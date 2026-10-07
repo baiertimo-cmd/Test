@@ -1,7 +1,26 @@
 # Kaufen oder leasen? Der Fuhrpark der HARO GmbH
 
-Interaktiver Lernpfad (eine einzelne HTML-Datei) zur Unterrichtseinheit „Leasing vs. Kreditkauf“.
-Öffne `index.html` im Browser – es ist keine Installation nötig.
+Interaktiver Lernpfad zur Unterrichtseinheit „Leasing vs. Kreditkauf“. Es gibt zwei Fassungen:
+
+| Datei | Für wen | Inhalt |
+| --- | --- | --- |
+| `index.html` | Schülerinnen und Schüler | Lernpfad mit Selbstkontrolle, **ohne** Lösungen |
+| `lehrkraft.html` | Lehrkraft | wie oben, plus Lösungen, Erwartungshorizonte, Musterlösung und „Lösung einsetzen“ |
+
+Beide Dateien funktionieren ohne Installation direkt im Browser. Gib der Klasse nur `index.html` weiter.
+
+## Änderungen vornehmen
+
+Beide Fassungen werden aus **einer** Quelldatei erzeugt: `src/lernpfad.html`. Nach einer Änderung dort:
+
+```
+python3 build.py
+```
+
+Teile nur für die Lehrkraft sind in der Quelle mit `<!--@T-->…<!--@/T-->` (HTML) bzw. `/*@T*/…/*@/T*/` (JavaScript)
+markiert. Die Lösungen stehen im Block `/*@SOL*/…/*@/SOL*/`; in der Schülerfassung werden sie durch Prüfsummen ersetzt,
+sodass die Selbstkontrolle funktioniert, die Lösungen aber nicht im Quelltext stehen. `build.py` bricht ab, wenn
+in der Schülerfassung noch Lösungswerte auftauchen.
 
 ## Stationen
 
@@ -19,10 +38,10 @@ Interaktiver Lernpfad (eine einzelne HTML-Datei) zur Unterrichtseinheit „Leasi
 Jede Station endet mit einer Box „Ins Heft“: Form des Hefteintrags, Arbeitsaufträge, ein Button zum Kopieren
 von Überschrift und Auftrag sowie ein aufklappbarer Selbstcheck zum Abhaken.
 
-## Lehrkraft-Modus
+## Lehrkraftfassung
 
-Der Schalter oben rechts blendet Lösungen, Erwartungshorizonte und eine Musterlösung ein
-und zeigt „Lösung einsetzen“-Buttons (z. B. zum Besprechen am Beamer).
+`lehrkraft.html` öffnet mit eingeblendeten Lösungen. Der Schalter „Lösungen anzeigen“ blendet sie aus,
+etwa wenn du die Seite am Beamer zuerst ohne Lösungen zeigen möchtest.
 
 ## Annahmen
 

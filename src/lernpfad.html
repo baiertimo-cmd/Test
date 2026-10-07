@@ -294,7 +294,7 @@ body.teacher .teacher-banner { display: block; }
 </head>
 <body>
 
-
+<!--@T--><div class="teacher-banner" role="status">Lehrkraft-Fassung: Lösungen und Erwartungshorizonte sind sichtbar. Diese Datei nicht an Schülerinnen und Schüler weitergeben.</div><!--@/T-->
 
 <header class="masthead">
   <div class="wrap">
@@ -304,7 +304,11 @@ body.teacher .teacher-banner { display: block; }
       <p class="sub">Ihr vergleicht Kreditkauf und Leasing für acht neue Servicefahrzeuge und gebt der Geschäftsführung eine begründete Empfehlung.</p>
     </div>
     <div class="tools">
-      
+      <!--@T--><label class="switch" for="teacherToggle">
+        <input type="checkbox" id="teacherToggle">
+        <span class="track" aria-hidden="true"></span>
+        Lösungen anzeigen
+      </label><!--@/T-->
       <button class="btn ghost" id="resetAll" type="button">Eingaben zurücksetzen</button>
     </div>
   </div>
@@ -417,11 +421,14 @@ body.teacher .teacher-banner { display: block; }
 
       <div class="btn-row">
         <button class="btn" type="button" id="checkRaster">Prüfen</button>
-        
+        <!--@T--><button class="btn teacher-btn teacher-only" type="button" id="solveRaster">Lösung einsetzen</button><!--@/T-->
         <span class="feedback" id="rasterFeedback" aria-live="polite"></span>
       </div>
 
-      
+      <!--@T--><div class="solution">
+        <strong>Erwartungshorizont Full-Service-Leasing</strong>
+        <p>Die Leasingrate deckt nicht nur die Nutzung des Fahrzeugs ab, sondern auch Dienstleistungen wie Wartung, Reparaturen, Reifen und Versicherung. Der Leasingnehmer zahlt einen festen Betrag und muss sich um diese Leistungen nicht selbst kümmern.</p>
+      </div><!--@/T-->
     </article>
   </div>
 </section>
@@ -502,7 +509,13 @@ body.teacher .teacher-banner { display: block; }
         <div class="field total-row"><label for="gA">Gesamtkosten Kreditkauf</label><div class="money"><input type="text" inputmode="decimal" id="gA"></div></div>
       </div>
       <p class="note">Gesamtkosten Kreditkauf = Tilgung + Zinsen + Wartung − Restwerterlös</p>
-      
+      <!--@T--><div class="solution">
+        <strong>Lösung Variante A</strong>
+        <p class="num">Zinsen: 12.000 + 9.000 + 6.000 + 3.000 = 30.000 €</p>
+        <p class="num">Wartung: 8 × 500 € × 4 Jahre = 16.000 €</p>
+        <p class="num">Restwerterlös: 30 % × 240.000 € = 72.000 €</p>
+        <p class="num">Gesamtkosten: 240.000 + 30.000 + 16.000 − 72.000 = 214.000 €</p>
+      </div><!--@/T-->
     </article>
 
     <article class="sheet">
@@ -513,7 +526,13 @@ body.teacher .teacher-banner { display: block; }
         <div class="field"><label for="sz">Sonderzahlung</label><div class="money"><input type="text" inputmode="decimal" id="sz"></div></div>
         <div class="field total-row"><label for="gB">Gesamtkosten Leasing</label><div class="money"><input type="text" inputmode="decimal" id="gB"></div></div>
       </div>
-      
+      <!--@T--><div class="solution">
+        <strong>Lösung Variante B</strong>
+        <p class="num">Monatsrate: 8 × 550 € = 4.400 €</p>
+        <p class="num">Leasingraten: 48 × 4.400 € = 211.200 €</p>
+        <p class="num">Sonderzahlung: 10 % × 240.000 € = 24.000 €</p>
+        <p class="num">Gesamtkosten: 211.200 + 24.000 = 235.200 €</p>
+      </div><!--@/T-->
 
       <div class="result-line">
         <div class="field"><label for="cheaper">Rechnerisch günstigere Variante</label>
@@ -521,11 +540,11 @@ body.teacher .teacher-banner { display: block; }
         </div>
         <div class="field"><label for="diff">um</label><div class="money"><input type="text" inputmode="decimal" id="diff"></div></div>
       </div>
-      
+      <!--@T--><div class="solution"><strong>Ergebnis</strong><p>Der Kreditkauf ist um <span class="num">21.200 €</span> günstiger.</p></div><!--@/T-->
 
       <div class="btn-row">
         <button class="btn" type="button" id="checkCalc">Rechnung prüfen</button>
-        
+        <!--@T--><button class="btn teacher-btn teacher-only" type="button" id="solveCalc">Lösung einsetzen</button><!--@/T-->
         <span class="feedback" id="calcFeedback" aria-live="polite"></span>
       </div>
     </article>
@@ -576,7 +595,11 @@ body.teacher .teacher-banner { display: block; }
         <div class="btn-row"><input type="text" inputmode="decimal" id="breakEven" style="max-width:140px" placeholder="z. B. 25"><button class="btn" type="button" id="checkBreak">Prüfen</button></div>
         <span class="feedback" id="breakFeedback" aria-live="polite"></span>
       </div>
-      
+      <!--@T--><div class="solution">
+        <strong>Lösung und Impuls</strong>
+        <p>Gleichstand bei einem Restwerterlös von 50.800 €, also rund 21,2 % des Anschaffungswerts (240.000 + 30.000 + 16.000 − R = 235.200). Fällt der Restwert unter etwa 21 %, ist das Leasing günstiger.</p>
+        <p>Impuls: Beim Kreditkauf trägt die HARO GmbH dieses Risiko selbst. Beim Kilometer-Leasing liegt es beim Leasinggeber. Ein Teil der Leasingmehrkosten ist also der Preis für die Absicherung.</p>
+      </div><!--@/T-->
     </article>
   </div>
 </section>
@@ -633,7 +656,13 @@ body.teacher .teacher-banner { display: block; }
     </div>
   </div>
 
-  
+  <!--@T--><div class="solution">
+    <strong>Musterlösung (eine mögliche Empfehlung für Leasing)</strong>
+    <p>Sehr geehrte Frau Herold, sehr geehrter Herr Acar,</p>
+    <p>wir haben die beiden Angebote zur Erneuerung unseres Fuhrparks über vier Jahre verglichen. Beim Kreditkauf entstehen Gesamtkosten von 214.000 €, beim Full-Service-Leasing von 235.200 €. Rein rechnerisch ist der Kreditkauf damit um 21.200 € günstiger. Diese Rechnung setzt allerdings voraus, dass wir die Fahrzeuge nach vier Jahren tatsächlich für 72.000 € verkaufen können. Sinkt der Restwert unter etwa 21 %, ist das Leasing günstiger. Dieses Restwertrisiko trägt beim Kilometer-Leasing der Leasinggeber. Außerdem binden wir beim Leasing kein Kapital in Höhe von 240.000 €, sodass unsere Liquidität für andere Aufgaben erhalten bleibt. Die monatlichen Kosten von 4.400 € sind fest und lassen sich gut planen. Wartung und Reparaturen sind bereits enthalten, sodass kein zusätzlicher Verwaltungsaufwand entsteht. Nach vier Jahren können wir zudem auf aktuelle Fahrzeuge umsteigen. Wir empfehlen daher das Full-Service-Leasing, weil die Mehrkosten von rund 5.300 € pro Jahr durch Planungssicherheit, Liquidität und den Wegfall des Restwertrisikos aufgewogen werden.</p>
+    <p>Mit freundlichen Grüßen<br>Team Rechnungswesen</p>
+    <p class="note">Eine Empfehlung für den Kreditkauf ist ebenso vertretbar, wenn sie mit den niedrigeren Gesamtkosten, dem Eigentum und der fehlenden Vertragsbindung schlüssig begründet wird.</p>
+  </div><!--@/T-->
 </section>
 
 <div class="pager">
@@ -674,7 +703,16 @@ body.teacher .teacher-banner { display: block; }
   }
 
   // ---------- Prüfwerte ----------
-    var SOL = null, SOLH = {"r0fl": "18t0gp7", "r0ol": "h3kvyn", "r1fl": "6d8ejt", "r1ol": "k3en0b", "r2fl": "m5ncn9", "r2ol": "19ko4z6", "km": "1vyp3l3", "rwl": "mu909s", "q0": "17cfj4x", "q1": "11xrmf2", "q2": "1cv596u", "q3": "cejhzf", "z1": "eknd3b", "z2": "1wuo7y4", "z3": "1rgdnm2", "z4": "16ud7e8", "zSum": "1dtwv2n", "wSum": "1pxq6a6", "rw": "343pwn", "gA": "guzp98", "mRate": "nqyowk", "lSum": "11cqvta", "sz": "eymxeg", "gB": "1b06fgy", "diff": "zglrax", "cheaper": "1lqxmo2", "arg0": "xuop2q", "arg1": "318wm5", "arg2": "n1f38s", "arg3": "1t55db", "arg4": "auywjj", "arg5": "1f7f3gk", "arg6": "15nphh", "arg7": "1eeim76", "arg8": "1oz2b8r", "arg9": "1361qds"};
+  // In der Lehrkraft-Fassung im Klartext; build.py ersetzt den Block in der Schülerfassung durch Prüfsummen.
+  /*@SOL*/var SOL = {
+    r0fl: "mittel- bis langfristig", r0ol: "kurzfristig / unbestimmt",
+    r1fl: "in der Grundmietzeit unkündbar", r1ol: "jederzeit kündbar (mit Frist)",
+    r2fl: "Leasingnehmer", r2ol: "Leasinggeber", km: "Leasinggeber", rwl: "Leasingnehmer",
+    q0: "1", q1: "1", q2: "2", q3: "0",
+    z1: "12000", z2: "9000", z3: "6000", z4: "3000", zSum: "30000", wSum: "16000", rw: "72000", gA: "214000",
+    mRate: "4400", lSum: "211200", sz: "24000", gB: "235200", diff: "21200", cheaper: "A",
+    arg0: "k", arg1: "k", arg2: "k", arg3: "k", arg4: "l", arg5: "l", arg6: "l", arg7: "l", arg8: "l", arg9: "l"
+  }, SOLH = null;/*@/SOL*/
   function hashStr(str) {
     var bytes = new TextEncoder().encode("haro|" + str), h = 0x811c9dc5;
     for (var i = 0; i < bytes.length; i++) { h ^= bytes[i]; h = Math.imul(h, 0x01000193) >>> 0; }
@@ -687,7 +725,7 @@ body.teacher .teacher-banner { display: block; }
   }
 
   // ---------- Speicher (nur dieser Browser) ----------
-  var KEY = "haro-fuhrpark-v1";
+  var KEY = "haro-fuhrpark-v1"/*@KEY*/;
   var store = {};
   try { store = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { store = {}; }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
@@ -701,7 +739,10 @@ body.teacher .teacher-banner { display: block; }
     el.addEventListener("change", function () { store.fields[el.id] = el.value; save(); });
   }
 
-  
+  /*@T*/// ---------- Lehrkraft-Fassung: Lösungen ein-/ausblenden ----------
+  var tToggle = document.getElementById("teacherToggle");
+  function setTeacher(on) { document.body.classList.toggle("teacher", on); tToggle.checked = on; store.teacher = on; save(); }
+  tToggle.addEventListener("change", function () { setTeacher(tToggle.checked); });/*@/T*/
 
   // ---------- Navigation ----------
   var sections = Array.prototype.slice.call(document.querySelectorAll("section.station"));
@@ -813,7 +854,10 @@ body.teacher .teacher-banner { display: block; }
       fb.textContent = ok + " von " + items.length + " richtig. Lest die markierten Stellen im Infotext nach.";
     }
   });
-  
+  /*@T*/document.getElementById("solveRaster").addEventListener("click", function () {
+    rasterItems().forEach(function (it) { var el = document.getElementById(it); el.value = SOL[it]; store.fields[it] = SOL[it]; el.classList.add("is-right"); el.classList.remove("is-wrong"); });
+    save();
+  });/*@/T*/
 
   // ---------- Station 03: Lesecheck ----------
   var QUIZ = [
@@ -894,7 +938,11 @@ body.teacher .teacher-banner { display: block; }
     if (ok === total) { fb.className = "feedback ok"; fb.textContent = "Alle Werte stimmen!"; markDone("s4", true); renderCalcChart(); }
     else { fb.className = "feedback no"; fb.textContent = ok + " von " + total + " Feldern richtig."; }
   });
-  
+  /*@T*/document.getElementById("solveCalc").addEventListener("click", function () {
+    CALC.forEach(function (c) { var el = document.getElementById(c[0]); el.value = fmt.format(+SOL[c[0]]); store.fields[c[0]] = el.value; el.classList.add("is-right"); el.classList.remove("is-wrong"); clearHint(el); });
+    var ch = document.getElementById("cheaper"); ch.value = SOL.cheaper; store.fields.cheaper = SOL.cheaper; ch.classList.add("is-right");
+    save(); renderCalcChart();
+  });/*@/T*/
 
   function renderBars(container, a, b) {
     var max = Math.max(a, b, 1);
@@ -1122,7 +1170,7 @@ body.teacher .teacher-banner { display: block; }
       return;
     }
     clearTimeout(armed); armed = null;
-    store = { fields: {}, done: {}  };
+    store = { fields: {}, done: {} /*@T*/, teacher: store.teacher/*@/T*/ };
     save();
     location.hash = "#start";
     location.reload();
@@ -1130,7 +1178,7 @@ body.teacher .teacher-banner { display: block; }
 
   // ---------- Start ----------
   document.querySelectorAll("main input[type=text], main textarea, main select").forEach(function (el) { if (el !== letter) bindPersist(el); });
-  
+  /*@T*/setTeacher(store.teacher !== false);/*@/T*/
   renderProgress(); renderSim(); renderLetter();
   if (store.done.s4) renderCalcChart();
   var h = (location.hash || "").slice(1), idx = sections.findIndex(function (s) { return s.id === h; });
