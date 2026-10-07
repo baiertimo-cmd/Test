@@ -261,6 +261,21 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 @media (max-width: 520px) { .argtable { grid-template-columns: minmax(0, 1fr); } }
 .counter { font: 600 .85rem/1 var(--font-mono); color: var(--muted); }
 
+/* Ins Heft */
+.heft { border: 2px solid var(--ink); border-radius: 10px; background: var(--surface); padding: 20px; display: grid; gap: 14px; }
+.heft h3 { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; }
+.heft h3 svg { width: 26px; height: 26px; flex: none; color: var(--bar-b); }
+.heft .form { color: var(--muted); }
+.heft ul.tasks { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; font-size: 1.05rem; }
+.heft .btn.ghost { border: 2px solid var(--ink); border-radius: 10px; background: var(--sunken); }
+.heft .selfcheck { border-top: 2px solid var(--ink); padding-top: 14px; display: grid; gap: 10px; }
+.heft .selfcheck > p:first-child { font-weight: 700; }
+.heft .checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.heft .checks label { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; padding: 4px 0; font-size: 1.02rem; }
+.heft .checks input { width: 20px; height: 20px; margin-top: 4px; flex: none; accent-color: var(--good); }
+.heft .tally { font-weight: 700; }
+.heft .tally.ok { color: var(--good); }
+
 /* Lehrkraft-Modus */
 .solution { display: none; border: 1.5px solid var(--teacher); background: var(--teacher-soft); border-radius: var(--radius); padding: 14px; gap: 6px; }
 .solution > strong:first-child { color: var(--teacher); font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; }
@@ -1055,6 +1070,71 @@ body.teacher .teacher-banner { display: block; }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(letter.value).then(function () { fb.className = "feedback ok"; fb.textContent = "Kopiert."; }, fallback);
     } else fallback();
+  });
+
+  // ---------- Ins Heft (je Station) ----------
+  var HEFT = {
+    start: { t: "Die Ausgangssituation", form: "Stichpunkte, Leitfrage",
+      tasks: ["Notiere die Eckdaten: Unternehmen, Anzahl der Fahrzeuge, Anschaffungswert, Zeitraum.", "Nenne die beiden Finanzierungsmöglichkeiten, zwischen denen die HARO GmbH wählen muss.", "Formuliere die Leitfrage der Einheit als Frage."],
+      checks: ["Eckdaten: 8 Fahrzeuge, 240.000 €, 4 Jahre", "Kreditkauf und Full-Service-Leasing benannt", "Leitfrage mit Fragezeichen formuliert"] },
+    leasingarten: { t: "Leasingarten", form: "Definition, Vergleichstabelle, Merksatz",
+      tasks: ["Schreibe eine Definition: Was ist Leasing? Verwende die Begriffe Leasinggeber, Leasingnehmer und Leasingrate.", "Lege eine Tabelle an: Finanzierungsleasing und Operating-Leasing nach Vertragslaufzeit, Kündbarkeit und Restwertrisiko.", "Notiere, wer beim Kilometer-Leasing und beim Restwert-Leasing das Restwertrisiko trägt.", "Erkläre in einem Satz, was Full-Service-Leasing bedeutet."],
+      checks: ["Definition mit Leasinggeber, Leasingnehmer, Leasingrate und Eigentum", "Tabelle mit drei Merkmalen für beide Leasingarten", "Restwertrisiko bei Kilometer- und Restwert-Leasing", "Merksatz zum Full-Service-Leasing in eigenen Worten"] },
+    datenblatt: { t: "Die Angebote", form: "Gegenüberstellung in zwei Spalten, Merksatz",
+      tasks: ["Stelle die wichtigsten Konditionen beider Angebote in einer Tabelle mit zwei Spalten gegenüber.", "Markiere, welche Kosten in der Leasingrate bereits enthalten sind.", "Erkläre in einem Satz, warum die Zinsen beim Ratendarlehen jedes Jahr sinken."],
+      checks: ["Tabelle mit Kreditsumme, Zins, Laufzeit, Rate, Sonderzahlung, Wartung und Restwert", "Enthaltene Leistungen der Leasingrate markiert", "Merksatz zum Ratendarlehen"] },
+    rechnung: { t: "Der Gesamtkostenvergleich", form: "Zinstabelle, Formeln, Rechenweg, Antwortsatz",
+      tasks: ["Übertrage die Zinstabelle des Ratendarlehens für vier Jahre.", "Schreibe die Formeln für die Gesamtkosten beider Varianten auf.", "Rechne beide Varianten mit vollständigem Rechenweg und Einheiten.", "Formuliere einen Antwortsatz: Welche Variante ist um wie viel Euro günstiger?"],
+      checks: ["Zinstabelle mit Restschuld, Zinsen und Tilgung", "Formel Kreditkauf: Tilgung + Zinsen + Wartung − Restwerterlös", "Formel Leasing: Leasingraten + Sonderzahlung", "Antwortsatz mit 21.200 €"] },
+    abwaegung: { t: "Die Abwägung", form: "Pro-und-Contra-Tabelle, Merksatz",
+      tasks: ["Lege eine Tabelle mit zwei Spalten an: je drei Argumente für Kreditkauf und für Leasing.", "Notiere den Restwert, ab dem das Leasing günstiger wird, und erkläre, was das bedeutet.", "Schreibe einen Merksatz: Warum ist die rechnerisch günstigere Variante nicht automatisch die bessere?"],
+      checks: ["Je drei Argumente für Kreditkauf und Leasing", "Break-even bei rund 21 % Restwert (50.800 €) erklärt", "Merksatz zu quantitativen und qualitativen Kriterien"] },
+    empfehlung: { t: "Die Empfehlung", form: "Gliederung, Reinschrift",
+      tasks: ["Notiere den Aufbau eines Empfehlungsschreibens als Gliederung.", "Übertrage dein Empfehlungsschreiben als Reinschrift.", "Markiere das Rechenergebnis und deine Argumente farbig."],
+      checks: ["Gliederung: Anrede, Anlass, Rechenergebnis, Argumente, Empfehlung, Gruß", "Reinschrift mit 10–15 Sätzen", "Rechenergebnis und mindestens zwei Argumente markiert", "Klare Empfehlung am Schluss"] }
+  };
+  var PEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+  function copyText(text, onDone) {
+    function legacy() {
+      var ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+      ta.remove(); onDone(ok);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { onDone(true); }, legacy);
+    else legacy();
+  }
+  sections.forEach(function (sec) {
+    var h = HEFT[sec.id]; if (!h) return;
+    var box = document.createElement("aside"); box.className = "heft"; box.setAttribute("aria-label", "Ins Heft: " + h.t);
+    var html = "<h3>" + PEN + "Ins Heft: " + h.t + '</h3><p class="form">Form: ' + h.form + '</p><ul class="tasks">' +
+      h.tasks.map(function (t) { return "<li>" + t + "</li>"; }).join("") + "</ul>" +
+      '<div class="btn-row"><button type="button" class="btn ghost" data-act="copy">Überschrift und Auftrag kopieren</button>' +
+      '<button type="button" class="btn ghost" data-act="toggle" aria-expanded="false">Selbstcheck öffnen</button><span class="feedback" aria-live="polite"></span></div>' +
+      '<div class="selfcheck" hidden><p>Hast du an alles gedacht? Hake ab, was in deinem Heft steht:</p><ul class="checks">' +
+      h.checks.map(function (c, i) { var id = "heft-" + sec.id + "-" + i; return '<li><label for="' + id + '"><input type="checkbox" id="' + id + '"' + (store.fields[id] ? " checked" : "") + "><span>" + c + "</span></label></li>"; }).join("") +
+      '</ul><p class="tally"></p></div>';
+    box.innerHTML = html;
+    sec.appendChild(box);
+    var sc = box.querySelector(".selfcheck"), tg = box.querySelector('[data-act="toggle"]'), fb = box.querySelector(".feedback"), tally = box.querySelector(".tally");
+    function count() {
+      var boxes = sc.querySelectorAll("input"), n = 0;
+      boxes.forEach(function (b) { if (b.checked) n++; });
+      var all = n === boxes.length;
+      tally.className = "tally" + (all ? " ok" : "");
+      tally.textContent = n + " von " + boxes.length + " Punkten abgehakt. " + (all ? "Dein Hefteintrag ist vollständig." : "Ergänze die fehlenden in deinem Heft.");
+    }
+    sc.addEventListener("change", function (e) { store.fields[e.target.id] = e.target.checked; save(); count(); });
+    tg.addEventListener("click", function () {
+      sc.hidden = !sc.hidden;
+      tg.setAttribute("aria-expanded", String(!sc.hidden));
+      tg.textContent = sc.hidden ? "Selbstcheck öffnen" : "Selbstcheck schließen";
+    });
+    box.querySelector('[data-act="copy"]').addEventListener("click", function () {
+      var text = "Ins Heft: " + h.t + "\nForm: " + h.form + "\n" + h.tasks.map(function (t) { return "- " + t; }).join("\n");
+      copyText(text, function (ok) { fb.className = "feedback" + (ok ? " ok" : " no"); fb.textContent = ok ? "Kopiert." : "Kopieren nicht möglich. Bitte den Text markieren."; });
+    });
+    count();
   });
 
   // ---------- Zurücksetzen (zweistufig, ohne confirm) ----------

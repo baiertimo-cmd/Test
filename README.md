@@ -14,6 +14,11 @@ Interaktiver Lernpfad (eine einzelne HTML-Datei) zur Unterrichtseinheit „Leasi
 | 05 | 05 (ergänzt) | Argumente zuordnen, Was-wäre-wenn-Rechner (Restwert, Zins, Wartung, Rate), Break-even |
 | 06 | 06 | Empfehlungsschreiben mit Live-Checkliste, Satzbausteinen und Kopierfunktion |
 
+## Ins Heft
+
+Jede Station endet mit einer Box „Ins Heft“: Form des Hefteintrags, Arbeitsaufträge, ein Button zum Kopieren
+von Überschrift und Auftrag sowie ein aufklappbarer Selbstcheck zum Abhaken.
+
 ## Lehrkraft-Modus
 
 Der Schalter oben rechts blendet Lösungen, Erwartungshorizonte und eine Musterlösung ein
