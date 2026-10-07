@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fuhrpark HARO GmbH</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Saira+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: Fallakte als Lernpfad – Kopf mit Kennzeichen-Navigation, je Station eine Seite, Material links / Aufgabe rechts */
+:root {
+  --bg: #eef1f4;
+  --surface: #ffffff;
+  --sunken: #f5f7f9;
+  --ink: #16202a;
+  --muted: #566372;
+  --line: #d3dae2;
+  --accent: #1d4ed8;
+  --accent-soft: #e3eafc;
+  --plate: #0b3a9e;
+  --good: #23784a;
+  --good-soft: #e1f3e8;
+  --bad: #b3362f;
+  --bad-soft: #fbe7e5;
+  --warn: #9a6200;
+  --warn-soft: #fbf0d9;
+  --teacher: #6b3fa0;
+  --teacher-soft: #f0e8fa;
+  --bar-a: #1d4ed8;
+  --bar-b: #c2770c;
+  --font-display: "Saira Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --font-body: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f151c; --surface: #17202a; --sunken: #121a22; --ink: #e6ebf1; --muted: #9aa7b6; --line: #2c3946;
+    --accent: #7ea2ff; --accent-soft: #1d2a4a; --plate: #3b6fe0;
+    --good: #5fcf8f; --good-soft: #15301f; --bad: #ff8a80; --bad-soft: #3a1c1a; --warn: #f0b44c; --warn-soft: #3a2c12;
+    --teacher: #c4a2f0; --teacher-soft: #2a1f3a; --bar-a: #7ea2ff; --bar-b: #f0a43c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f151c; --surface: #17202a; --sunken: #121a22; --ink: #e6ebf1; --muted: #9aa7b6; --line: #2c3946;
+  --accent: #7ea2ff; --accent-soft: #1d2a4a; --plate: #3b6fe0;
+  --good: #5fcf8f; --good-soft: #15301f; --bad: #ff8a80; --bad-soft: #3a1c1a; --warn: #f0b44c; --warn-soft: #3a2c12;
+  --teacher: #c4a2f0; --teacher-soft: #2a1f3a; --bar-a: #7ea2ff; --bar-b: #f0a43c;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 1rem/1.6 var(--font-body);
+}
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; text-wrap: balance; margin: 0; letter-spacing: .01em; }
+h1 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); }
+h2 { font-size: clamp(1.5rem, 3.2vw, 2rem); }
+h3 { font-size: 1.25rem; }
+p { margin: 0; }
+.mono, .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; }
+
+/* ---------- Kopf ---------- */
+.masthead { background: var(--surface); border-bottom: 1px solid var(--line); }
+.masthead .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; justify-content: space-between; padding-block: 20px 16px; }
+.eyebrow { font: 600 .75rem/1.2 var(--font-body); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+.masthead .title-block { display: grid; gap: 6px; min-width: 0; }
+.masthead .sub { color: var(--muted); max-width: 60ch; }
+.tools { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; font-weight: 600; font-size: .9rem; padding: 6px 12px 6px 6px; border: 1px solid var(--line); border-radius: 999px; background: var(--sunken); }
+.switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.switch .track { width: 38px; height: 22px; border-radius: 999px; background: var(--line); position: relative; transition: background .2s; flex: none; }
+.switch .track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); transition: transform .2s; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+.switch input:checked + .track { background: var(--teacher); }
+.switch input:checked + .track::after { transform: translateX(16px); }
+.switch input:focus-visible + .track { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- Kennzeichen-Navigation ---------- */
+.stations { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
+.stations .wrap { padding-block: 10px; }
+.stations ol { list-style: none; margin: 0; padding: 0 0 2px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: thin; }
+.plate {
+  display: inline-flex; align-items: stretch; flex: none;
+  border: 2px solid var(--ink); border-radius: 5px; background: var(--surface);
+  cursor: pointer; padding: 0; text-align: left; min-height: 44px;
+  transition: transform .15s, box-shadow .15s;
+}
+.plate:hover { transform: translateY(-1px); box-shadow: 0 2px 0 var(--line); }
+.plate .eu { background: var(--plate); color: #fff; font: 700 .7rem/1 var(--font-body); width: 20px; display: grid; place-items: end center; padding-bottom: 6px; border-radius: 2px 0 0 2px; }
+.plate .txt { display: grid; padding: 4px 10px 4px 8px; line-height: 1.1; }
+.plate .code { font: 700 1.15rem/1.1 var(--font-display); letter-spacing: .06em; }
+.plate .lbl { font-size: .72rem; color: var(--muted); white-space: nowrap; }
+.plate .state { align-self: center; width: 18px; height: 18px; margin-right: 8px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: .7rem; color: var(--surface); }
+.plate[aria-current="step"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.plate.done .state { background: var(--good); border-color: var(--good); }
+.plate.done .state::before { content: "✓"; font-weight: 700; }
+
+.progress { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-size: .8rem; color: var(--muted); }
+.progress .bar { flex: 1; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.progress .bar i { display: block; height: 100%; width: 0; background: var(--good); transition: width .4s; }
+
+/* ---------- Stationen ---------- */
+main.wrap { padding-block: 28px 64px; }
+.station { display: grid; gap: 24px; }
+.station-head { display: grid; gap: 8px; max-width: 72ch; }
+.station-head .lead { color: var(--muted); font-size: 1.05rem; }
+.grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 860px) { .grid-2 { grid-template-columns: minmax(0, 1fr); } }
+
+.sheet { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.sheet > header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 1px dashed var(--line); }
+.mat-no { font: 600 .75rem/1 var(--font-mono); color: var(--muted); letter-spacing: .04em; }
+.sheet p, .sheet li { max-width: 68ch; }
+.sheet ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+
+.task { background: var(--accent-soft); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 4px; }
+.task strong { font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); }
+
+.note { font-size: .85rem; color: var(--muted); }
+.added { font-size: .75rem; color: var(--muted); font-style: italic; }
+
+/* Infotext */
+.info-block { display: grid; gap: 6px; padding-block: 4px; }
+.info-block h3 { font-size: 1.15rem; }
+.term { font-weight: 700; }
+
+/* Szenario */
+.case { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; }
+@media (max-width: 860px) { .case { grid-template-columns: minmax(0, 1fr); } }
+.memo { font-size: 1.02rem; display: grid; gap: 12px; }
+.memo .from { font: 600 .8rem/1.4 var(--font-mono); color: var(--muted); display: grid; }
+.facts { display: grid; gap: 0; margin: 0; }
+.facts div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.facts div:last-child { border-bottom: 0; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; font-family: var(--font-mono); font-weight: 600; text-align: right; }
+.goals { counter-reset: g; list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.goals li { display: grid; grid-template-columns: 2.2em minmax(0, 1fr); gap: 8px; align-items: baseline; }
+.goals li::before { counter-increment: g; content: "0" counter(g); font: 600 .8rem/1 var(--font-mono); color: var(--muted); }
+
+/* Tabellen */
+.table-scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+th, td { text-align: left; padding: 10px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+th { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+.solution .num { font-size: .88rem; }
+
+select, input[type="text"], input[type="number"], textarea {
+  background: var(--sunken); border: 1.5px solid var(--line); border-radius: 4px; padding: 8px 10px; width: 100%; min-width: 0;
+}
+select { cursor: pointer; }
+textarea { resize: vertical; line-height: 1.55; }
+.field { display: grid; gap: 4px; }
+.field label { font-size: .85rem; font-weight: 600; }
+.money { position: relative; }
+.money input { font-family: var(--font-mono); text-align: right; padding-right: 28px; }
+.money::after { content: "€"; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-family: var(--font-mono); pointer-events: none; }
+.is-right { border-color: var(--good) !important; background: var(--good-soft) !important; }
+.is-wrong { border-color: var(--bad) !important; background: var(--bad-soft) !important; }
+.hint { font-size: .82rem; color: var(--bad); }
+
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn { border: 1.5px solid var(--ink); background: var(--ink); color: var(--surface); padding: 9px 16px; border-radius: 4px; font-weight: 600; cursor: pointer; min-height: 42px; }
+.btn:hover { filter: brightness(1.15); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.ghost:hover { border-color: var(--ink); }
+.btn.teacher-btn { background: var(--teacher); border-color: var(--teacher); color: var(--surface); }
+.feedback { font-weight: 600; font-size: .95rem; }
+.feedback.ok { color: var(--good); }
+.feedback.no { color: var(--bad); }
+
+/* Strukturraster */
+.raster td:first-child { font-weight: 600; width: 28%; }
+.raster select { min-width: 0; }
+.pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 520px) { .pair { grid-template-columns: minmax(0, 1fr); } }
+.pair .box { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; display: grid; gap: 8px; background: var(--sunken); }
+
+/* Datenblatt */
+.offers { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+@media (max-width: 860px) { .offers { grid-template-columns: minmax(0, 1fr); } }
+.offer h3 { display: flex; gap: 10px; align-items: baseline; }
+.offer .tag { font: 600 .72rem/1 var(--font-mono); padding: 4px 6px; border-radius: 3px; color: var(--surface); }
+.offer.a .tag { background: var(--bar-a); }
+.offer.b .tag { background: var(--bar-b); }
+.kv { display: grid; margin: 0; }
+.kv div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.kv div:last-child { border-bottom: 0; }
+.kv dt { color: var(--muted); font-size: .92rem; }
+.kv dd { margin: 0; font-weight: 600; }
+.infocard { border: 1.5px dashed var(--line); border-radius: var(--radius); padding: 14px; display: grid; gap: 6px; }
+
+.quiz { display: grid; gap: 18px; }
+.q { display: grid; gap: 8px; }
+.q > p { font-weight: 600; }
+.opts { display: grid; gap: 6px; }
+.opt { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border: 1.5px solid var(--line); border-radius: 4px; cursor: pointer; background: var(--sunken); }
+.opt input { margin-top: 5px; accent-color: var(--accent); }
+
+/* Rechendossier */
+.calc td input { max-width: 170px; margin-left: auto; display: block; }
+.calc .money { max-width: 170px; margin-left: auto; }
+.sum-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.result-line { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; padding: 12px; border-radius: var(--radius); background: var(--sunken); border: 1px solid var(--line); }
+@media (max-width: 520px) { .result-line { grid-template-columns: minmax(0, 1fr); } }
+.total-row { font-weight: 700; }
+
+/* Vergleichsbalken */
+.bars { display: grid; gap: 12px; }
+.bar-row { display: grid; grid-template-columns: 7.5em minmax(0, 1fr); gap: 10px; align-items: center; }
+.bar-row .name { font-weight: 600; font-size: .9rem; }
+.bar-track { position: relative; height: 34px; background: var(--sunken); border-radius: 3px; overflow: hidden; border: 1px solid var(--line); }
+.bar-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: #fff; font: 600 .85rem/1 var(--font-mono); transition: width .35s ease; white-space: nowrap; }
+.bar-fill.a { background: var(--bar-a); }
+.bar-fill.b { background: var(--bar-b); }
+:root[data-theme="dark"] .bar-fill, :root[data-theme="dark"] .offer .tag { color: #0f151c; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .bar-fill, :root:not([data-theme="light"]) .offer .tag { color: #0f151c; } }
+.verdict { font-size: 1.05rem; }
+.verdict b { font-family: var(--font-mono); }
+
+/* Sortierung */
+.sort-list { display: grid; gap: 10px; }
+.arg { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.arg .choice { display: flex; gap: 6px; }
+.chip { border: 1.5px solid var(--line); background: var(--sunken); padding: 6px 10px; border-radius: 999px; font-size: .82rem; font-weight: 600; cursor: pointer; min-height: 36px; }
+.chip[aria-pressed="true"].k { background: var(--bar-a); border-color: var(--bar-a); color: var(--surface); }
+.chip[aria-pressed="true"].l { background: var(--bar-b); border-color: var(--bar-b); color: var(--surface); }
+.arg.right { border-color: var(--good); }
+.arg.wrong { border-color: var(--bad); }
+.arg .why { grid-column: 1 / -1; font-size: .85rem; color: var(--muted); }
+@media (max-width: 520px) { .arg { grid-template-columns: minmax(0, 1fr); } }
+
+.sliders { display: grid; gap: 16px; }
+.slider { display: grid; gap: 4px; }
+.slider .top { display: flex; justify-content: space-between; gap: 10px; font-size: .9rem; }
+.slider .top output { font-family: var(--font-mono); font-weight: 600; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+
+/* Empfehlung */
+.checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.checklist li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: .92rem; }
+.checklist .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); margin-top: 3px; display: grid; place-items: center; font-size: .65rem; color: var(--surface); }
+.checklist li.met .dot { background: var(--good); border-color: var(--good); }
+.checklist li.met .dot::before { content: "✓"; font-weight: 700; }
+.builders { display: flex; flex-wrap: wrap; gap: 6px; }
+.builders .chip { font-weight: 400; text-align: left; }
+.argtable { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; font-size: .9rem; }
+.argtable ul { padding-left: 1.1em; }
+.argtable h4 { margin: 0 0 4px; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; }
+.argtable .ka h4 { color: var(--bar-a); }
+.argtable .le h4 { color: var(--bar-b); }
+@media (max-width: 520px) { .argtable { grid-template-columns: minmax(0, 1fr); } }
+.counter { font: 600 .85rem/1 var(--font-mono); color: var(--muted); }
+
+/* Lehrkraft-Modus */
+.solution { display: none; border: 1.5px solid var(--teacher); background: var(--teacher-soft); border-radius: var(--radius); padding: 14px; gap: 6px; }
+.solution > strong:first-child { color: var(--teacher); font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; }
+body.teacher .solution { display: grid; }
+.teacher-only { display: none !important; }
+body.teacher .teacher-only { display: inline-flex !important; }
+.teacher-banner { display: none; background: var(--teacher); color: var(--surface); font-size: .85rem; font-weight: 600; text-align: center; padding: 6px 16px; }
+body.teacher .teacher-banner { display: block; }
+
+.pager { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 8px; border-top: 1px solid var(--line); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="teacher-banner" role="status">Lehrkraft-Modus aktiv: Lösungen und Erwartungshorizonte werden angezeigt.</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="title-block">
+      <span class="eyebrow">Lernpfad · Investitionsfinanzierung</span>
+      <h1>Kaufen oder leasen? Der Fuhrpark der HARO GmbH</h1>
+      <p class="sub">Ihr vergleicht Kreditkauf und Leasing für acht neue Servicefahrzeuge und gebt der Geschäftsführung eine begründete Empfehlung.</p>
+    </div>
+    <div class="tools">
+      <label class="switch" for="teacherToggle">
+        <input type="checkbox" id="teacherToggle">
+        <span class="track" aria-hidden="true"></span>
+        Lehrkraft-Modus
+      </label>
+      <button class="btn ghost" id="resetAll" type="button">Eingaben zurücksetzen</button>
+    </div>
+  </div>
+</header>
+
+<nav class="stations" aria-label="Stationen des Lernpfads">
+  <div class="wrap">
+    <ol id="stationNav"></ol>
+    <div class="progress"><span id="progressText">0 von 5 Stationen erledigt</span><span class="bar"><i id="progressBar"></i></span></div>
+  </div>
+</nav>
+
+<main class="wrap" id="main">
+
+<!-- ===================== START ===================== -->
+<section class="station" id="start" data-label="Start" data-code="START">
+  <div class="station-head">
+    <span class="eyebrow">Ausgangssituation</span>
+    <h2>Acht Transporter, eine Entscheidung</h2>
+    <p class="lead">Lest die Nachricht der Geschäftsführung. Sie ist euer Arbeitsauftrag für die ganze Einheit.</p>
+  </div>
+
+  <div class="case">
+    <article class="sheet memo">
+      <header><h3>Interne Mitteilung</h3><span class="mat-no">02 · Situation</span></header>
+      <div class="from"><span>Von: Sabine Herold, Kemal Acar (Geschäftsführung)</span><span>An: Team Rechnungswesen</span><span>Betreff: Erneuerung Fuhrpark</span></div>
+      <p>Liebes Team,</p>
+      <p>unsere acht Servicefahrzeuge sind in die Jahre gekommen. Die Reparaturen häufen sich, und zwei Wagen würden die nächste Hauptuntersuchung kaum noch bestehen. Wir wollen den gesamten Fuhrpark deshalb zum Jahresbeginn durch neue Transporter ersetzen.</p>
+      <p>Ein neuer Transporter kostet 30.000 €, insgesamt also 240.000 €. Eigenes Geld wollen wir dafür nicht einsetzen. Uns liegen zwei Angebote vor: ein Kredit unserer Hausbank und ein Full-Service-Leasing über das Autohaus.</p>
+      <p>Bitte rechnet beide Varianten über vier Jahre durch und schickt uns eine begründete Empfehlung. Uns interessiert nicht nur der Preis, sondern auch, was die Entscheidung für unsere Liquidität und unser Risiko bedeutet.</p>
+      <p>Viele Grüße<br>Sabine Herold und Kemal Acar</p>
+      <p class="added">Situationstext für diesen Lernpfad ergänzt.</p>
+    </article>
+
+    <div style="display:grid; gap:24px; min-width:0;">
+      <div class="sheet">
+        <header><h3>Eckdaten</h3></header>
+        <dl class="facts">
+          <div><dt>Unternehmen</dt><dd>HARO GmbH</dd></div>
+          <div><dt>Fahrzeuge</dt><dd>8 Transporter</dd></div>
+          <div><dt>Preis je Fahrzeug</dt><dd>30.000 €</dd></div>
+          <div><dt>Anschaffungswert</dt><dd>240.000 €</dd></div>
+          <div><dt>Betrachtungszeitraum</dt><dd>4 Jahre</dd></div>
+        </dl>
+      </div>
+      <div class="sheet">
+        <header><h3>Euer Weg durch die Einheit</h3></header>
+        <ol class="goals">
+          <li>Leasingarten unterscheiden (Infotext 02, Strukturraster 01)</li>
+          <li>Angebote lesen (Datenblatt 03)</li>
+          <li>Gesamtkosten berechnen (Rechendossier 04)</li>
+          <li>Argumente abwägen und Szenarien testen (05)</li>
+          <li>Empfehlung an die Geschäftsführung schreiben (06)</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 01 / 02 ===================== -->
+<section class="station" id="leasingarten" data-label="Leasingarten" data-code="01" data-track="s1" hidden>
+  <div class="station-head">
+    <span class="eyebrow">Station 01 · Material 01 und 02</span>
+    <h2>Leasingarten im Vergleich</h2>
+    <p class="lead">Lest den Infotext und füllt daneben das Strukturraster aus. Mit „Prüfen“ seht ihr, was schon stimmt.</p>
+  </div>
+
+  <div class="grid-2">
+    <article class="sheet">
+      <header><h3>Infotext: Was ist Leasing?</h3><span class="mat-no">02 · Infotext</span></header>
+      <p>Beim <span class="term">Leasing</span> überlässt ein Leasinggeber (z. B. eine Leasinggesellschaft oder ein Autohaus) dem Leasingnehmer ein Wirtschaftsgut gegen ein regelmäßiges Entgelt, die Leasingrate. Der Leasingnehmer darf das Gut nutzen, Eigentümer bleibt aber der Leasinggeber. Leasing ist damit eine Form der Miete und ersetzt einen Kauf mit Eigen- oder Fremdkapital.</p>
+
+      <div class="info-block">
+        <h3>Finanzierungsleasing</h3>
+        <p>Der Vertrag läuft mittel- bis langfristig. Er hat eine feste <span class="term">Grundmietzeit</span>, die meist zwischen 40 % und 90 % der üblichen Nutzungsdauer liegt. Während dieser Grundmietzeit ist der Vertrag <span class="term">unkündbar</span>. Der Leasingnehmer trägt das Investitionsrisiko: Er haftet für Untergang, Beschädigung und Wertverlust und damit auch für das <span class="term">Restwertrisiko</span>.</p>
+      </div>
+      <div class="info-block">
+        <h3>Operating-Leasing</h3>
+        <p>Der Vertrag ist kurzfristig oder auf unbestimmte Zeit geschlossen und kann unter Einhaltung einer Frist <span class="term">jederzeit gekündigt</span> werden. Weil der Leasinggeber das Gut danach weitervermieten oder verkaufen muss, trägt er das Investitionsrisiko und damit das <span class="term">Restwertrisiko</span>. Beispiele sind Baumaschinen oder Mietwagen.</p>
+      </div>
+      <div class="info-block">
+        <h3>Kfz-Leasing: Kilometer- oder Restwertvertrag</h3>
+        <p>Beim <span class="term">Kilometer-Leasing</span> vereinbaren beide Seiten eine Laufleistung. Am Ende werden nur Mehr- oder Minderkilometer und eventuelle Schäden abgerechnet. Wie viel das Fahrzeug danach noch wert ist, ist Sache des <span class="term">Leasinggebers</span>.</p>
+        <p>Beim <span class="term">Restwert-Leasing</span> wird bei Vertragsbeginn ein Restwert kalkuliert. Erzielt der Leasinggeber beim Verkauf weniger, muss der <span class="term">Leasingnehmer</span> die Differenz nachzahlen. Er trägt also das Risiko sinkender Restwerte.</p>
+      </div>
+      <div class="info-block">
+        <h3>Full-Service-Leasing</h3>
+        <p>Neben der reinen Nutzungsüberlassung übernimmt der Leasinggeber weitere Dienstleistungen, etwa Wartung, Reparaturen, Reifen, Versicherung oder Kfz-Steuer. Diese Kosten sind in der Leasingrate enthalten. Der Leasingnehmer hat dafür keinen eigenen Aufwand und kann mit festen Kosten planen.</p>
+      </div>
+      <p class="added">Infotext für diesen Lernpfad ergänzt.</p>
+    </article>
+
+    <article class="sheet">
+      <header><h3>Strukturraster</h3><span class="mat-no">01 · Arbeitsblatt</span></header>
+      <div class="task"><strong>Arbeitsauftrag</strong><p>Füllt das Strukturraster mithilfe des Infotextes aus.</p></div>
+
+      <div class="table-scroll">
+        <table class="raster">
+          <thead><tr><th>Merkmal</th><th>Finanzierungsleasing</th><th>Operating-Leasing</th></tr></thead>
+          <tbody id="rasterBody"></tbody>
+        </table>
+      </div>
+
+      <div class="pair" id="kmRwPair"></div>
+
+      <div class="field">
+        <label for="fullService">Erklärt in eigenen Worten: Was bedeutet „Full-Service-Leasing“?</label>
+        <textarea id="fullService" rows="3" placeholder="Beim Full-Service-Leasing …"></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" type="button" id="checkRaster">Prüfen</button>
+        <button class="btn teacher-btn teacher-only" type="button" id="solveRaster">Lösung einsetzen</button>
+        <span class="feedback" id="rasterFeedback" aria-live="polite"></span>
+      </div>
+
+      <div class="solution">
+        <strong>Erwartungshorizont Full-Service-Leasing</strong>
+        <p>Die Leasingrate deckt nicht nur die Nutzung des Fahrzeugs ab, sondern auch Dienstleistungen wie Wartung, Reparaturen, Reifen und Versicherung. Der Leasingnehmer zahlt einen festen Betrag und muss sich um diese Leistungen nicht selbst kümmern.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ===================== 03 ===================== -->
+<section class="station" id="datenblatt" data-label="Datenblatt" data-code="03" data-track="s3" hidden>
+  <div class="station-head">
+    <span class="eyebrow">Station 03 · Material 03</span>
+    <h2>Die Angebote für den Fuhrpark</h2>
+    <p class="lead">Vergleicht die Konditionen. Die Fragen darunter prüfen, ob ihr alle Angaben für die Rechnung richtig herauslest.</p>
+  </div>
+
+  <div class="offers">
+    <article class="sheet offer a">
+      <header><h3><span class="tag">A</span> Kreditkauf über die Hausbank</h3><span class="mat-no">03 · Angebot 1</span></header>
+      <dl class="kv">
+        <div><dt>Kreditsumme</dt><dd><span class="num">240.000 €</span> (= Anschaffungswert)</dd></div>
+        <div><dt>Zinssatz</dt><dd><span class="num">5 %</span> p. a. (effektiv)</dd></div>
+        <div><dt>Tilgungsform</dt><dd>Ratendarlehen mit gleichbleibender Tilgung, Laufzeit 4 Jahre</dd></div>
+        <div><dt>Wartung, Reparatur, Reifen</dt><dd>trägt die HARO GmbH selbst: <span class="num">500 €</span> je Fahrzeug und Jahr</dd></div>
+        <div><dt>Restwert nach 4 Jahren</dt><dd><span class="num">30 %</span> des Anschaffungswerts, Verkaufserlös verbleibt bei der HARO GmbH</dd></div>
+      </dl>
+    </article>
+    <article class="sheet offer b">
+      <header><h3><span class="tag">B</span> Full-Service-Leasing (Kilometer-Leasing)</h3><span class="mat-no">03 · Angebot 2</span></header>
+      <dl class="kv">
+        <div><dt>Leasingrate je Fahrzeug</dt><dd><span class="num">550 €</span> pro Monat, inkl. Wartung, Reparatur und Versicherungspaket</dd></div>
+        <div><dt>Vertragslaufzeit</dt><dd><span class="num">48</span> Monate (4 Jahre)</dd></div>
+        <div><dt>Leasing-Sonderzahlung</dt><dd><span class="num">10 %</span> des Anschaffungswerts, einmalig bei Vertragsbeginn</dd></div>
+        <div><dt>Restwertrisiko</dt><dd>trägt der Leasinggeber (Kilometer-Leasing)</dd></div>
+      </dl>
+    </article>
+  </div>
+
+  <div class="grid-2">
+    <div class="sheet infocard">
+      <h3>Infokarte: Ratendarlehen kompakt</h3>
+      <p>Bei einem Ratendarlehen mit gleichbleibender Tilgung wird die Kreditsumme in gleich hohen jährlichen Tilgungsraten zurückgezahlt. Die Zinsen werden jedes Jahr neu auf die verbleibende Restschuld berechnet. Sie sinken daher von Jahr zu Jahr.</p>
+    </div>
+
+    <div class="sheet">
+      <header><h3>Lesecheck</h3><span class="mat-no">03 · Verständnisfragen</span></header>
+      <div class="quiz" id="quiz3"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" id="checkQuiz3">Antworten prüfen</button>
+        <span class="feedback" id="quiz3Feedback" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 04 ===================== -->
+<section class="station" id="rechnung" data-label="Rechendossier" data-code="04" data-track="s4" hidden>
+  <div class="station-head">
+    <span class="eyebrow">Station 04 · Material 04</span>
+    <h2>Gesamtkostenvergleich</h2>
+    <p class="lead">Berechnet mit den Daten aus dem Datenblatt die Gesamtkosten beider Varianten über vier Jahre. Ihr könnt Beträge mit oder ohne Tausenderpunkt eingeben.</p>
+  </div>
+
+  <div class="grid-2">
+    <article class="sheet">
+      <header><h3><span style="color:var(--bar-a)">Variante A:</span> Kreditkauf</h3><span class="mat-no">04 · Teil A</span></header>
+      <div class="table-scroll">
+        <table class="calc">
+          <thead><tr><th>Jahr</th><th class="num">Restschuld Jahresbeginn</th><th class="num">Zinsen (5 %)</th><th class="num">Tilgung</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td class="num">240.000 €</td><td><div class="money"><input type="text" inputmode="decimal" id="z1" aria-label="Zinsen Jahr 1"></div></td><td class="num">60.000 €</td></tr>
+            <tr><td>2</td><td class="num">180.000 €</td><td><div class="money"><input type="text" inputmode="decimal" id="z2" aria-label="Zinsen Jahr 2"></div></td><td class="num">60.000 €</td></tr>
+            <tr><td>3</td><td class="num">120.000 €</td><td><div class="money"><input type="text" inputmode="decimal" id="z3" aria-label="Zinsen Jahr 3"></div></td><td class="num">60.000 €</td></tr>
+            <tr><td>4</td><td class="num">60.000 €</td><td><div class="money"><input type="text" inputmode="decimal" id="z4" aria-label="Zinsen Jahr 4"></div></td><td class="num">60.000 €</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sum-grid">
+        <div class="field"><label for="zSum">Summe der Zinsen über 4 Jahre</label><div class="money"><input type="text" inputmode="decimal" id="zSum"></div></div>
+        <div class="field"><label for="wSum">Wartungskosten über 4 Jahre</label><div class="money"><input type="text" inputmode="decimal" id="wSum"></div></div>
+        <div class="field"><label for="rw">Restwerterlös</label><div class="money"><input type="text" inputmode="decimal" id="rw"></div></div>
+        <div class="field total-row"><label for="gA">Gesamtkosten Kreditkauf</label><div class="money"><input type="text" inputmode="decimal" id="gA"></div></div>
+      </div>
+      <p class="note">Gesamtkosten Kreditkauf = Tilgung + Zinsen + Wartung − Restwerterlös</p>
+      <div class="solution">
+        <strong>Lösung Variante A</strong>
+        <p class="num">Zinsen: 12.000 + 9.000 + 6.000 + 3.000 = 30.000 €</p>
+        <p class="num">Wartung: 8 × 500 € × 4 Jahre = 16.000 €</p>
+        <p class="num">Restwerterlös: 30 % × 240.000 € = 72.000 €</p>
+        <p class="num">Gesamtkosten: 240.000 + 30.000 + 16.000 − 72.000 = 214.000 €</p>
+      </div>
+    </article>
+
+    <article class="sheet">
+      <header><h3><span style="color:var(--bar-b)">Variante B:</span> Leasing</h3><span class="mat-no">04 · Teil B</span></header>
+      <div class="sum-grid">
+        <div class="field"><label for="mRate">Monatliche Gesamtrate (alle Fahrzeuge)</label><div class="money"><input type="text" inputmode="decimal" id="mRate"></div></div>
+        <div class="field"><label for="lSum">Leasingraten gesamt (48 Monate)</label><div class="money"><input type="text" inputmode="decimal" id="lSum"></div></div>
+        <div class="field"><label for="sz">Sonderzahlung</label><div class="money"><input type="text" inputmode="decimal" id="sz"></div></div>
+        <div class="field total-row"><label for="gB">Gesamtkosten Leasing</label><div class="money"><input type="text" inputmode="decimal" id="gB"></div></div>
+      </div>
+      <div class="solution">
+        <strong>Lösung Variante B</strong>
+        <p class="num">Monatsrate: 8 × 550 € = 4.400 €</p>
+        <p class="num">Leasingraten: 48 × 4.400 € = 211.200 €</p>
+        <p class="num">Sonderzahlung: 10 % × 240.000 € = 24.000 €</p>
+        <p class="num">Gesamtkosten: 211.200 + 24.000 = 235.200 €</p>
+      </div>
+
+      <div class="result-line">
+        <div class="field"><label for="cheaper">Rechnerisch günstigere Variante</label>
+          <select id="cheaper"><option value="">bitte wählen</option><option value="A">Kreditkauf</option><option value="B">Leasing</option></select>
+        </div>
+        <div class="field"><label for="diff">um</label><div class="money"><input type="text" inputmode="decimal" id="diff"></div></div>
+      </div>
+      <div class="solution"><strong>Ergebnis</strong><p>Der Kreditkauf ist um <span class="num">21.200 €</span> günstiger.</p></div>
+
+      <div class="btn-row">
+        <button class="btn" type="button" id="checkCalc">Rechnung prüfen</button>
+        <button class="btn teacher-btn teacher-only" type="button" id="solveCalc">Lösung einsetzen</button>
+        <span class="feedback" id="calcFeedback" aria-live="polite"></span>
+      </div>
+    </article>
+  </div>
+
+  <div class="sheet" id="calcChart" hidden>
+    <header><h3>Euer Ergebnis im Bild</h3></header>
+    <div class="bars" id="calcBars"></div>
+    <p class="verdict" id="calcVerdict"></p>
+  </div>
+</section>
+
+<!-- ===================== 05 ===================== -->
+<section class="station" id="abwaegung" data-label="Abwägung" data-code="05" data-track="s5" hidden>
+  <div class="station-head">
+    <span class="eyebrow">Station 05 · Material 05</span>
+    <h2>Mehr als nur der Preis</h2>
+    <p class="lead">Die Rechnung ist eindeutig, die Entscheidung noch nicht. Ordnet die Argumente zu und prüft, wie stabil euer Ergebnis ist, wenn sich Annahmen ändern.</p>
+  </div>
+
+  <div class="grid-2">
+    <article class="sheet">
+      <header><h3>Argumente zuordnen</h3><span class="mat-no">05 · Teil A</span></header>
+      <div class="task"><strong>Arbeitsauftrag</strong><p>Entscheidet für jede Aussage: Spricht sie eher für den Kreditkauf oder eher für das Leasing?</p></div>
+      <div class="sort-list" id="sortList"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" id="checkSort">Zuordnung prüfen</button>
+        <span class="feedback" id="sortFeedback" aria-live="polite"></span>
+      </div>
+      <p class="added">Material 05 für diesen Lernpfad ergänzt.</p>
+    </article>
+
+    <article class="sheet">
+      <header><h3>Was wäre, wenn …?</h3><span class="mat-no">05 · Teil B</span></header>
+      <div class="task"><strong>Arbeitsauftrag</strong><p>Verändert die Annahmen. Bei welchem Restwert wäre das Leasing günstiger? Was sagt das über das Restwertrisiko aus?</p></div>
+      <div class="sliders">
+        <div class="slider"><div class="top"><label for="sRest">Restwert nach 4 Jahren</label><output id="oRest" for="sRest"></output></div><input type="range" id="sRest" min="0" max="45" step="1" value="30"></div>
+        <div class="slider"><div class="top"><label for="sZins">Zinssatz Kredit</label><output id="oZins" for="sZins"></output></div><input type="range" id="sZins" min="1" max="10" step="0.5" value="5"></div>
+        <div class="slider"><div class="top"><label for="sWart">Wartung je Fahrzeug und Jahr</label><output id="oWart" for="sWart"></output></div><input type="range" id="sWart" min="0" max="2000" step="100" value="500"></div>
+        <div class="slider"><div class="top"><label for="sRate">Leasingrate je Fahrzeug und Monat</label><output id="oRate" for="sRate"></output></div><input type="range" id="sRate" min="400" max="700" step="10" value="550"></div>
+      </div>
+      <div class="bars" id="simBars"></div>
+      <p class="verdict" id="simVerdict" aria-live="polite"></p>
+      <div class="btn-row"><button class="btn ghost" type="button" id="simReset">Werte aus dem Datenblatt</button></div>
+
+      <div class="field">
+        <label for="breakEven">Ab welchem Restwert (in %) ist das Leasing günstiger? Alle anderen Werte wie im Datenblatt.</label>
+        <div class="btn-row"><input type="text" inputmode="decimal" id="breakEven" style="max-width:140px" placeholder="z. B. 25"><button class="btn" type="button" id="checkBreak">Prüfen</button></div>
+        <span class="feedback" id="breakFeedback" aria-live="polite"></span>
+      </div>
+      <div class="solution">
+        <strong>Lösung und Impuls</strong>
+        <p>Gleichstand bei einem Restwerterlös von 50.800 €, also rund 21,2 % des Anschaffungswerts (240.000 + 30.000 + 16.000 − R = 235.200). Fällt der Restwert unter etwa 21 %, ist das Leasing günstiger.</p>
+        <p>Impuls: Beim Kreditkauf trägt die HARO GmbH dieses Risiko selbst. Beim Kilometer-Leasing liegt es beim Leasinggeber. Ein Teil der Leasingmehrkosten ist also der Preis für die Absicherung.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ===================== 06 ===================== -->
+<section class="station" id="empfehlung" data-label="Empfehlung" data-code="06" data-track="s6" hidden>
+  <div class="station-head">
+    <span class="eyebrow">Station 06 · Material 06</span>
+    <h2>Empfehlung an die Geschäftsführung</h2>
+    <p class="lead">Verfasst eine kurze schriftliche Empfehlung (ca. 10–15 Sätze) an Frau Herold und Herrn Acar.</p>
+  </div>
+
+  <div class="grid-2">
+    <article class="sheet">
+      <header><h3>Euer Empfehlungsschreiben</h3><span class="mat-no">06 · Auftrag</span></header>
+      <div class="task"><strong>Arbeitsauftrag</strong><p>Geht auf euer Rechenergebnis aus Arbeitsblatt 04 sowie auf mindestens zwei qualitative Argumente ein (z. B. Liquidität, Bilanzwirkung, Aktualität der Fahrzeuge, Restwertrisiko, Flexibilität). Begründet am Ende eine klare Empfehlung.</p></div>
+      <div class="field">
+        <label for="letter">Text</label>
+        <textarea id="letter" rows="16" placeholder="Sehr geehrte Frau Herold, sehr geehrter Herr Acar, …"></textarea>
+      </div>
+      <div class="btn-row">
+        <span class="counter" id="letterCount">0 Sätze · 0 Wörter</span>
+        <button class="btn ghost" type="button" id="copyLetter">Text kopieren</button>
+        <span class="feedback" id="copyFeedback" aria-live="polite"></span>
+      </div>
+      <p class="note">Euer Entwurf wird nur in diesem Browser gespeichert. Kopiert ihn zum Abgeben in ein Dokument oder eine Nachricht.</p>
+    </article>
+
+    <div style="display:grid; gap:24px; min-width:0;">
+      <div class="sheet">
+        <header><h3>Checkliste</h3></header>
+        <ul class="checklist" id="letterChecks"></ul>
+      </div>
+      <div class="sheet">
+        <header><h3>Argumentehilfe</h3><span class="mat-no">nach Bedarf nutzen</span></header>
+        <div class="argtable">
+          <div class="ka"><h4>spricht eher für Kreditkauf</h4><ul>
+            <li>niedrigere Gesamtkosten laut Rechnung</li>
+            <li>Eigentum und Restwerterlös verbleiben im Unternehmen</li>
+            <li>keine langfristige Vertragsbindung</li>
+          </ul></div>
+          <div class="le"><h4>spricht eher für Leasing</h4><ul>
+            <li>keine hohe Kapitalbindung, Liquidität bleibt erhalten</li>
+            <li>feste, gut planbare monatliche Kosten</li>
+            <li>kein Wartungs- und Reparaturaufwand (Full-Service)</li>
+            <li>kein Restwertrisiko, stets aktuelle Fahrzeuge</li>
+          </ul></div>
+        </div>
+      </div>
+      <div class="sheet">
+        <header><h3>Satzbausteine</h3><span class="mat-no">antippen zum Einfügen</span></header>
+        <div class="builders" id="builders"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="solution">
+    <strong>Musterlösung (eine mögliche Empfehlung für Leasing)</strong>
+    <p>Sehr geehrte Frau Herold, sehr geehrter Herr Acar,</p>
+    <p>wir haben die beiden Angebote zur Erneuerung unseres Fuhrparks über vier Jahre verglichen. Beim Kreditkauf entstehen Gesamtkosten von 214.000 €, beim Full-Service-Leasing von 235.200 €. Rein rechnerisch ist der Kreditkauf damit um 21.200 € günstiger. Diese Rechnung setzt allerdings voraus, dass wir die Fahrzeuge nach vier Jahren tatsächlich für 72.000 € verkaufen können. Sinkt der Restwert unter etwa 21 %, ist das Leasing günstiger. Dieses Restwertrisiko trägt beim Kilometer-Leasing der Leasinggeber. Außerdem binden wir beim Leasing kein Kapital in Höhe von 240.000 €, sodass unsere Liquidität für andere Aufgaben erhalten bleibt. Die monatlichen Kosten von 4.400 € sind fest und lassen sich gut planen. Wartung und Reparaturen sind bereits enthalten, sodass kein zusätzlicher Verwaltungsaufwand entsteht. Nach vier Jahren können wir zudem auf aktuelle Fahrzeuge umsteigen. Wir empfehlen daher das Full-Service-Leasing, weil die Mehrkosten von rund 5.300 € pro Jahr durch Planungssicherheit, Liquidität und den Wegfall des Restwertrisikos aufgewogen werden.</p>
+    <p>Mit freundlichen Grüßen<br>Team Rechnungswesen</p>
+    <p class="note">Eine Empfehlung für den Kreditkauf ist ebenso vertretbar, wenn sie mit den niedrigeren Gesamtkosten, dem Eigentum und der fehlenden Vertragsbindung schlüssig begründet wird.</p>
+  </div>
+</section>
+
+<div class="pager">
+  <button class="btn ghost" type="button" id="prevBtn">← Zurück</button>
+  <button class="btn" type="button" id="nextBtn">Weiter →</button>
+</div>
+
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Grunddaten (Datenblatt 03, 8 Fahrzeuge) ----------
+  var FLEET = 8, PRICE = 240000;
+  var BASE = { rest: 30, zins: 5, wart: 500, rate: 550 };
+  var fmt = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 2 });
+  function eur(n) { return fmt.format(Math.round(n)) + " €"; }
+
+  function costs(p) {
+    var zinsen = 0, schuld = PRICE, tilg = PRICE / 4;
+    for (var j = 0; j < 4; j++) { zinsen += schuld * p.zins / 100; schuld -= tilg; }
+    var wart = FLEET * p.wart * 4;
+    var rest = PRICE * p.rest / 100;
+    var a = PRICE + zinsen + wart - rest;
+    var b = FLEET * p.rate * 48 + PRICE * 0.10;
+    return { a: a, b: b, zinsen: zinsen, wart: wart, rest: rest };
+  }
+
+  // Deutsche Zahleneingaben lesen: "12.000", "12000", "12.000,00 €", "21,2"
+  function parseNum(s) {
+    if (s == null) return NaN;
+    s = String(s).replace(/[€\s%]/g, "");
+    if (!s) return NaN;
+    if (s.indexOf(",") > -1) s = s.replace(/\./g, "").replace(",", ".");
+    else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
+    return Number(s);
+  }
+
+  // ---------- Speicher (nur dieser Browser) ----------
+  var KEY = "haro-fuhrpark-v1";
+  var store = {};
+  try { store = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { store = {}; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+  store.fields = store.fields || {};
+  store.done = store.done || {};
+
+  function bindPersist(el) {
+    if (!el.id) return;
+    if (store.fields[el.id] != null) el.value = store.fields[el.id];
+    el.addEventListener("input", function () { store.fields[el.id] = el.value; save(); });
+    el.addEventListener("change", function () { store.fields[el.id] = el.value; save(); });
+  }
+
+  // ---------- Lehrkraft-Modus ----------
+  var tToggle = document.getElementById("teacherToggle");
+  function setTeacher(on) { document.body.classList.toggle("teacher", on); tToggle.checked = on; store.teacher = on; save(); }
+  tToggle.addEventListener("change", function () { setTeacher(tToggle.checked); });
+
+  // ---------- Navigation ----------
+  var sections = Array.prototype.slice.call(document.querySelectorAll("section.station"));
+  var nav = document.getElementById("stationNav");
+  var tracked = sections.filter(function (s) { return s.dataset.track; });
+  sections.forEach(function (s, i) {
+    var li = document.createElement("li");
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "plate"; b.dataset.target = s.id;
+    b.innerHTML = '<span class="eu" aria-hidden="true">D</span><span class="txt"><span class="code">' + s.dataset.code + '</span><span class="lbl">' + s.dataset.label + '</span></span>' + (s.dataset.track ? '<span class="state" aria-hidden="true"></span>' : "");
+    b.addEventListener("click", function () { show(i, true); });
+    li.appendChild(b); nav.appendChild(li);
+  });
+  var current = 0;
+  function show(i, scroll) {
+    current = Math.max(0, Math.min(sections.length - 1, i));
+    sections.forEach(function (s, k) { s.hidden = k !== current; });
+    nav.querySelectorAll(".plate").forEach(function (b, k) {
+      if (k === current) { b.setAttribute("aria-current", "step"); b.scrollIntoView({ block: "nearest", inline: "nearest" }); }
+      else b.removeAttribute("aria-current");
+    });
+    document.getElementById("prevBtn").disabled = current === 0;
+    document.getElementById("prevBtn").style.visibility = current === 0 ? "hidden" : "visible";
+    var nb = document.getElementById("nextBtn");
+    nb.style.visibility = current === sections.length - 1 ? "hidden" : "visible";
+    if (current < sections.length - 1) nb.textContent = "Weiter: " + sections[current + 1].dataset.label + " →";
+    try { history.replaceState(null, "", "#" + sections[current].id); } catch (e) {}
+    store.station = current; save();
+    if (scroll) window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.getElementById("prevBtn").addEventListener("click", function () { show(current - 1, true); });
+  document.getElementById("nextBtn").addEventListener("click", function () { show(current + 1, true); });
+
+  function markDone(key, ok) {
+    store.done[key] = !!ok || !!store.done[key];
+    save(); renderProgress();
+  }
+  function renderProgress() {
+    var n = 0;
+    nav.querySelectorAll(".plate").forEach(function (b, k) {
+      var t = sections[k].dataset.track;
+      var d = t && store.done[t];
+      b.classList.toggle("done", !!d);
+      if (d) n++;
+    });
+    document.getElementById("progressText").textContent = n + " von " + tracked.length + " Stationen erledigt";
+    document.getElementById("progressBar").style.width = (n / tracked.length * 100) + "%";
+  }
+
+  // ---------- Station 01: Strukturraster ----------
+  var RASTER = [
+    { m: "Vertragslaufzeit", fl: "mittel- bis langfristig", ol: "kurzfristig / unbestimmt",
+      opts: ["mittel- bis langfristig", "kurzfristig / unbestimmt"] },
+    { m: "Kündbarkeit", fl: "in der Grundmietzeit unkündbar", ol: "jederzeit kündbar (mit Frist)",
+      opts: ["in der Grundmietzeit unkündbar", "jederzeit kündbar (mit Frist)"] },
+    { m: "Trägt das Restwertrisiko", fl: "Leasingnehmer", ol: "Leasinggeber",
+      opts: ["Leasingnehmer", "Leasinggeber"] }
+  ];
+  var KMRW = [
+    { id: "km", t: "Kilometer-Leasing", sol: "Leasinggeber" },
+    { id: "rwl", t: "Restwert-Leasing", sol: "Leasingnehmer" }
+  ];
+  function makeSelect(id, opts, label) {
+    var s = document.createElement("select"); s.id = id; s.setAttribute("aria-label", label);
+    s.innerHTML = '<option value="">auswählen …</option>' + opts.map(function (o) { return "<option>" + o + "</option>"; }).join("");
+    return s;
+  }
+  var rb = document.getElementById("rasterBody");
+  RASTER.forEach(function (r, i) {
+    var tr = document.createElement("tr");
+    var td0 = document.createElement("td"); td0.textContent = r.m; tr.appendChild(td0);
+    ["fl", "ol"].forEach(function (k) {
+      var td = document.createElement("td");
+      td.appendChild(makeSelect("r" + i + k, r.opts, r.m + " – " + (k === "fl" ? "Finanzierungsleasing" : "Operating-Leasing")));
+      tr.appendChild(td);
+    });
+    rb.appendChild(tr);
+  });
+  var pair = document.getElementById("kmRwPair");
+  KMRW.forEach(function (k) {
+    var box = document.createElement("div"); box.className = "box";
+    box.innerHTML = '<strong>' + k.t + '</strong><label for="' + k.id + '" class="note">Wer trägt das Risiko sinkender Restwerte?</label>';
+    box.appendChild(makeSelect(k.id, ["Leasingnehmer", "Leasinggeber"], k.t));
+    pair.appendChild(box);
+  });
+  function rasterItems() {
+    var items = [];
+    RASTER.forEach(function (r, i) { items.push(["r" + i + "fl", r.fl]); items.push(["r" + i + "ol", r.ol]); });
+    KMRW.forEach(function (k) { items.push([k.id, k.sol]); });
+    return items;
+  }
+  document.getElementById("checkRaster").addEventListener("click", function () {
+    var ok = 0, items = rasterItems();
+    items.forEach(function (it) {
+      var el = document.getElementById(it[0]);
+      var right = el.value === it[1];
+      el.classList.toggle("is-right", right); el.classList.toggle("is-wrong", !right);
+      if (right) ok++;
+    });
+    var fs = document.getElementById("fullService").value.trim();
+    var fb = document.getElementById("rasterFeedback");
+    if (ok === items.length) {
+      fb.className = "feedback ok";
+      fb.textContent = fs.length < 20 ? "Raster komplett richtig. Ergänzt noch die Erklärung zum Full-Service-Leasing." : "Alles richtig. Weiter zum Datenblatt!";
+      markDone("s1", fs.length >= 20);
+    } else {
+      fb.className = "feedback no";
+      fb.textContent = ok + " von " + items.length + " richtig. Lest die markierten Stellen im Infotext nach.";
+    }
+  });
+  document.getElementById("solveRaster").addEventListener("click", function () {
+    rasterItems().forEach(function (it) { var el = document.getElementById(it[0]); el.value = it[1]; store.fields[it[0]] = it[1]; el.classList.add("is-right"); el.classList.remove("is-wrong"); });
+    save();
+  });
+
+  // ---------- Station 03: Lesecheck ----------
+  var QUIZ = [
+    { q: "Wer trägt bei Angebot 2 das Restwertrisiko?", o: ["die HARO GmbH", "der Leasinggeber", "die Hausbank"], a: 1 },
+    { q: "Was ist in der Leasingrate von 550 € enthalten?", o: ["nur die Nutzung des Fahrzeugs", "Nutzung, Wartung, Reparatur und Versicherungspaket", "Nutzung und Kraftstoff"], a: 1 },
+    { q: "Wie entwickeln sich beim Ratendarlehen die jährlichen Zinsen?", o: ["Sie bleiben gleich.", "Sie steigen jedes Jahr.", "Sie sinken, weil die Restschuld sinkt."], a: 2 },
+    { q: "Wie hoch ist die jährliche Tilgung beim Kreditkauf?", o: ["60.000 €", "48.000 €", "12.000 €"], a: 0 }
+  ];
+  var qz = document.getElementById("quiz3");
+  QUIZ.forEach(function (item, i) {
+    var d = document.createElement("div"); d.className = "q";
+    var html = "<p>" + (i + 1) + ". " + item.q + '</p><div class="opts" role="radiogroup">';
+    item.o.forEach(function (o, k) {
+      html += '<label class="opt" for="q' + i + "_" + k + '"><input type="radio" name="q' + i + '" id="q' + i + "_" + k + '" value="' + k + '"><span>' + o + "</span></label>";
+    });
+    d.innerHTML = html + "</div>";
+    qz.appendChild(d);
+    if (store.fields["q" + i] != null) { var r = d.querySelector('input[value="' + store.fields["q" + i] + '"]'); if (r) r.checked = true; }
+    d.addEventListener("change", function (e) { store.fields["q" + i] = e.target.value; save(); });
+  });
+  document.getElementById("checkQuiz3").addEventListener("click", function () {
+    var ok = 0;
+    QUIZ.forEach(function (item, i) {
+      var labels = qz.querySelectorAll('[name="q' + i + '"]');
+      labels.forEach(function (inp) {
+        var lab = inp.closest(".opt");
+        lab.classList.remove("is-right", "is-wrong");
+        if (inp.checked) {
+          var right = Number(inp.value) === item.a;
+          lab.classList.add(right ? "is-right" : "is-wrong");
+          if (right) ok++;
+        }
+      });
+    });
+    var fb = document.getElementById("quiz3Feedback");
+    if (ok === QUIZ.length) { fb.className = "feedback ok"; fb.textContent = "Alle Angaben sitzen. Jetzt wird gerechnet!"; markDone("s3", true); }
+    else { fb.className = "feedback no"; fb.textContent = ok + " von " + QUIZ.length + " richtig. Schaut noch einmal ins Datenblatt."; }
+  });
+
+  // ---------- Station 04: Rechendossier ----------
+  var base = costs(BASE);
+  var CALC = [
+    ["z1", 12000, "Restschuld 240.000 € × 5 %"],
+    ["z2", 9000, "Restschuld 180.000 € × 5 %"],
+    ["z3", 6000, "Restschuld 120.000 € × 5 %"],
+    ["z4", 3000, "Restschuld 60.000 € × 5 %"],
+    ["zSum", 30000, "Addiert die vier Zinsbeträge."],
+    ["wSum", 16000, "8 Fahrzeuge × 500 € × 4 Jahre"],
+    ["rw", 72000, "30 % von 240.000 €"],
+    ["gA", 214000, "Tilgung (240.000 €) + Zinsen + Wartung − Restwerterlös"],
+    ["mRate", 4400, "8 Fahrzeuge × 550 €"],
+    ["lSum", 211200, "Monatliche Gesamtrate × 48 Monate"],
+    ["sz", 24000, "10 % von 240.000 €"],
+    ["gB", 235200, "Leasingraten gesamt + Sonderzahlung"],
+    ["diff", 21200, "Differenz der beiden Gesamtkosten"]
+  ];
+  function clearHint(el) { var h = el.closest(".field, td").querySelector(".hint"); if (h) h.remove(); }
+  function addHint(el, text) {
+    clearHint(el);
+    var h = document.createElement("span"); h.className = "hint"; h.textContent = "Tipp: " + text;
+    el.closest(".field, td").appendChild(h);
+  }
+  document.getElementById("checkCalc").addEventListener("click", function () {
+    var ok = 0;
+    CALC.forEach(function (c) {
+      var el = document.getElementById(c[0]);
+      var v = parseNum(el.value);
+      var right = Math.abs(v - c[1]) < 0.5;
+      el.classList.toggle("is-right", right); el.classList.toggle("is-wrong", !right);
+      if (right) { ok++; clearHint(el); } else addHint(el, c[2]);
+    });
+    var ch = document.getElementById("cheaper");
+    var chOk = ch.value === "A";
+    ch.classList.toggle("is-right", chOk); ch.classList.toggle("is-wrong", !chOk);
+    var total = CALC.length + 1;
+    if (chOk) ok++;
+    var fb = document.getElementById("calcFeedback");
+    if (ok === total) { fb.className = "feedback ok"; fb.textContent = "Alle Werte stimmen!"; markDone("s4", true); renderCalcChart(); }
+    else { fb.className = "feedback no"; fb.textContent = ok + " von " + total + " Feldern richtig."; }
+  });
+  document.getElementById("solveCalc").addEventListener("click", function () {
+    CALC.forEach(function (c) { var el = document.getElementById(c[0]); el.value = fmt.format(c[1]); store.fields[c[0]] = el.value; el.classList.add("is-right"); el.classList.remove("is-wrong"); clearHint(el); });
+    var ch = document.getElementById("cheaper"); ch.value = "A"; store.fields.cheaper = "A"; ch.classList.add("is-right");
+    save(); renderCalcChart();
+  });
+
+  function renderBars(container, a, b) {
+    var max = Math.max(a, b, 1);
+    container.innerHTML =
+      '<div class="bar-row"><span class="name">Kreditkauf</span><div class="bar-track"><div class="bar-fill a" style="width:' + (a / max * 100) + '%">' + eur(a) + '</div></div></div>' +
+      '<div class="bar-row"><span class="name">Leasing</span><div class="bar-track"><div class="bar-fill b" style="width:' + (b / max * 100) + '%">' + eur(b) + '</div></div></div>';
+  }
+  function renderCalcChart() {
+    document.getElementById("calcChart").hidden = false;
+    renderBars(document.getElementById("calcBars"), base.a, base.b);
+    document.getElementById("calcVerdict").innerHTML = "Rechnerisch ist der <strong>Kreditkauf</strong> um <b>" + eur(base.b - base.a) + "</b> günstiger. Das sind rund <b>" + eur((base.b - base.a) / 4) + "</b> pro Jahr. Ob das allein entscheidet, klärt ihr in Station 05.";
+  }
+
+  // ---------- Station 05: Argumente ----------
+  var ARGS = [
+    { t: "Die Gesamtkosten sind laut Rechnung niedriger.", a: "k", w: "Laut Rechendossier ist der Kreditkauf um 21.200 € günstiger." },
+    { t: "Eigentum und Restwerterlös verbleiben im Unternehmen.", a: "k", w: "Nur beim Kauf gehören die Fahrzeuge der HARO GmbH und der Verkaufserlös fließt ihr zu." },
+    { t: "Es gibt keine langfristige Vertragsbindung.", a: "k", w: "Eigene Fahrzeuge können jederzeit verkauft werden, ein Leasingvertrag läuft fest 48 Monate." },
+    { t: "Die Fahrzeuge dürfen frei umgebaut und ohne Kilometergrenze genutzt werden.", a: "k", w: "Werkstatteinbauten und hohe Laufleistungen sind beim Kilometer-Leasing eingeschränkt oder kosten extra." },
+    { t: "Es wird kein Kapital von 240.000 € gebunden, die Liquidität bleibt erhalten.", a: "l", w: "Statt einer großen Investition fallen laufende Raten an. Der Kreditrahmen bleibt frei." },
+    { t: "Die monatlichen Kosten sind fest und gut planbar.", a: "l", w: "Die Rate von 4.400 € enthält bereits Wartung und Reparatur." },
+    { t: "Es entsteht kein eigener Aufwand für Wartung und Reparaturen.", a: "l", w: "Das übernimmt beim Full-Service-Leasing der Leasinggeber." },
+    { t: "Ein Wertverlust der Fahrzeuge trifft das Unternehmen nicht.", a: "l", w: "Beim Kilometer-Leasing trägt der Leasinggeber das Restwertrisiko." },
+    { t: "Die Fahrzeuge erscheinen in der Regel nicht in der eigenen Bilanz, die Eigenkapitalquote bleibt stabil.", a: "l", w: "Das Leasinggut wird meist beim Leasinggeber bilanziert, ein Kredit erhöht dagegen das Fremdkapital." },
+    { t: "Nach vier Jahren fährt das Team wieder aktuelle Fahrzeuge.", a: "l", w: "Nach Vertragsende werden einfach neue Fahrzeuge geleast." }
+  ];
+  var sortList = document.getElementById("sortList");
+  ARGS.forEach(function (g, i) {
+    var row = document.createElement("div"); row.className = "arg"; row.id = "arg" + i;
+    row.innerHTML = '<span>' + g.t + '</span><span class="choice" role="group" aria-label="Zuordnung"><button type="button" class="chip k" data-v="k" aria-pressed="false">Kreditkauf</button><button type="button" class="chip l" data-v="l" aria-pressed="false">Leasing</button></span>';
+    row.querySelectorAll(".chip").forEach(function (c) {
+      c.addEventListener("click", function () {
+        row.querySelectorAll(".chip").forEach(function (x) { x.setAttribute("aria-pressed", x === c ? "true" : "false"); });
+        store.fields["arg" + i] = c.dataset.v; save();
+        row.classList.remove("right", "wrong"); var w = row.querySelector(".why"); if (w) w.remove();
+      });
+      if (store.fields["arg" + i] === c.dataset.v) c.setAttribute("aria-pressed", "true");
+    });
+    sortList.appendChild(row);
+  });
+  document.getElementById("checkSort").addEventListener("click", function () {
+    var ok = 0, answered = 0;
+    ARGS.forEach(function (g, i) {
+      var row = document.getElementById("arg" + i);
+      var v = store.fields["arg" + i];
+      row.classList.remove("right", "wrong");
+      var w = row.querySelector(".why"); if (w) w.remove();
+      if (!v) return;
+      answered++;
+      var right = v === g.a;
+      row.classList.add(right ? "right" : "wrong");
+      if (right) ok++;
+      var why = document.createElement("span"); why.className = "why"; why.textContent = (right ? "Richtig. " : "Noch nicht. ") + g.w;
+      row.appendChild(why);
+    });
+    var fb = document.getElementById("sortFeedback");
+    if (ok === ARGS.length) { fb.className = "feedback ok"; fb.textContent = "Alle Argumente richtig zugeordnet!"; markDone("s5", true); }
+    else { fb.className = "feedback no"; fb.textContent = ok + " von " + ARGS.length + " richtig" + (answered < ARGS.length ? ", " + (ARGS.length - answered) + " noch offen." : "."); }
+  });
+
+  // Was-wäre-wenn
+  var S = { rest: "sRest", zins: "sZins", wart: "sWart", rate: "sRate" };
+  function readSim() { return { rest: +document.getElementById(S.rest).value, zins: +document.getElementById(S.zins).value, wart: +document.getElementById(S.wart).value, rate: +document.getElementById(S.rate).value }; }
+  function renderSim() {
+    var p = readSim();
+    document.getElementById("oRest").textContent = fmt.format(p.rest) + " % = " + eur(PRICE * p.rest / 100);
+    document.getElementById("oZins").textContent = fmt.format(p.zins) + " %";
+    document.getElementById("oWart").textContent = eur(p.wart);
+    document.getElementById("oRate").textContent = eur(p.rate);
+    var c = costs(p);
+    renderBars(document.getElementById("simBars"), c.a, c.b);
+    var d = c.b - c.a, v = document.getElementById("simVerdict");
+    if (Math.abs(d) < 1) v.innerHTML = "Beide Varianten kosten gleich viel.";
+    else if (d > 0) v.innerHTML = "Der <strong>Kreditkauf</strong> ist um <b>" + eur(d) + "</b> günstiger.";
+    else v.innerHTML = "Das <strong>Leasing</strong> ist um <b>" + eur(-d) + "</b> günstiger.";
+  }
+  Object.keys(S).forEach(function (k) { var el = document.getElementById(S[k]); bindPersist(el); el.addEventListener("input", renderSim); });
+  document.getElementById("simReset").addEventListener("click", function () {
+    Object.keys(S).forEach(function (k) { var el = document.getElementById(S[k]); el.value = BASE[k]; store.fields[S[k]] = String(BASE[k]); });
+    save(); renderSim();
+  });
+  document.getElementById("checkBreak").addEventListener("click", function () {
+    var v = parseNum(document.getElementById("breakEven").value);
+    var be = (base.a + PRICE * BASE.rest / 100 - base.b) / PRICE * 100; // 21,17 %
+    var fb = document.getElementById("breakFeedback");
+    if (isNaN(v)) { fb.className = "feedback no"; fb.textContent = "Bitte eine Zahl in Prozent eingeben."; return; }
+    if (Math.abs(v - be) <= 0.6) {
+      fb.className = "feedback ok"; fb.textContent = "Genau: Unter rund 21,2 % Restwert (50.800 €) ist das Leasing günstiger.";
+    } else {
+      fb.className = "feedback no"; fb.textContent = v > be ? "Zu hoch. Schiebt den Restwert-Regler weiter nach links, bis die Balken gleich lang sind." : "Zu niedrig. Bei diesem Wert ist das Leasing schon deutlich günstiger. Sucht den Gleichstand.";
+    }
+  });
+
+  // ---------- Station 06: Empfehlung ----------
+  var letter = document.getElementById("letter");
+  var CHECKS = [
+    { t: "Anrede an Frau Herold und Herrn Acar", f: function (s) { return /herold/i.test(s) && /acar/i.test(s); } },
+    { t: "Rechenergebnis genannt (Gesamtkosten oder Differenz von 21.200 €)", f: function (s) { return /21\.?200|214\.?000|235\.?200/.test(s); } },
+    { t: "Mindestens zwei qualitative Argumente (Liquidität, Bilanz, Aktualität, Restwert, Flexibilität, Planbarkeit, Wartung, Eigentum)", f: function (s) { return argCount(s) >= 2; } },
+    { t: "Klare Empfehlung am Ende (z. B. „Wir empfehlen …“)", f: function (s) { return /empfehl|raten ihnen|schlagen vor/i.test(s); } },
+    { t: "Umfang ca. 10–15 Sätze", f: function (s) { var n = sentences(s); return n >= 10 && n <= 17; } }
+  ];
+  var ARG_PATTERNS = [/liquid|kapitalbind/i, /bilanz|eigenkapital/i, /aktuell|neu(?:e|est)/i, /restwert/i, /flexib|vertragsbind|kündb/i, /planbar|plan(?:ung)?ssicher|feste? (?:monatlich|rate|kosten)/i, /wartung|reparatur/i, /eigentum/i];
+  function argCount(s) { return ARG_PATTERNS.filter(function (r) { return r.test(s); }).length; }
+  function sentences(s) { var m = s.replace(/\b(z|d|u|bzw|inkl|ca|ggf|usw|Nr|Fr|Hr)\.\s?(B\.|h\.|a\.)?/gi, "x").match(/[^.!?]+[.!?]+/g); return m ? m.filter(function (x) { return x.trim().length > 3; }).length : 0; }
+  var cl = document.getElementById("letterChecks");
+  CHECKS.forEach(function (c, i) { var li = document.createElement("li"); li.id = "lc" + i; li.innerHTML = '<span class="dot" aria-hidden="true"></span><span>' + c.t + "</span>"; cl.appendChild(li); });
+  function renderLetter() {
+    var s = letter.value, met = 0;
+    CHECKS.forEach(function (c, i) { var m = c.f(s); document.getElementById("lc" + i).classList.toggle("met", m); if (m) met++; });
+    var words = (s.trim().match(/\S+/g) || []).length;
+    document.getElementById("letterCount").textContent = sentences(s) + " Sätze · " + words + " Wörter";
+    if (met === CHECKS.length) markDone("s6", true);
+  }
+  bindPersist(letter);
+  letter.addEventListener("input", renderLetter);
+
+  var BUILDERS = [
+    "Sehr geehrte Frau Herold, sehr geehrter Herr Acar,",
+    "wir haben die beiden Angebote zur Erneuerung des Fuhrparks über vier Jahre verglichen.",
+    "Beim Kreditkauf entstehen Gesamtkosten von … €, beim Leasing von … €.",
+    "Rechnerisch ist … damit um … € günstiger.",
+    "Für das Leasing spricht außerdem, dass …",
+    "Für den Kreditkauf spricht außerdem, dass …",
+    "Zu bedenken ist allerdings, dass …",
+    "Wir empfehlen daher …, weil …",
+    "Mit freundlichen Grüßen"
+  ];
+  var bd = document.getElementById("builders");
+  BUILDERS.forEach(function (b) {
+    var c = document.createElement("button"); c.type = "button"; c.className = "chip"; c.textContent = b;
+    c.addEventListener("click", function () {
+      var start = letter.selectionStart != null ? letter.selectionStart : letter.value.length;
+      var before = letter.value.slice(0, start), after = letter.value.slice(letter.selectionEnd != null ? letter.selectionEnd : start);
+      var sep = before && !/\s$/.test(before) ? " " : "";
+      var ins = sep + b + (/[,]$|Grüßen$/.test(b) ? "\n" : " ");
+      letter.value = before + ins + after;
+      var pos = (before + ins).length;
+      letter.focus(); letter.setSelectionRange(pos, pos);
+      store.fields.letter = letter.value; save(); renderLetter();
+    });
+    bd.appendChild(c);
+  });
+  document.getElementById("copyLetter").addEventListener("click", function () {
+    var fb = document.getElementById("copyFeedback");
+    function fallback() { letter.focus(); letter.select(); fb.className = "feedback"; fb.textContent = "Text markiert. Mit Strg+C bzw. ⌘+C kopieren."; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(letter.value).then(function () { fb.className = "feedback ok"; fb.textContent = "Kopiert."; }, fallback);
+    } else fallback();
+  });
+
+  // ---------- Zurücksetzen (zweistufig, ohne confirm) ----------
+  var resetBtn = document.getElementById("resetAll"), armed = null;
+  resetBtn.addEventListener("click", function () {
+    if (!armed) {
+      resetBtn.textContent = "Wirklich alles löschen?";
+      armed = setTimeout(function () { armed = null; resetBtn.textContent = "Eingaben zurücksetzen"; }, 4000);
+      return;
+    }
+    clearTimeout(armed); armed = null;
+    var teacher = store.teacher;
+    store = { fields: {}, done: {}, teacher: teacher };
+    save();
+    location.hash = "#start";
+    location.reload();
+  });
+
+  // ---------- Start ----------
+  document.querySelectorAll("main input[type=text], main textarea, main select").forEach(function (el) { if (el !== letter) bindPersist(el); });
+  setTeacher(!!store.teacher);
+  renderProgress(); renderSim(); renderLetter();
+  if (store.done.s4) renderCalcChart();
+  var h = (location.hash || "").slice(1), idx = sections.findIndex(function (s) { return s.id === h; });
+  show(idx >= 0 ? idx : (store.station || 0), false);
+})();
+</script>
+</body>
+</html>
