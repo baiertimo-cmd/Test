@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Saira+Condensed:wght@600;700&display=swap">
 <style>
-/* Layout: Fallakte als Lernpfad – Kopf mit Kennzeichen-Navigation, je Station eine Seite, Material links / Aufgabe rechts */
+/* Layout: Fallakte als Lernpfad – Kopf mit Stationslinie, je Station eine Seite, Material links / Aufgabe rechts */
 :root {
   --bg: #eef1f4;
   --surface: #ffffff;
@@ -18,7 +18,6 @@
   --line: #d3dae2;
   --accent: #1d4ed8;
   --accent-soft: #e3eafc;
-  --plate: #0b3a9e;
   --good: #23784a;
   --good-soft: #e1f3e8;
   --bad: #b3362f;
@@ -37,7 +36,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0f151c; --surface: #17202a; --sunken: #121a22; --ink: #e6ebf1; --muted: #9aa7b6; --line: #2c3946;
-    --accent: #7ea2ff; --accent-soft: #1d2a4a; --plate: #3b6fe0;
+    --accent: #7ea2ff; --accent-soft: #1d2a4a;
     --good: #5fcf8f; --good-soft: #15301f; --bad: #ff8a80; --bad-soft: #3a1c1a; --warn: #f0b44c; --warn-soft: #3a2c12;
     --teacher: #c4a2f0; --teacher-soft: #2a1f3a; --bar-a: #7ea2ff; --bar-b: #f0a43c;
     color-scheme: dark;
@@ -45,7 +44,7 @@
 }
 :root[data-theme="dark"] {
   --bg: #0f151c; --surface: #17202a; --sunken: #121a22; --ink: #e6ebf1; --muted: #9aa7b6; --line: #2c3946;
-  --accent: #7ea2ff; --accent-soft: #1d2a4a; --plate: #3b6fe0;
+  --accent: #7ea2ff; --accent-soft: #1d2a4a;
   --good: #5fcf8f; --good-soft: #15301f; --bad: #ff8a80; --bad-soft: #3a1c1a; --warn: #f0b44c; --warn-soft: #3a2c12;
   --teacher: #c4a2f0; --teacher-soft: #2a1f3a; --bar-a: #7ea2ff; --bar-b: #f0a43c;
   color-scheme: dark;
@@ -87,25 +86,22 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .switch input:checked + .track::after { transform: translateX(16px); }
 .switch input:focus-visible + .track { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-/* ---------- Kennzeichen-Navigation ---------- */
+/* ---------- Lernpfad-Navigation (Stationen auf einer Linie) ---------- */
 .stations { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
-.stations .wrap { padding-block: 10px; }
-.stations ol { list-style: none; margin: 0; padding: 0 0 2px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: thin; }
-.plate {
-  display: inline-flex; align-items: stretch; flex: none;
-  border: 2px solid var(--ink); border-radius: 5px; background: var(--surface);
-  cursor: pointer; padding: 0; text-align: left; min-height: 44px;
-  transition: transform .15s, box-shadow .15s;
-}
-.plate:hover { transform: translateY(-1px); box-shadow: 0 2px 0 var(--line); }
-.plate .eu { background: var(--plate); color: #fff; font: 700 .7rem/1 var(--font-body); width: 20px; display: grid; place-items: end center; padding-bottom: 6px; border-radius: 2px 0 0 2px; }
-.plate .txt { display: grid; padding: 4px 10px 4px 8px; line-height: 1.1; }
-.plate .code { font: 700 1.15rem/1.1 var(--font-display); letter-spacing: .06em; }
-.plate .lbl { font-size: .72rem; color: var(--muted); white-space: nowrap; }
-.plate .state { align-self: center; width: 18px; height: 18px; margin-right: 8px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: .7rem; color: var(--surface); }
-.plate[aria-current="step"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
-.plate.done .state { background: var(--good); border-color: var(--good); }
-.plate.done .state::before { content: "✓"; font-weight: 700; }
+.stations .wrap { padding-block: 12px 10px; }
+.stations ol { list-style: none; margin: 0; padding: 0 0 2px; display: flex; overflow-x: auto; scrollbar-width: thin; }
+.stations li { flex: 1 0 92px; position: relative; display: flex; justify-content: center; }
+.stations li + li::before { content: ""; position: absolute; top: 19px; left: -50%; width: 100%; height: 2px; background: var(--line); }
+.stations li.reached::before { background: var(--good); }
+.step { position: relative; z-index: 1; display: grid; justify-items: center; gap: 4px; padding: 4px 6px; background: none; border: 0; border-radius: var(--radius); cursor: pointer; min-height: 44px; }
+.step .mark { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); display: grid; place-items: center; font: 600 .8rem/1 var(--font-mono); color: var(--muted); transition: background .2s, border-color .2s, transform .15s; }
+.step .lbl { font-size: .78rem; color: var(--muted); white-space: nowrap; }
+.step:hover .mark { border-color: var(--accent); transform: scale(1.06); }
+.step.done .mark { background: var(--good); border-color: var(--good); color: var(--surface); }
+.step.done .mark span { display: none; }
+.step.done .mark::before { content: "✓"; font: 700 .9rem/1 var(--font-body); }
+.step[aria-current="step"] .mark { background: var(--accent); border-color: var(--accent); color: var(--surface); box-shadow: 0 0 0 4px var(--accent-soft); }
+.step[aria-current="step"] .lbl { color: var(--ink); font-weight: 700; }
 
 .progress { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-size: .8rem; color: var(--muted); }
 .progress .bar { flex: 1; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
@@ -313,7 +309,7 @@ body.teacher .teacher-banner { display: block; }
 <main class="wrap" id="main">
 
 <!-- ===================== START ===================== -->
-<section class="station" id="start" data-label="Start" data-code="START">
+<section class="station" id="start" data-label="Start" data-code="▸">
   <div class="station-head">
     <span class="eyebrow">Ausgangssituation</span>
     <h2>Acht Transporter, eine Entscheidung</h2>
@@ -718,8 +714,8 @@ body.teacher .teacher-banner { display: block; }
   sections.forEach(function (s, i) {
     var li = document.createElement("li");
     var b = document.createElement("button");
-    b.type = "button"; b.className = "plate"; b.dataset.target = s.id;
-    b.innerHTML = '<span class="eu" aria-hidden="true">D</span><span class="txt"><span class="code">' + s.dataset.code + '</span><span class="lbl">' + s.dataset.label + '</span></span>' + (s.dataset.track ? '<span class="state" aria-hidden="true"></span>' : "");
+    b.type = "button"; b.className = "step"; b.dataset.target = s.id;
+    b.innerHTML = '<span class="mark" aria-hidden="true"><span>' + s.dataset.code + '</span></span><span class="lbl">' + s.dataset.label + '</span>';
     b.addEventListener("click", function () { show(i, true); });
     li.appendChild(b); nav.appendChild(li);
   });
@@ -727,7 +723,7 @@ body.teacher .teacher-banner { display: block; }
   function show(i, scroll) {
     current = Math.max(0, Math.min(sections.length - 1, i));
     sections.forEach(function (s, k) { s.hidden = k !== current; });
-    nav.querySelectorAll(".plate").forEach(function (b, k) {
+    nav.querySelectorAll(".step").forEach(function (b, k) {
       if (k === current) { b.setAttribute("aria-current", "step"); b.scrollIntoView({ block: "nearest", inline: "nearest" }); }
       else b.removeAttribute("aria-current");
     });
@@ -749,10 +745,11 @@ body.teacher .teacher-banner { display: block; }
   }
   function renderProgress() {
     var n = 0;
-    nav.querySelectorAll(".plate").forEach(function (b, k) {
+    nav.querySelectorAll(".step").forEach(function (b, k) {
       var t = sections[k].dataset.track;
       var d = t && store.done[t];
       b.classList.toggle("done", !!d);
+      b.parentNode.classList.toggle("reached", !!d);
       if (d) n++;
     });
     document.getElementById("progressText").textContent = n + " von " + tracked.length + " Stationen erledigt";
