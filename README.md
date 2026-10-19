@@ -50,3 +50,21 @@ etwa wenn du die Seite am Beamer zuerst ohne Lösungen zeigen möchtest.
 - Gleichstand bei einem Restwert von ca. 21,2 % (50.800 €)
 
 Eingaben werden nur lokal im Browser gespeichert (localStorage).
+
+---
+
+# Allgemein-Verbraucherdarlehensverträge (LF 5): Wiederholung
+
+`verbraucherdarlehen/index.html` ist eine eigenständige Wiederholungsseite zum Arbeitsblatt „Kreditarten und
+Finanzierungsanlässe – Verbraucherdarlehen“ (Situation: Eheleute Müller finanzieren eine Küche über 15.000 EUR).
+Die Lösungen des Arbeitsblatts (rote Wörter) sind die Inhalte der Übungen:
+
+| Bereich | Inhalt |
+| --- | --- |
+| Lückentext | 50 Lücken zu AVD, Form, Widerruf, Kündigung, VVI, Werbung; Prüfen, Tipp, Lösung zeigen |
+| Karteikarten | 19 Fragen zum Aufdecken mit „Gewusst/Nochmal“ |
+| Zuordnen | fehlende Vertragsangabe → Rechtsfolge (§ 494 BGB); Angaben → Art. 247 §§ 3, 4, 6 EGBGB |
+| Fälle Müller | 17 Anwendungsfälle mit Begründung (Widerruf, § 498-Kündigung, Vorfälligkeitsentschädigung …) |
+| Merkblatt | vollständiges Arbeitsblatt mit Lösungen in Rot, Lösungen lassen sich verdecken |
+
+Der Fortschritt wird nur lokal im Browser gespeichert.

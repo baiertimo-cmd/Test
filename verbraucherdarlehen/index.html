@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verbraucherdarlehen wiederholen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: Gesetzbuch-Spalte – Text links, Paragrafen als Randnummern rechts; Rot = Lösungsfarbe der Lehrkraft */
+:root{
+  --paper:#f5f7f9; --sheet:#ffffff; --ink:#16232e; --muted:#55636f; --line:#d5dde4;
+  --navy:#1d3a54; --red:#c8102e; --red-soft:#fbe9ec; --ok:#1d7a4c; --ok-soft:#e5f3eb; --warn:#9a5b00;
+  --f-display:"Literata",Georgia,"Times New Roman",serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0f161c; --sheet:#16202a; --ink:#e4ebf1; --muted:#9aa8b4; --line:#2a3845;
+  --navy:#9cc2e4; --red:#ff6b7d; --red-soft:#3a1c22; --ok:#5fd29a; --ok-soft:#173527; --warn:#f0b35a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f161c; --sheet:#16202a; --ink:#e4ebf1; --muted:#9aa8b4; --line:#2a3845;
+  --navy:#9cc2e4; --red:#ff6b7d; --red-soft:#3a1c22; --ok:#5fd29a; --ok-soft:#173527; --warn:#f0b35a; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.55 var(--f-body)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--sheet)}
+.wrap{max-width:60rem;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.2;margin:0}
+h1{font-size:clamp(1.7rem,4.5vw,2.5rem);font-weight:700}
+h2{font-size:1.5rem;font-weight:700}
+h3{font-size:1.1rem;font-weight:700}
+p{margin:0}
+.eyebrow{font:500 .75rem/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.par{font:500 .78rem/1.3 var(--f-mono);color:var(--navy);white-space:nowrap}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+
+/* Kopf */
+header{background:var(--sheet);border-bottom:1px solid var(--line)}
+header .wrap{padding-block:28px 22px;display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+h1,h2,h3,.q{overflow-wrap:break-word;hyphens:auto}
+.situation{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,17rem);gap:20px;align-items:start}
+.situation p{max-width:62ch;color:var(--muted)}
+.situation strong{color:var(--ink)}
+.kis{border:1px solid var(--line);font-size:.85rem;font-variant-numeric:tabular-nums}
+.kis div{display:flex;justify-content:space-between;gap:12px;padding:6px 10px;border-top:1px solid var(--line)}
+.kis div:first-child{border-top:0;background:var(--paper);font-weight:600}
+@media (max-width:700px){.situation{grid-template-columns:1fr}}
+
+/* Navigation */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--sheet);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+nav button{flex:0 0 auto;border:0;background:none;color:var(--muted);padding:12px 12px 10px;border-bottom:3px solid transparent;font-weight:500;font-size:.92rem;display:flex;gap:8px;align-items:center}
+nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--red)}
+nav .cnt{font:500 .72rem var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+
+main .wrap{padding-block:28px 64px;display:grid;grid-template-columns:minmax(0,1fr);gap:28px}
+.intro{display:grid;gap:6px;max-width:65ch}
+.intro p{color:var(--muted)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--sheet);color:var(--ink);padding:7px 14px;border-radius:4px;font-size:.9rem}
+.btn:hover{border-color:var(--navy)}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:var(--sheet)}
+.score{font:500 .85rem var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* Gesetzesblock: Text + Randparagraf */
+.block{background:var(--sheet);border:1px solid var(--line)}
+.block>h3{padding:12px 16px;border-bottom:1px solid var(--line);background:var(--paper)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 9.5rem;border-top:1px solid var(--line)}
+.block>h3+.row{border-top:0}
+.row>.txt{padding:14px 16px;display:grid;gap:8px;min-width:0}
+.row>.par{padding:14px 16px;border-left:1px solid var(--line);white-space:normal}
+.row ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+@media (max-width:640px){.row{grid-template-columns:1fr}.row>.par{border-left:0;padding-top:0}}
+
+/* Lücken */
+.gap{display:inline-flex;align-items:baseline;gap:2px;vertical-align:baseline}
+.gap input{font:inherit;color:var(--red);background:transparent;border:0;border-bottom:1.5px dashed var(--muted);padding:0 2px;min-width:3.5ch;max-width:100%}
+.gap input:focus{outline:none;border-bottom-color:var(--navy);border-bottom-style:solid}
+.gap.ok input{border-bottom:2px solid var(--ok);color:var(--ok)}
+.gap.bad input{border-bottom:2px solid var(--red);background:var(--red-soft)}
+.gap.shown input{color:var(--red);border-bottom-style:solid;font-style:italic}
+
+/* Merkblatt-Lösungen */
+.sol{color:var(--red);transition:filter .2s}
+.hide-sol .sol{background:var(--red-soft);color:transparent;border-radius:2px;cursor:pointer;user-select:none}
+.hide-sol .sol.peek{color:var(--red);background:none;cursor:auto}
+
+/* Karteikarten */
+.deck{display:grid;gap:14px}
+.card{background:var(--sheet);border:1px solid var(--line);min-height:16rem;display:grid;grid-template-rows:auto 1fr auto}
+.card .top{display:flex;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.card .face{padding:22px 20px;display:grid;align-content:center;gap:12px}
+.card .q{font-family:var(--f-display);font-size:1.3rem;font-weight:500;max-width:40ch}
+.card .a{color:var(--red);display:grid;gap:6px}
+.card .a ul{margin:0;padding-left:1.2em;display:grid;gap:3px}
+.card .bottom{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;border-top:1px solid var(--line);justify-content:space-between}
+.card .bottom>div{display:flex;gap:8px;flex-wrap:wrap}
+.btn.good{border-color:var(--ok);color:var(--ok)}
+.btn.again{border-color:var(--red);color:var(--red)}
+.pips{display:flex;flex-wrap:wrap;gap:4px}
+.pips span{width:14px;height:6px;background:var(--line)}
+.pips span.k{background:var(--ok)}
+.pips span.n{background:var(--red)}
+.pips span.cur{outline:2px solid var(--navy);outline-offset:1px}
+
+/* Zuordnen */
+.match{display:grid;gap:10px}
+.match .item{background:var(--sheet);border:1px solid var(--line);padding:12px 14px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,20rem);gap:12px;align-items:center}
+.match select{font:inherit;width:100%;padding:6px 8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:4px}
+.item.ok{border-color:var(--ok);background:var(--ok-soft)}
+.item.bad{border-color:var(--red);background:var(--red-soft)}
+.item .fb{grid-column:1/-1;font-size:.88rem;color:var(--muted)}
+@media (max-width:640px){.match .item{grid-template-columns:1fr}}
+.sortlist{display:grid;gap:8px}
+.sortitem{background:var(--sheet);border:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.sortitem>span{min-width:0;flex:1 1 14rem}
+.seg{display:flex;flex-wrap:wrap;gap:4px}
+.seg button{border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:4px 10px;border-radius:3px;font-size:.82rem}
+.seg button[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:var(--sheet)}
+.sortitem.ok{border-color:var(--ok);background:var(--ok-soft)}
+.sortitem.bad{border-color:var(--red);background:var(--red-soft)}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:8px;font-size:.85rem;color:var(--muted)}
+.legend b{color:var(--ink)}
+
+/* Fälle */
+.case{background:var(--sheet);border:1px solid var(--line);padding:16px;display:grid;gap:12px}
+.case .head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.case p.s{max-width:65ch}
+.opts{display:grid;gap:6px}
+.opts button{text-align:left;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:9px 12px;border-radius:4px}
+.opts button:hover:not(:disabled){border-color:var(--navy)}
+.opts button:disabled{cursor:default}
+.opts button.right{border-color:var(--ok);background:var(--ok-soft)}
+.opts button.wrong{border-color:var(--red);background:var(--red-soft)}
+.expl{border-left:3px solid var(--navy);padding:4px 0 4px 12px;color:var(--muted);max-width:68ch}
+.expl b{color:var(--ink)}
+
+.note{font-size:.85rem;color:var(--muted);max-width:70ch}
+footer .wrap{padding-block:0 40px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">LF 5 · Kreditarten und Finanzierungsanlässe · Wiederholung</div>
+    <h1>Allgemein-Verbraucher&shy;darlehens&shy;verträge</h1>
+    <div class="situation">
+      <p>Ihr seid Junior-Berater*innen der <strong>Sparbank AG</strong> in der Kreditabteilung für Privatkunden. Die Eheleute <strong>Susanne und Klaus Müller</strong> ziehen in drei Monaten in eine Mietwohnung ohne Küche und möchten eine neue Küche mit Elektrogeräten für <strong>15.000,00 EUR</strong> voll finanzieren. Wiederholt hier das Kapitel für das Mitarbeiterhandbuch. Die roten Stellen sind die Lösungen aus dem Arbeitsblatt.</p>
+      <div class="kis" aria-label="Datenkranz Kundeninformationssystem">
+        <div><span>KIS · Klaus und Susanne Müller</span></div>
+        <div><span>Kontostand Gehaltskonto</span><span>H 1.695,91 €</span></div>
+        <div><span>Dispositionslinie</span><span>6.000,00 €</span></div>
+        <div><span>Habenumsätze (3 Mon.)</span><span>10.455,00 €</span></div>
+        <div><span>Sollumsätze (3 Mon.)</span><span>12.678,75 €</span></div>
+        <div><span>Sparbrief Klaus Müller</span><span>5.000,00 €</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav aria-label="Übungen">
+  <div class="wrap" role="tablist">
+    <button role="tab" id="tab-luecken" aria-controls="luecken" aria-selected="true">Lückentext <span class="cnt" id="c-luecken"></span></button>
+    <button role="tab" id="tab-karten" aria-controls="karten" aria-selected="false">Karteikarten <span class="cnt" id="c-karten"></span></button>
+    <button role="tab" id="tab-zuordnen" aria-controls="zuordnen" aria-selected="false">Zuordnen <span class="cnt" id="c-zuordnen"></span></button>
+    <button role="tab" id="tab-faelle" aria-controls="faelle" aria-selected="false">Fälle Müller <span class="cnt" id="c-faelle"></span></button>
+    <button role="tab" id="tab-merkblatt" aria-controls="merkblatt" aria-selected="false">Merkblatt</button>
+  </div>
+</nav>
+
+<main>
+<!-- ============ LÜCKENTEXT ============ -->
+<section id="luecken" role="tabpanel" aria-labelledby="tab-luecken">
+<div class="wrap">
+  <div class="intro">
+    <h2>Lückentext</h2>
+    <p>Füllt die Lücken aus dem Gedächtnis. „Prüfen“ zeigt richtig und falsch, „Tipp“ verrät den ersten Buchstaben. Groß- und Kleinschreibung ist egal.</p>
+  </div>
+  <div class="tools">
+    <button class="btn primary" id="gap-check">Prüfen</button>
+    <button class="btn" id="gap-hint">Tipp für leere Lücken</button>
+    <button class="btn" id="gap-show">Lösungen zeigen</button>
+    <button class="btn" id="gap-reset">Leeren</button>
+    <span class="score" id="gap-score"></span>
+  </div>
+
+  <div class="block">
+    <h3>Allgemein-Verbraucherdarlehensverträge (AVD)</h3>
+    <div class="row"><div class="txt"><p>Verbraucher ist jede <span class="gap" data-a="natürliche"></span> Person, die <span class="gap" data-a="überwiegend|ueberwiegend"></span> weder <span class="gap" data-a="gewerblich"></span> noch <span class="gap" data-a="selbstständig|selbständig|selbstaendig"></span> tätig ist.</p></div><div class="par">§ 13 BGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Allgemeine Verbraucherdarlehensverträge sind Darlehensverträge zwischen einem <span class="gap" data-a="Unternehmer|Unternehmen"></span> als Darlehensgeber und einem <span class="gap" data-a="Verbraucher"></span> als Darlehensnehmer.</p>
+      <p>Die §§ 491 bis 512 BGB gelten auch für <span class="gap" data-a="Existenzgründer|Existenzgruender|Existenzgründer*innen"></span>, sofern der Nettodarlehensbetrag nicht <span class="gap" data-a="75.000|75000|75.000,00|75 000"></span> EUR übersteigt.</p>
+      <p>Das Ziel der §§ 491–512 BGB ist, die Rechte der <span class="gap" data-a="Verbraucher"></span> zu stärken.</p>
+    </div><div class="par">§ 491 / § 513 BGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Keine allgemeinen Verbraucherdarlehensverträge sind:</p>
+      <ul>
+        <li>Nettodarlehensbetrag unter <span class="gap" data-a="200|200,00|200.00"></span> EUR</li>
+        <li>Haftung des Darlehensnehmers beschränkt sich auf das <span class="gap" data-a="Pfand"></span> an den Darlehensgeber</li>
+        <li>Rückzahlung binnen <span class="gap" data-a="3|drei"></span> Monaten, nur geringe Kosten vereinbart</li>
+        <li><span class="gap" data-a="Arbeitgeber"></span>darlehen mit effektiven Zinssätzen unter den marktüblichen Zinsen</li>
+        <li>Darlehen im Rahmen <span class="gap" data-a="öffentlich-rechtlicher|oeffentlich-rechtlicher|öffentlich rechtlicher|öffentlicher"></span> Förderprogramme mit Zinsen unter den marktüblichen Bedingungen</li>
+      </ul>
+    </div><div class="par">§ 491 BGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Form: <span class="gap" data-a="Schriftform|schriftlich"></span>; Darlehensnehmer und Darlehensgeber dürfen <span class="gap" data-a="getrennt"></span> unterzeichnen.</p>
+      <p>Fehlen Formvorschriften oder Pflichtangaben nach Art. 247 EGBGB, ist der Vertrag <span class="gap" data-a="nichtig"></span>. Er wird trotzdem gültig, wenn der Darlehensnehmer das Darlehen <span class="gap" data-a="empfängt|empfaengt|erhält|in Anspruch nimmt"></span>.</p>
+      <p>Fehlt der Sollzins, der effektive Jahreszins oder der Gesamtbetrag, reduziert sich der Sollzinssatz auf den gesetzlichen Zins von <span class="gap" data-a="4|4%|4 %|vier"></span> %.</p>
+      <p>Fehlen Angaben zu Sicherheiten, darf der Darlehensgeber diese <span class="gap" data-a="nicht"></span> verlangen. Nicht angegebene Kosten werden nicht <span class="gap" data-a="geschuldet"></span>. Fehlen Angaben zur Laufzeit oder zum Kündigungsrecht, darf der Darlehensnehmer <span class="gap" data-a="jederzeit"></span> kündigen.</p>
+    </div><div class="par">§ 492 i. V. m. § 126 BGB · § 494 BGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Sobald der Darlehensgeber zum Abschluss bereit ist, ist dem Darlehensnehmer ein <span class="gap" data-a="Vertragsentwurf|Entwurf"></span> auszuhändigen.</p>
+    </div><div class="par">§ 491a BGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Die Widerrufsfrist beträgt <span class="gap" data-a="14|vierzehn"></span> Tage, nachdem der Verbraucher den Vertrag mit allen Pflichtangaben erhalten hat und über sein Widerrufsrecht belehrt wurde. Der Widerruf erfolgt in <span class="gap" data-a="Textform"></span>; es reicht die rechtzeitige <span class="gap" data-a="Absendung"></span>. Eine <span class="gap" data-a="Begründung|Begruendung"></span> ist nicht notwendig.</p>
+      <p>Fehlen Pflichtangaben, hat der Darlehensnehmer ein <span class="gap" data-a="unbegrenztes|unbefristetes|ewiges"></span> Widerrufsrecht. Werden sie nachgeholt, beträgt die Frist ab diesem Datum <span class="gap" data-a="30|1 Monat|einen Monat|ein Monat"></span> Tage.</p>
+      <p>Nach dem Widerruf muss das Darlehen unverzüglich, spätestens nach <span class="gap" data-a="30|dreißig"></span> Tagen zurückgezahlt werden.</p>
+    </div><div class="par">§§ 355 f. BGB · Art. 247 EGBGB, Anlage 7</div></div>
+  </div>
+
+  <div class="block">
+    <h3>Kündigungsmöglichkeiten</h3>
+    <div class="row"><div class="txt">
+      <p><b>Darlehensgeber</b> bei Zahlungsverzug (Darlehen in Teilzahlungen):</p>
+      <ul>
+        <li>Der Darlehensnehmer ist mit <span class="gap" data-a="zwei|2"></span> aufeinanderfolgenden Teilzahlungen ganz oder teilweise in Verzug, und</li>
+        <li>bei einer Laufzeit bis zu <span class="gap" data-a="3|drei"></span> Jahren mit mindestens <span class="gap" data-a="10|10%|zehn"></span> % oder bei mehr als <span class="gap" data-a="3|drei"></span> Jahren mit mindestens <span class="gap" data-a="5|5%|fünf"></span> % des Nennbetrags in Verzug,</li>
+        <li>und der Darlehensgeber hat eine Frist von <span class="gap" data-a="2|zwei|14 Tagen|zwei Wochen"></span> Wochen gesetzt mit der Ankündigung, danach die gesamte Restschuld zu verlangen.</li>
+      </ul>
+    </div><div class="par">§ 498 BGB</div></div>
+    <div class="row"><div class="txt">
+      <p><b>Darlehensnehmer:</b> kann <span class="gap" data-a="jederzeit"></span> ganz oder teilweise vorzeitig zurückzahlen. Die Kosten vermindern sich um die <span class="gap" data-a="Zinsen"></span> und Kreditkosten der restlichen Laufzeit.</p>
+      <p>Die Vorfälligkeitsentschädigung beträgt höchstens <span class="gap" data-a="1|1%|1 %|ein"></span> % des vorzeitig zurückgezahlten Betrags (Restlaufzeit über 1 Jahr) bzw. <span class="gap" data-a="0,5|0.5|0,5%|0,5 %"></span> % (bis 1 Jahr) und nie mehr als die <span class="gap" data-a="Sollzinsen|Zinsen"></span>, die bis zum vereinbarten Ende angefallen wären.</p>
+      <p>Ausgeschlossen ist sie, wenn Angaben zu Laufzeit, Kündigungsrecht oder Berechnungsmethode im Vertrag fehlen oder die Rückzahlung aus einer <span class="gap" data-a="Versicherung|Restschuldversicherung|Lebensversicherung"></span> erfolgt, die bei Darlehensaufnahme abgeschlossen wurde.</p>
+    </div><div class="par">§§ 500–502 BGB</div></div>
+  </div>
+
+  <div class="block">
+    <h3>Vorvertragliche Informationen und Werbung</h3>
+    <div class="row"><div class="txt">
+      <p>Form: <span class="gap" data-a="Textform"></span> · Zeitpunkt: vor Abgabe der <span class="gap" data-a="Vertragserklärung|Vertragserklaerung"></span> · Mustervorlage: <span class="gap" data-a="ESIS|ESIS-Merkblatt|Europäische Standardinformationen|SECCI"></span>-Merkblatt</p>
+      <p>Der Darlehensgeber muss vor Vertragsabschluss angemessene <span class="gap" data-a="Erläuterungen|Erlaeuterungen"></span> geben, damit der Darlehensnehmer beurteilen kann, ob der Vertrag zu seinem Zweck und seinen <span class="gap" data-a="Vermögensverhältnissen|Vermoegensverhaeltnissen"></span> passt.</p>
+    </div><div class="par">Art. 247 § 2 EGBGB · §§ 491a, 492 BGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Werbung muss eindeutig, verständlich und nicht <span class="gap" data-a="irreführend|irrefuehrend"></span> sein und mit einem <span class="gap" data-a="Beispiel|Rechenbeispiel"></span> unterlegt werden. Anzugeben ist der <span class="gap" data-a="2/3|Zweidrittel|zwei Drittel|2/3-Zins"></span>-Zins: der Zins, zu dem zwei Drittel der Nachfrager den Kredit bekommen.</p>
+    </div><div class="par">§ 5 / § 6a PAngV</div></div>
+  </div>
+</div>
+</section>
+
+<!-- ============ KARTEIKARTEN ============ -->
+<section id="karten" role="tabpanel" aria-labelledby="tab-karten" hidden>
+<div class="wrap">
+  <div class="intro">
+    <h2>Karteikarten</h2>
+    <p>Beantwortet die Frage zuerst laut oder auf einem Zettel, dann deckt die Antwort auf. Karten mit „Nochmal“ kommen wieder dran.</p>
+  </div>
+  <div class="deck">
+    <div class="pips" id="pips" aria-hidden="true"></div>
+    <article class="card" aria-live="polite">
+      <div class="top"><span class="eyebrow" id="card-no"></span><span class="par" id="card-par"></span></div>
+      <div class="face">
+        <p class="q" id="card-q"></p>
+        <div class="a" id="card-a" hidden></div>
+      </div>
+      <div class="bottom">
+        <div><button class="btn" id="card-prev">Zurück</button><button class="btn primary" id="card-flip">Antwort zeigen</button></div>
+        <div><button class="btn again" id="card-again">Nochmal</button><button class="btn good" id="card-good">Gewusst</button></div>
+      </div>
+    </article>
+    <div class="tools"><button class="btn" id="card-shuffle">Mischen</button><button class="btn" id="card-only">Nur „Nochmal“-Karten</button><button class="btn" id="card-reset">Neu starten</button><span class="score" id="card-score"></span></div>
+  </div>
+</div>
+</section>
+
+<!-- ============ ZUORDNEN ============ -->
+<section id="zuordnen" role="tabpanel" aria-labelledby="tab-zuordnen" hidden>
+<div class="wrap">
+  <div class="intro">
+    <h2>Fehlende Angabe und Rechtsfolge</h2>
+    <p>Was passiert, wenn im Vertrag etwas fehlt? Ordnet jeder Lücke im Vertrag die Rechtsfolge nach § 494 BGB zu.</p>
+  </div>
+  <div class="match" id="match"></div>
+  <div class="tools"><button class="btn primary" id="match-check">Prüfen</button><button class="btn" id="match-reset">Neu mischen</button><span class="score" id="match-score"></span></div>
+
+  <div class="intro">
+    <h2>Wohin gehört die Angabe?</h2>
+    <p>Ordnet jede Angabe dem richtigen Paragrafen aus Art. 247 EGBGB zu.</p>
+  </div>
+  <div class="legend">
+    <div><b>§ 3</b> · Pflichtinhalte der vorvertraglichen Information</div>
+    <div><b>§ 4</b> · weitere Angaben (soweit erheblich)</div>
+    <div><b>§ 6</b> · zusätzlich im Vertrag</div>
+  </div>
+  <div class="sortlist" id="sortlist"></div>
+  <div class="tools"><button class="btn primary" id="sort-check">Prüfen</button><button class="btn" id="sort-reset">Neu mischen</button><span class="score" id="sort-score"></span></div>
+</div>
+</section>
+
+<!-- ============ FÄLLE ============ -->
+<section id="faelle" role="tabpanel" aria-labelledby="tab-faelle" hidden>
+<div class="wrap">
+  <div class="intro">
+    <h2>Fälle aus der Beratung</h2>
+    <p>Wendet die Regeln auf die Müllers und andere Kunden der Sparbank AG an. Nach jeder Antwort steht die Begründung mit Paragraf.</p>
+  </div>
+  <div class="tools"><span class="score" id="case-score"></span><button class="btn" id="case-reset">Alle zurücksetzen</button></div>
+  <div id="cases" style="display:grid;gap:14px"></div>
+</div>
+</section>
+
+<!-- ============ MERKBLATT ============ -->
+<section id="merkblatt" role="tabpanel" aria-labelledby="tab-merkblatt" hidden>
+<div class="wrap">
+  <div class="intro">
+    <h2>Merkblatt: Kapitel für das Mitarbeiterhandbuch</h2>
+    <p>Das vollständige Arbeitsblatt mit allen Lösungen in Rot. Mit „Lösungen verdecken“ könnt ihr euch selbst abfragen: Ein Klick auf eine verdeckte Stelle deckt sie auf.</p>
+  </div>
+  <div class="tools"><button class="btn primary" id="sol-toggle" aria-pressed="false">Lösungen verdecken</button></div>
+
+  <div id="sheet" style="display:grid;gap:20px">
+  <div class="block">
+    <h3>Allgemein-Verbraucherdarlehensverträge (AVD)</h3>
+    <div class="row"><div class="txt"><p>Verbraucher ist <span class="sol">jede natürliche Person, die überwiegend weder gewerblich noch selbstständig tätig ist.</span></p></div><div class="par">§ 13 BGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Allgemeine Verbraucherdarlehensverträge sind Darlehensverträge zwischen einem <span class="sol">Unternehmer</span> als Darlehensgeber und einem <span class="sol">Verbraucher</span> als Darlehensnehmer.</p>
+      <p>Grundsätzlich gelten die allgemeinen Vorschriften über den Darlehensvertrag (§§ 488 bis 490 BGB). Die §§ 491–512 BGB gelten für das Verbraucherdarlehen.</p>
+      <p>Die §§ 491 bis 512 BGB gelten auch für <span class="sol">Existenzgründer</span>, sofern der Nettodarlehensbetrag nicht <span class="sol">75.000,00</span> EUR übersteigt.</p>
+      <p>Das Ziel der §§ 491–512 BGB ist, <span class="sol">die Rechte der Verbraucher zu stärken.</span></p>
+    </div><div class="par">§ 491 / § 513 BGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Keine allgemeinen Verbraucherdarlehensverträge sind:</p>
+      <ul>
+        <li>Nettodarlehensbetrag &lt; <span class="sol">200,00</span> EUR</li>
+        <li>Haftung des Darlehensnehmers beschränkt sich auf das <span class="sol">Pfand</span> an den Darlehensgeber</li>
+        <li>Rückzahlung binnen <span class="sol">3 Monaten</span>; nur geringe Kosten sind vereinbart</li>
+        <li><span class="sol">Arbeitgeber</span>darlehen mit effektiven Zinssätzen unter den marktüblichen Zinsen</li>
+        <li>Darlehen im Rahmen <span class="sol">öffentlich-rechtlicher Förderprogramme</span>, wenn die Zinsen unter den marktüblichen Bedingungen liegen</li>
+      </ul>
+    </div><div class="par">§ 491 BGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Form: <span class="sol">Schriftform; Darlehensnehmer und -geber unterzeichnen getrennt.</span></p>
+      <p>Folgen bei Nichtbeachtung der Formvorschriften und Inhalte nach Art. 247 EGBGB: Der Vertrag ist <span class="sol">nichtig.</span> Ungeachtet dieser Mängel wird der Vertrag gültig, wenn der Darlehensnehmer das Darlehen empfängt oder in Anspruch nimmt. Jedoch …</p>
+      <ul>
+        <li><span class="sol">fehlt der Sollzins, der effektive Zinssatz oder der Gesamtbetrag im Vertrag, reduziert sich der zugrunde gelegte Sollzinssatz auf den gesetzlichen Zins (4 %)</span></li>
+        <li><span class="sol">fehlen Angaben zu Sicherheiten, dürfen diese nicht vom Darlehensgeber verlangt werden</span></li>
+        <li><span class="sol">nicht angegebene Kosten werden nicht geschuldet</span></li>
+        <li><span class="sol">fehlen Angaben zur Laufzeit oder zum Kündigungsrecht, ist der Darlehensnehmer jederzeit zur Kündigung berechtigt</span></li>
+      </ul>
+    </div><div class="par">§ 492 BGB i. V. m. § 126 BGB · § 494 BGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Aushändigung eines Vertragsentwurfs:</p>
+      <p><span class="sol">Sobald der Darlehensgeber zum Abschluss des Darlehens bereit ist, ist dem Darlehensnehmer ein Vertragsentwurf auszuhändigen.</span></p>
+    </div><div class="par">§ 491a BGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Widerrufsrecht und Widerrufsbelehrung:</p>
+      <ul>
+        <li><span class="sol">Die Widerrufsfrist beträgt 14 Tage, nachdem der Verbraucher den Vertrag mit allen Pflichtangaben erhalten hat und über sein Widerrufsrecht belehrt wurde; Textform; es reicht die rechtzeitige Absendung des Widerrufs.</span></li>
+        <li><span class="sol">Fehlen Pflichtangaben, hat der Darlehensnehmer ein unbegrenztes Widerrufsrecht. Werden die Pflichtangaben nachgeholt, beträgt die Widerrufsfrist ab diesem Datum 30 Tage.</span></li>
+        <li><span class="sol">Es ist keine Begründung für den Widerruf notwendig.</span></li>
+        <li><span class="sol">Im Fall des Widerrufs hat der Darlehensnehmer die empfangene Leistung unverzüglich zurückzuzahlen, spätestens nach 30 Tagen. Für den in Anspruch genommenen Kredit sind Zinsen zu zahlen bzw. bei Nichteinhaltung der 30-Tages-Frist Verzugszinsen. Der Widerruf bleibt wirksam.</span></li>
+      </ul>
+      <p>Inhalte der Widerrufsinformation (Muster, Anlage 7 zu Art. 247 § 6 Abs. 2 EGBGB):</p>
+      <ul>
+        <li><span class="sol">Hinweis auf das Recht zum Widerruf</span></li>
+        <li><span class="sol">Hinweis auf Beginn und Dauer der Widerrufsfrist bei fehlenden Pflichtangaben</span></li>
+        <li><span class="sol">Adressat des Widerrufs</span></li>
+        <li><span class="sol">Hinweis, dass ein bereits ausgezahltes Darlehen innerhalb von 30 Tagen inkl. Verzugszinsen zurückzuzahlen ist</span></li>
+      </ul>
+    </div><div class="par">§§ 355 f. BGB · Art. 247 EGBGB Anlage 7</div></div>
+  </div>
+
+  <div class="block">
+    <h3>Kündigungsmöglichkeiten bei Allgemein-Verbraucherdarlehensverträgen</h3>
+    <div class="row"><div class="txt">
+      <p><b>Für den Darlehensgeber:</b> Der Darlehensgeber kann den Verbraucherdarlehensvertrag bei einem Darlehen, das in Teilzahlungen zu tilgen ist, wegen Zahlungsverzugs des Darlehensnehmers nur dann kündigen, wenn …</p>
+      <ul>
+        <li>a) <span class="sol">der Darlehensnehmer mit zwei aufeinanderfolgenden Teilzahlungen ganz oder teilweise in Verzug ist</span></li>
+        <li>b) er bei einer Vertragslaufzeit bis zu <span class="sol">3</span> Jahren mit mind. <span class="sol">10</span> % oder bei einer Vertragslaufzeit von mehr als <span class="sol">3</span> Jahren mit mind. <span class="sol">5</span> % des Nennbetrags des Darlehens in Verzug ist.</li>
+      </ul>
+      <p><span class="sol">Der Darlehensgeber muss dem Darlehensnehmer eine Zwei-Wochen-Frist setzen mit der Ankündigung, dass anschließend die gesamte Darlehenssumme zurückgefordert wird.</span></p>
+    </div><div class="par">§ 498 BGB</div></div>
+    <div class="row"><div class="txt">
+      <p><b>Für den Darlehensnehmer:</b> Der Darlehensnehmer kann seine Verbindlichkeiten aus einem Allgemein-Verbraucherdarlehensvertrag <span class="sol">jederzeit</span> ganz oder teilweise vorzeitig erfüllen.</p>
+      <p>Soweit er vorzeitig erfüllt, vermindern sich die Kreditkosten um die <span class="sol">Zinsen und Kreditkosten</span>, die in der Zeit bis zur Fälligkeit angefallen wären.</p>
+      <p>Der Darlehensgeber kann im Falle der vorzeitigen Rückzahlung eine angemessene Vorfälligkeitsentschädigung verlangen. Sie darf folgende Beträge nicht übersteigen:</p>
+      <ul>
+        <li><span class="sol">1 % des vorzeitig zurückgezahlten Betrages bei einer (Rest-)Laufzeit über 1 Jahr</span></li>
+        <li><span class="sol">0,5 %, wenn die (Rest-)Laufzeit höchstens 1 Jahr beträgt</span></li>
+        <li><span class="sol">den Betrag der Sollzinsen zwischen vorzeitiger und vereinbarter Rückzahlung</span></li>
+      </ul>
+      <p>Der Anspruch auf Vorfälligkeitsentschädigung ist ausgeschlossen, wenn …</p>
+      <ul>
+        <li><span class="sol">im Vertrag Angaben über Laufzeit, Kündigungsrecht des Darlehensnehmers oder die Berechnungsmethode der Vorfälligkeitsentschädigung fehlen</span></li>
+        <li><span class="sol">die Rückzahlung aus Mitteln einer Versicherung erfolgt, die bei der Darlehensaufnahme abgeschlossen wurde (Lebensversicherung/Restschuldversicherung).</span></li>
+      </ul>
+    </div><div class="par">§§ 500 bis 502 BGB · § 6 PAngV</div></div>
+  </div>
+
+  <div class="block">
+    <h3>Vorvertragliche Informationspflichten (VVI)</h3>
+    <div class="row"><div class="txt">
+      <p>Form: <span class="sol">Textform</span> · Zeitpunkt: <span class="sol">vor Abgabe der Vertragserklärung</span> · Mustervorlage: <span class="sol">ESIS-Merkblatt</span></p>
+    </div><div class="par">Art. 247 § 2 EGBGB i. V. m. §§ 491a, 492 BGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Erläuterungen zum Darlehensvertrag:</p>
+      <p><span class="sol">Der Darlehensgeber ist verpflichtet, dem Darlehensnehmer vor Abschluss eines Verbraucherdarlehensvertrags angemessene Erläuterungen zu geben, damit der Darlehensnehmer in die Lage versetzt wird, zu beurteilen, ob der Vertrag dem von ihm verfolgten Zweck und seinen Vermögensverhältnissen gerecht wird.</span></p>
+    </div><div class="par">§ 491a BGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Inhalte:</p>
+      <ul id="sheet-s3"></ul>
+    </div><div class="par">Art. 247 § 3 EGBGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Weitere Angaben:</p>
+      <ul id="sheet-s4"></ul>
+    </div><div class="par">Art. 247 § 4 EGBGB</div></div>
+    <div class="row"><div class="txt">
+      <p>Vertragsinhalte:</p>
+      <ul><li><span class="sol">die in den §§ 3 und 4 genannten Angaben</span></li></ul>
+      <ul id="sheet-s6"></ul>
+    </div><div class="par">Art. 247 § 6 EGBGB</div></div>
+  </div>
+
+  <div class="block">
+    <h3>Werbung für Verbraucherdarlehen</h3>
+    <div class="row"><div class="txt">
+      <p><span class="sol">Werbung für ein Allgemein-Verbraucherdarlehen muss eindeutig, verständlich und nicht irreführend sein. Sie ist mit einem Beispiel zu unterlegen. In der Werbung müssen die Vertragsinhalte, besonders der Darlehensgeber, klar genannt sein, damit der Verbraucher die Kreditkonditionen einzelner Anbieter vergleichen kann. Es muss der 2/3-Zins angegeben werden: der Zins, zu dem 2/3 der Nachfrager den Kredit gewährt bekommen. Weiterhin ist im Schaufenster bzw. in den Schalterräumen ein Aushang zu machen.</span></p>
+    </div><div class="par">§ 5 PAngV · § 6a PAngV</div></div>
+  </div>
+  </div>
+</div>
+</section>
+</main>
+
+<footer><div class="wrap"><p class="note">Euer Fortschritt wird nur in diesem Browser gespeichert. Paragrafenangaben wie auf dem Arbeitsblatt; seit der Neufassung der Preisangabenverordnung 2022 stehen die Regeln zur Kreditwerbung in §§ 16, 17 PAngV.</p></div></footer>
+
+<script>
+(function(){
+"use strict";
+var KEY="avd-wiederholung-v1";
+var store={};
+try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){store={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store))}catch(e){}}
+function $(id){return document.getElementById(id)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+/* ---------- Tabs ---------- */
+var tabs=[].slice.call(document.querySelectorAll('[role="tab"]'));
+function openTab(id,focus){
+  tabs.forEach(function(t){var on=t.getAttribute("aria-controls")===id;t.setAttribute("aria-selected",on);t.tabIndex=on?0:-1;$(t.getAttribute("aria-controls")).hidden=!on;if(on&&focus)t.focus()});
+  store.tab=id;save();
+}
+tabs.forEach(function(t,i){
+  t.addEventListener("click",function(){openTab(t.getAttribute("aria-controls"));window.scrollTo({top:0})});
+  t.addEventListener("keydown",function(e){var d=e.key==="ArrowRight"?1:e.key==="ArrowLeft"?-1:0;if(d){e.preventDefault();openTab(tabs[(i+d+tabs.length)%tabs.length].getAttribute("aria-controls"),true)}});
+});
+var start=(location.hash||"").slice(1)||store.tab;
+openTab($(start)&&$(start).getAttribute("role")==="tabpanel"?start:"luecken");
+
+/* ---------- Lückentext ---------- */
+function norm(s){return String(s).toLowerCase().replace(/ /g," ").replace(/\s*%\s*$/,"").replace(/\s*(eur|€)\s*$/,"").replace(/[.\s]+$/,"").replace(/\s+/g," ").trim()}
+var gaps=[].slice.call(document.querySelectorAll("#luecken .gap"));
+store.gaps=store.gaps||{};
+gaps.forEach(function(g,i){
+  var answers=g.dataset.a.split("|");
+  var inp=document.createElement("input");
+  inp.type="text";inp.id="gap-"+i;inp.autocomplete="off";inp.spellcheck=false;inp.setAttribute("autocapitalize","off");
+  inp.setAttribute("aria-label","Lücke "+(i+1));
+  inp.size=Math.max(4,answers[0].length+1);
+  inp.value=store.gaps[i]||"";
+  g.appendChild(inp);
+  g._answers=answers;g._inp=inp;
+  inp.addEventListener("input",function(){g.classList.remove("ok","bad","shown");store.gaps[i]=inp.value;save();gapScore()});
+  inp.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();checkGap(g);gapScore();var n=gaps[i+1];if(n)n._inp.focus()}});
+});
+function isRight(g){var v=norm(g._inp.value);return v!==""&&g._answers.some(function(a){return norm(a)===v})}
+function checkGap(g){g.classList.remove("ok","bad","shown");if(g._inp.value.trim()==="")return;g.classList.add(isRight(g)?"ok":"bad")}
+function gapScore(){var n=gaps.filter(isRight).length;$("gap-score").textContent=n+" von "+gaps.length+" richtig";$("c-luecken").textContent=n+"/"+gaps.length}
+$("gap-check").onclick=function(){gaps.forEach(checkGap);gapScore();var bad=document.querySelector("#luecken .gap.bad input");if(bad)bad.focus()};
+$("gap-hint").onclick=function(){gaps.forEach(function(g){if(g._inp.value.trim()===""){g._inp.placeholder=g._answers[0].charAt(0)+"…"}})};
+$("gap-show").onclick=function(){gaps.forEach(function(g){if(!isRight(g)){g._inp.value=g._answers[0];g.classList.remove("ok","bad");g.classList.add("shown")}});gapScore()};
+$("gap-reset").onclick=function(){gaps.forEach(function(g){g._inp.value="";g._inp.placeholder="";g.classList.remove("ok","bad","shown")});store.gaps={};save();gapScore()};
+gapScore();
+
+/* ---------- Karteikarten ---------- */
+var CARDS=[
+ {q:"Wer ist Verbraucher?",p:"§ 13 BGB",a:"Jede natürliche Person, die das Geschäft überwiegend weder für ihre gewerbliche noch für ihre selbstständige berufliche Tätigkeit abschließt."},
+ {q:"Zwischen wem wird ein Allgemein-Verbraucherdarlehensvertrag geschlossen und für wen gelten die Regeln zusätzlich?",p:"§§ 491, 513 BGB",a:["Darlehensgeber: Unternehmer","Darlehensnehmer: Verbraucher","Auch Existenzgründer, wenn der Nettodarlehensbetrag 75.000 EUR nicht übersteigt"]},
+ {q:"Welche Darlehen sind keine Allgemein-Verbraucherdarlehen?",p:"§ 491 BGB",a:["Nettodarlehensbetrag unter 200 EUR","Haftung nur mit einem Pfand","Rückzahlung binnen 3 Monaten bei geringen Kosten","Arbeitgeberdarlehen unter Marktzins","Darlehen aus öffentlich-rechtlichen Förderprogrammen unter Marktzins"]},
+ {q:"Welche Form gilt für den Vertrag, und was passiert bei Formfehlern?",p:"§§ 492, 494 BGB",a:["Schriftform; beide Seiten dürfen getrennt unterschreiben","Fehlen Form oder Pflichtangaben, ist der Vertrag nichtig","Er wird gültig, sobald der Darlehensnehmer das Darlehen empfängt oder in Anspruch nimmt"]},
+ {q:"Der Vertrag ist durch Auszahlung gültig geworden, aber Angaben fehlen. Welche vier Folgen gibt es?",p:"§ 494 BGB",a:["Kein Sollzins, eff. Jahreszins oder Gesamtbetrag: Sollzins sinkt auf den gesetzlichen Zins von 4 %","Keine Angaben zu Sicherheiten: Bank darf keine verlangen","Nicht angegebene Kosten werden nicht geschuldet","Keine Angaben zu Laufzeit oder Kündigung: Kunde darf jederzeit kündigen"]},
+ {q:"Wann muss der Kunde einen Vertragsentwurf bekommen?",p:"§ 491a BGB",a:"Sobald der Darlehensgeber zum Vertragsabschluss bereit ist."},
+ {q:"Wie lange, in welcher Form und wie kann der Kunde widerrufen?",p:"§§ 355 f. BGB",a:["14 Tage ab Erhalt des Vertrags mit allen Pflichtangaben und Belehrung","Textform, rechtzeitige Absendung genügt","Keine Begründung nötig"]},
+ {q:"Was gilt für den Widerruf, wenn Pflichtangaben fehlen?",p:"§§ 355 f., 492 BGB",a:["Das Widerrufsrecht ist unbegrenzt","Werden die Angaben nachgeholt, läuft ab dann eine Frist von 30 Tagen (Gesetz: ein Monat)"]},
+ {q:"Was muss der Kunde nach einem Widerruf tun?",p:"§§ 355 f. BGB",a:["Darlehen unverzüglich, spätestens nach 30 Tagen zurückzahlen","Zinsen für die Zeit der Nutzung zahlen; nach Ablauf der 30 Tage Verzugszinsen","Der Widerruf bleibt wirksam"]},
+ {q:"Was steht in der Widerrufsinformation?",p:"Art. 247 EGBGB, Anlage 7",a:["Hinweis auf das Widerrufsrecht","Beginn und Dauer der Frist, auch bei fehlenden Pflichtangaben","Adressat des Widerrufs","Rückzahlung eines ausgezahlten Darlehens binnen 30 Tagen inkl. Zinsen"]},
+ {q:"Unter welchen Voraussetzungen darf die Bank wegen Zahlungsverzugs kündigen?",p:"§ 498 BGB",a:["Verzug mit zwei aufeinanderfolgenden Raten","Rückstand mind. 10 % des Nennbetrags (Laufzeit bis 3 Jahre) bzw. 5 % (über 3 Jahre)","Erfolglose Zwei-Wochen-Frist mit Androhung der Gesamtfälligstellung"]},
+ {q:"Darf der Kunde vorzeitig zurückzahlen, und was spart er dabei?",p:"§§ 500, 501 BGB",a:"Ja, jederzeit ganz oder teilweise. Die Zinsen und laufzeitabhängigen Kreditkosten für die restliche Zeit entfallen."},
+ {q:"Wie hoch darf die Vorfälligkeitsentschädigung höchstens sein?",p:"§ 502 BGB",a:["1 % des vorzeitig gezahlten Betrags, wenn bis zum vereinbarten Ende mehr als 1 Jahr bleibt","0,5 %, wenn es höchstens 1 Jahr ist","Nie mehr als die Sollzinsen bis zum vereinbarten Ende"]},
+ {q:"Wann darf die Bank gar keine Vorfälligkeitsentschädigung verlangen?",p:"§ 502 BGB",a:["Vertrag enthält keine Angaben zu Laufzeit, Kündigungsrecht oder Berechnungsmethode","Rückzahlung aus einer Versicherung, die bei Darlehensaufnahme abgeschlossen wurde (Restschuld-/Lebensversicherung)"]},
+ {q:"Form, Zeitpunkt und Muster der vorvertraglichen Information?",p:"Art. 247 § 2 EGBGB",a:["Textform","vor Abgabe der Vertragserklärung des Kunden","Muster: ESIS-Merkblatt (Europäische Standardinformationen)"]},
+ {q:"Wozu dient die Erläuterungspflicht der Bank?",p:"§ 491a BGB",a:"Der Kunde soll beurteilen können, ob der Vertrag zu seinem Zweck und zu seinen Vermögensverhältnissen passt."},
+ {q:"Was steht im Vertrag zusätzlich zu den Angaben aus Art. 247 §§ 3 und 4?",p:"Art. 247 § 6 EGBGB",a:["Name und Anschrift des Darlehensnehmers","zuständige Aufsichtsbehörde","Hinweis auf den Anspruch auf einen Tilgungsplan","Verfahren bei einer Kündigung","sämtliche weiteren Vertragsbedingungen"]},
+ {q:"Welche Regeln gelten für Kreditwerbung?",p:"§§ 5, 6a PAngV",a:["eindeutig, verständlich, nicht irreführend","mit einem Beispiel","Darlehensgeber klar nennen, damit Angebote vergleichbar sind","2/3-Zins angeben","Aushang im Schaufenster bzw. Schalterraum"]},
+ {q:"Was ist das Ziel der §§ 491–512 BGB?",p:"§§ 491 ff. BGB",a:"Die Rechte der Verbraucher zu stärken."}
+];
+store.cards=store.cards||{};
+var order=CARDS.map(function(_,i){return i}),pos=0,onlyAgain=false;
+function renderCard(){
+  if(!order.length){order=CARDS.map(function(_,i){return i});onlyAgain=false}
+  if(pos>=order.length)pos=0;if(pos<0)pos=order.length-1;
+  var c=CARDS[order[pos]];
+  $("card-no").textContent="Karte "+(pos+1)+" von "+order.length+(onlyAgain?" · nur Nochmal":"");
+  $("card-par").textContent=c.p;
+  $("card-q").textContent=c.q;
+  $("card-a").innerHTML=Array.isArray(c.a)?"<ul>"+c.a.map(function(x){return"<li>"+esc(x)+"</li>"}).join("")+"</ul>":"<p>"+esc(c.a)+"</p>";
+  $("card-a").hidden=true;$("card-flip").textContent="Antwort zeigen";
+  $("pips").innerHTML=order.map(function(k,i){var s=store.cards[k];return'<span class="'+(s==="k"?"k":s==="n"?"n":"")+(i===pos?" cur":"")+'"></span>'}).join("");
+  var known=CARDS.filter(function(_,i){return store.cards[i]==="k"}).length;
+  $("card-score").textContent=known+" von "+CARDS.length+" gewusst";
+  $("c-karten").textContent=known+"/"+CARDS.length;
+}
+$("card-flip").onclick=function(){var a=$("card-a");a.hidden=!a.hidden;this.textContent=a.hidden?"Antwort zeigen":"Antwort verbergen"};
+function rate(v){store.cards[order[pos]]=v;save();pos++;renderCard()}
+$("card-good").onclick=function(){rate("k")};
+$("card-again").onclick=function(){rate("n")};
+$("card-prev").onclick=function(){pos--;renderCard()};
+$("card-shuffle").onclick=function(){order=shuffle(order);pos=0;renderCard()};
+$("card-only").onclick=function(){var o=CARDS.map(function(_,i){return i}).filter(function(i){return store.cards[i]!=="k"});if(o.length){order=shuffle(o);onlyAgain=true;pos=0;renderCard()}else{$("card-score").textContent="Alle Karten gewusst."}};
+$("card-reset").onclick=function(){store.cards={};save();order=CARDS.map(function(_,i){return i});onlyAgain=false;pos=0;renderCard()};
+document.addEventListener("keydown",function(e){
+  if($("karten").hidden||/input|select|textarea/i.test(e.target.tagName))return;
+  if(e.key===" "){e.preventDefault();$("card-flip").click()}else if(e.key==="ArrowRight")rate("k");else if(e.key==="ArrowLeft"){pos--;renderCard()}
+});
+renderCard();
+
+/* ---------- Zuordnen: fehlende Angabe -> Folge ---------- */
+var MATCH=[
+ ["Im Vertrag fehlt der effektive Jahreszins.","Der Sollzins sinkt auf den gesetzlichen Zins von 4 %."],
+ ["Im Vertrag stehen keine Angaben zu Sicherheiten.","Die Bank darf keine Sicherheiten verlangen."],
+ ["Eine Bearbeitungsgebühr wurde im Vertrag nicht angegeben.","Die Kosten werden nicht geschuldet."],
+ ["Im Vertrag fehlen Angaben zur Laufzeit und zum Kündigungsrecht.","Der Kunde darf jederzeit kündigen."],
+ ["Der Vertrag wurde nur mündlich geschlossen, das Geld ist noch nicht ausgezahlt.","Der Vertrag ist nichtig."],
+ ["Pflichtangaben fehlen, das Darlehen wurde aber ausgezahlt.","Der Vertrag wird gültig, die Mängel haben besondere Rechtsfolgen."]
+];
+var matchOpts=MATCH.map(function(m){return m[1]});
+function renderMatch(){
+  var opts=shuffle(matchOpts);
+  $("match").innerHTML=shuffle(MATCH.map(function(m,i){return i})).map(function(i){
+    return'<div class="item" data-i="'+i+'"><label for="m-'+i+'">'+esc(MATCH[i][0])+'</label><select id="m-'+i+'"><option value="">Rechtsfolge wählen …</option>'+opts.map(function(o){return'<option>'+esc(o)+'</option>'}).join("")+'</select><div class="fb" hidden></div></div>'}).join("");
+  [].forEach.call($("match").querySelectorAll("select"),function(s){s.onchange=function(){var it=s.parentNode;it.classList.remove("ok","bad");it.querySelector(".fb").hidden=true}});
+  $("match-score").textContent="";
+}
+$("match-check").onclick=function(){
+  var n=0;
+  [].forEach.call($("match").querySelectorAll(".item"),function(it){
+    var i=+it.dataset.i,v=it.querySelector("select").value,fb=it.querySelector(".fb");
+    it.classList.remove("ok","bad");fb.hidden=true;
+    if(!v)return;
+    if(v===MATCH[i][1]){it.classList.add("ok");n++}else{it.classList.add("bad");fb.hidden=false;fb.textContent="Richtig wäre: "+MATCH[i][1]}
+  });
+  $("match-score").textContent=n+" von "+MATCH.length+" richtig";
+  store.match=Math.max(store.match||0,n);save();zScore();
+};
+$("match-reset").onclick=renderMatch;
+renderMatch();
+
+/* ---------- Sortieren Art. 247 ---------- */
+var S3=["Name und Anschrift des Darlehensgebers","Art des Darlehens","effektiver Jahreszins","Sollzinssatz","Nettodarlehensbetrag","Vertragslaufzeit","Betrag, Zahl und Fälligkeit der Teilzahlungen","Gesamtbetrag","Auszahlungsbedingungen","alle sonstigen Kosten","Warnhinweis für den Fall ausbleibender Zahlungen","Verzugszinssatz, Art seiner Anpassung, Verzugskosten","Hinweis auf das Recht zur vorzeitigen Rückzahlung","Bestehen oder Nichtbestehen des Widerrufsrechts"];
+var S4=["Hinweis auf Notarkosten","Sicherheiten","Anspruch auf Vorfälligkeitsentschädigung","Zeitraum, in dem sich der Darlehensgeber an die Informationen hält"];
+var S6=["Name und Anschrift des Darlehensnehmers","zuständige Aufsichtsbehörde des Darlehensgebers","Hinweis auf den Anspruch auf einen Tilgungsplan","einzuhaltendes Verfahren bei einer Kündigung","sämtliche weiteren Vertragsbedingungen"];
+function fill(id,arr){$(id).innerHTML=arr.map(function(x){return'<li><span class="sol">'+esc(x)+'</span></li>'}).join("")}
+fill("sheet-s3",S3);fill("sheet-s4",S4);fill("sheet-s6",S6);
+var SORT=[].concat(S3.map(function(x){return[x,"3"]}),S4.map(function(x){return[x,"4"]}),S6.map(function(x){return[x,"6"]}));
+var sortSel={};
+function renderSort(){
+  sortSel={};
+  $("sortlist").innerHTML=shuffle(SORT.map(function(_,i){return i})).map(function(i){
+    return'<div class="sortitem" data-i="'+i+'"><span>'+esc(SORT[i][0])+'</span><div class="seg" role="group" aria-label="Paragraf wählen">'+["3","4","6"].map(function(p){return'<button type="button" data-p="'+p+'" aria-pressed="false">§ '+p+'</button>'}).join("")+'</div></div>'}).join("");
+  [].forEach.call($("sortlist").querySelectorAll(".seg button"),function(b){b.onclick=function(){
+    var it=b.closest(".sortitem");sortSel[it.dataset.i]=b.dataset.p;it.classList.remove("ok","bad");
+    [].forEach.call(it.querySelectorAll("button"),function(x){x.setAttribute("aria-pressed",x===b)})}});
+  $("sort-score").textContent="";
+}
+$("sort-check").onclick=function(){
+  var n=0,done=0;
+  [].forEach.call($("sortlist").querySelectorAll(".sortitem"),function(it){
+    var i=it.dataset.i;it.classList.remove("ok","bad");if(!sortSel[i])return;done++;
+    if(sortSel[i]===SORT[i][1]){it.classList.add("ok");n++}else it.classList.add("bad");
+  });
+  $("sort-score").textContent=n+" von "+SORT.length+" richtig"+(done<SORT.length?" · "+(SORT.length-done)+" noch offen":"");
+  store.sort=Math.max(store.sort||0,n);save();zScore();
+};
+$("sort-reset").onclick=renderSort;
+renderSort();
+function zScore(){var t=MATCH.length+SORT.length;$("c-zuordnen").textContent=((store.match||0)+(store.sort||0))+"/"+t}
+zScore();
+
+/* ---------- Fälle ---------- */
+var CASES=[
+ {t:"Die Küche der Müllers",s:"Die Müllers wollen die Küche für 15.000 EUR privat bei der Sparbank AG finanzieren. Welche Vorschriften gelten?",o:["Nur die §§ 488–490 BGB, weil es ein normaler Ratenkredit ist","Die §§ 491–512 BGB, weil ein Unternehmer einem Verbraucher ein Darlehen über 200 EUR gibt","Gar keine Sonderregeln, weil die Müllers langjährige Kunden sind"],r:1,e:"Die Sparbank AG ist <b>Unternehmer</b>, die Müllers handeln privat und sind <b>Verbraucher</b>. Der Betrag liegt über 200 EUR. Es ist ein Allgemein-Verbraucherdarlehen; die §§ 488–490 BGB gelten zusätzlich (§§ 13, 491 BGB)."},
+ {t:"Getrennt unterschreiben",s:"Herr Müller unterschreibt den Vertrag in der Filiale, die Bank unterschreibt zwei Tage später in der Kreditabteilung. Ist das zulässig?",o:["Ja, die Schriftform ist gewahrt, auch wenn getrennt unterschrieben wird","Nein, beide müssen gleichzeitig auf derselben Urkunde unterschreiben","Nein, der Vertrag muss notariell beurkundet werden"],r:0,e:"Der Vertrag braucht die <b>Schriftform</b>; Darlehensnehmer und Darlehensgeber dürfen ihre Erklärungen <b>getrennt</b> unterschreiben (§ 492 BGB)."},
+ {t:"Widerruf per E-Mail",s:"Die Müllers erhalten am 1. Dezember den Vertrag mit allen Pflichtangaben und der Widerrufsbelehrung. Am 15. Dezember abends schicken sie eine E-Mail mit dem Widerruf, ohne Begründung. Die Bank liest sie am 16. Dezember. Ist der Widerruf wirksam?",o:["Nein, die Bank hat die E-Mail erst nach Fristende gelesen","Nein, ein Widerruf muss begründet werden","Ja, Textform genügt und die rechtzeitige Absendung innerhalb von 14 Tagen reicht"],r:2,e:"Die Frist beträgt <b>14 Tage</b>. Eine E-Mail erfüllt die <b>Textform</b>, eine <b>Begründung</b> ist nicht nötig und es zählt die <b>rechtzeitige Absendung</b> (§§ 355 f. BGB)."},
+ {t:"Geld nach dem Widerruf",s:"Das Darlehen war schon ausgezahlt. Was müssen die Müllers nach dem wirksamen Widerruf tun?",o:["Nichts, das Geld dürfen sie behalten","Das Darlehen spätestens nach 30 Tagen zurückzahlen und Zinsen für die Nutzungszeit zahlen","Eine Vorfälligkeitsentschädigung von 1 % zahlen"],r:1,e:"Die empfangene Leistung ist <b>unverzüglich, spätestens nach 30 Tagen</b> zurückzuzahlen. Für die genutzte Zeit fallen <b>Zinsen</b> an, nach Ablauf der 30 Tage Verzugszinsen. Der Widerruf bleibt wirksam."},
+ {t:"Fehlender effektiver Jahreszins",s:"Im unterschriebenen Vertrag fehlt der effektive Jahreszins. Das Geld ist ausgezahlt. Vereinbart war ein Sollzins von 6,9 %. Welcher Zins gilt?",o:["6,9 %, weil das Darlehen ausgezahlt wurde","0 %, der Vertrag ist nichtig","4 %, der gesetzliche Zinssatz"],r:2,e:"Durch die Auszahlung wird der Vertrag gültig. Fehlt aber der effektive Jahreszins, reduziert sich der Sollzins auf den <b>gesetzlichen Zinssatz von 4 %</b> (§ 494 BGB)."},
+ {t:"Sicherheit nachfordern",s:"Nach der Auszahlung möchte die Bank die Abtretung des Gehalts als Sicherheit. Im Vertrag steht dazu nichts. Darf sie das verlangen?",o:["Ja, Banken dürfen Sicherheiten jederzeit nachfordern","Nein, ohne Angabe im Vertrag dürfen keine Sicherheiten verlangt werden","Ja, aber nur bis 75.000 EUR"],r:1,e:"Fehlen im Vertrag Angaben zu Sicherheiten, <b>dürfen diese nicht verlangt werden</b> (§ 494 BGB)."},
+ {t:"Zwei Raten im Rückstand",s:"Kredit 15.000 EUR, Laufzeit 4 Jahre, Monatsrate 340 EUR. Die Müllers zahlen zwei aufeinanderfolgende Raten nicht (680 EUR Rückstand). Darf die Bank kündigen?",o:["Ja, zwei Raten Rückstand reichen immer","Nein, bei über 3 Jahren Laufzeit müssen mind. 5 % = 750 EUR rückständig sein","Nein, die Bank darf einen Verbraucherkredit nie kündigen"],r:1,e:"Bei einer Laufzeit <b>über 3 Jahre</b> braucht es zusätzlich einen Rückstand von mind. <b>5 % des Nennbetrags</b>: 5 % von 15.000 EUR = 750 EUR. 680 EUR reichen nicht (§ 498 BGB)."},
+ {t:"Drei Raten im Rückstand",s:"Jetzt sind drei aufeinanderfolgende Raten offen (1.020 EUR). Was muss die Bank vor der Kündigung tun?",o:["Sofort fristlos kündigen","Eine Frist von zwei Wochen setzen und ankündigen, dass sonst die ganze Restschuld fällig wird","Drei Monate warten"],r:1,e:"Die Rückstandsgrenze ist erreicht. Die Bank muss eine <b>Zwei-Wochen-Frist</b> setzen und die <b>Gesamtfälligstellung androhen</b>; erst wenn nicht gezahlt wird, darf sie kündigen (§ 498 BGB)."},
+ {t:"Kurzer Kredit, andere Grenze",s:"Ein Kunde hat einen Kredit über 6.000 EUR mit 2 Jahren Laufzeit und ist mit zwei Raten in Verzug. Ab welchem Rückstand darf die Bank (nach Fristsetzung) kündigen?",o:["ab 300 EUR (5 %)","ab 600 EUR (10 %)","ab 1.200 EUR (20 %)"],r:1,e:"Bei einer Laufzeit <b>bis zu 3 Jahren</b> gilt die Grenze von <b>10 %</b> des Nennbetrags: 10 % von 6.000 EUR = 600 EUR (§ 498 BGB)."},
+ {t:"Sondertilgung durch Erbschaft",s:"Die Müllers erben und zahlen 6.000 EUR vorzeitig zurück. Bis zum vereinbarten Ende wären es noch 2 Jahre. Wie hoch darf die Vorfälligkeitsentschädigung höchstens sein?",o:["60 EUR (1 %)","30 EUR (0,5 %)","Die Bank darf nichts verlangen, vorzeitige Rückzahlung ist immer kostenlos"],r:0,e:"Bleibt <b>mehr als ein Jahr</b> bis zur vereinbarten Rückzahlung, gilt höchstens <b>1 %</b> des vorzeitig gezahlten Betrags: 1 % von 6.000 EUR = 60 EUR. Außerdem nie mehr als die entfallenden Sollzinsen (§ 502 BGB)."},
+ {t:"Sondertilgung kurz vor Schluss",s:"Ein Kunde zahlt 4.000 EUR zurück; der Kredit wäre in 8 Monaten planmäßig getilgt gewesen. Höchstbetrag der Vorfälligkeitsentschädigung?",o:["40 EUR","20 EUR","80 EUR"],r:1,e:"Bei <b>höchstens einem Jahr</b> bis zum vereinbarten Ende gilt <b>0,5 %</b>: 0,5 % von 4.000 EUR = 20 EUR (§ 502 BGB)."},
+ {t:"Restschuldversicherung zahlt",s:"Herr Müller wird berufsunfähig. Die bei Darlehensaufnahme abgeschlossene Restschuldversicherung tilgt den Kredit vollständig. Darf die Bank eine Vorfälligkeitsentschädigung verlangen?",o:["Ja, 1 % der Restschuld","Nein, bei Rückzahlung aus einer bei Darlehensaufnahme abgeschlossenen Versicherung ist sie ausgeschlossen","Nur wenn die Restlaufzeit unter einem Jahr liegt"],r:1,e:"Der Anspruch ist <b>ausgeschlossen</b>, wenn die Rückzahlung aus einer Versicherung erfolgt, die bei der Darlehensaufnahme abgeschlossen wurde (§ 502 BGB)."},
+ {t:"Kleinkredit",s:"Ein Kunde möchte für eine Reparatur 150 EUR für zwei Monate leihen. Liegt ein Allgemein-Verbraucherdarlehen vor?",o:["Ja, jeder Kredit an Privatpersonen ist eins","Nein, der Nettodarlehensbetrag liegt unter 200 EUR"],r:1,e:"Darlehen mit einem <b>Nettodarlehensbetrag unter 200 EUR</b> sind ausgenommen (§ 491 BGB)."},
+ {t:"Arbeitgeberdarlehen",s:"Eine Mitarbeiterin der Sparbank AG erhält von ihrem Arbeitgeber ein Darlehen zu 1 % effektiv, deutlich unter dem Marktzins. Gelten die §§ 491 ff. BGB?",o:["Ja, sie ist Verbraucherin","Nein, Arbeitgeberdarlehen unter Marktzins sind ausgenommen"],r:1,e:"<b>Arbeitgeberdarlehen</b> mit Zinsen unter den marktüblichen Sätzen sind keine Allgemein-Verbraucherdarlehen (§ 491 BGB)."},
+ {t:"Existenzgründerin",s:"Frau Yilmaz eröffnet ein Café und braucht 90.000 EUR für die Einrichtung. Gelten die Verbraucherschutzregeln?",o:["Ja, Existenzgründer sind immer geschützt","Nein, der Schutz gilt für Existenzgründer nur bis 75.000 EUR Nettodarlehensbetrag"],r:1,e:"Existenzgründer werden nur geschützt, wenn der Nettodarlehensbetrag <b>75.000 EUR</b> nicht übersteigt (§ 513 BGB). Bei 90.000 EUR gelten die Sonderregeln nicht."},
+ {t:"Vorvertragliche Information",s:"Wann und wie müssen die Müllers die vorvertraglichen Informationen erhalten?",o:["Mündlich bei Vertragsunterschrift","In Textform vor Abgabe ihrer Vertragserklärung, auf dem Muster-Merkblatt","Schriftlich nach Auszahlung des Darlehens"],r:1,e:"Die Informationen kommen in <b>Textform</b> und <b>vor Abgabe der Vertragserklärung</b>, auf dem vorgeschriebenen Muster (ESIS-Merkblatt) (Art. 247 § 2 EGBGB)."},
+ {t:"Plakat im Schaufenster",s:"Die Sparbank AG wirbt: „Ihr Traumkredit ab 1,9 %!“ Ohne weitere Angaben. Was fehlt?",o:["Nichts, Werbung ist frei","Ein Beispiel mit 2/3-Zins und der klar genannte Darlehensgeber, damit Kunden vergleichen können","Nur das Logo der Bank"],r:1,e:"Werbung muss <b>eindeutig, verständlich und nicht irreführend</b> sein, mit einem <b>Beispiel</b> und dem <b>2/3-Zins</b>, zu dem zwei Drittel der Kunden den Kredit bekommen (PAngV)."}
+];
+store.cases=store.cases||{};
+function renderCases(){
+  $("cases").innerHTML=CASES.map(function(c,i){
+    return'<article class="case" data-i="'+i+'"><div class="head"><h3>'+esc(c.t)+'</h3><span class="eyebrow">Fall '+(i+1)+'</span></div><p class="s">'+esc(c.s)+'</p><div class="opts">'+c.o.map(function(o,j){return'<button type="button" data-j="'+j+'">'+esc(o)+'</button>'}).join("")+'</div><p class="expl" hidden>'+c.e+'</p></article>'}).join("");
+  [].forEach.call($("cases").querySelectorAll(".case"),function(el){
+    var i=+el.dataset.i;
+    if(store.cases[i]!=null)answer(el,i,store.cases[i]);
+    [].forEach.call(el.querySelectorAll(".opts button"),function(b){b.onclick=function(){store.cases[i]=+b.dataset.j;save();answer(el,i,+b.dataset.j);caseScore()}});
+  });
+  caseScore();
+}
+function answer(el,i,j){
+  [].forEach.call(el.querySelectorAll(".opts button"),function(b){var k=+b.dataset.j;b.disabled=true;if(k===CASES[i].r)b.classList.add("right");else if(k===j)b.classList.add("wrong")});
+  el.querySelector(".expl").hidden=false;
+}
+function caseScore(){var a=0,r=0;CASES.forEach(function(c,i){if(store.cases[i]!=null){a++;if(store.cases[i]===c.r)r++}});$("case-score").textContent=r+" von "+a+" beantworteten Fällen richtig · "+(CASES.length-a)+" offen";$("c-faelle").textContent=r+"/"+CASES.length}
+$("case-reset").onclick=function(){store.cases={};save();renderCases()};
+renderCases();
+
+/* ---------- Merkblatt ---------- */
+var sheet=$("sheet"),tog=$("sol-toggle");
+function setHide(h){sheet.classList.toggle("hide-sol",h);tog.setAttribute("aria-pressed",h);tog.textContent=h?"Alle Lösungen zeigen":"Lösungen verdecken";[].forEach.call(sheet.querySelectorAll(".sol"),function(s){s.classList.remove("peek");if(h){s.tabIndex=0;s.setAttribute("role","button");s.setAttribute("aria-label","Lösung aufdecken")}else{s.removeAttribute("tabindex");s.removeAttribute("role");s.removeAttribute("aria-label")}});store.hide=h;save()}
+tog.onclick=function(){setHide(!sheet.classList.contains("hide-sol"))};
+sheet.addEventListener("click",function(e){var s=e.target.closest(".sol");if(s&&sheet.classList.contains("hide-sol")){s.classList.add("peek");s.removeAttribute("role");s.removeAttribute("aria-label")}});
+sheet.addEventListener("keydown",function(e){var s=e.target.closest&&e.target.closest(".sol");if(s&&(e.key==="Enter"||e.key===" ")&&sheet.classList.contains("hide-sol")){e.preventDefault();s.click()}});
+setHide(!!store.hide);
+})();
+</script>
+</body>
+</html>
