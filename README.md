@@ -50,3 +50,11 @@ etwa wenn du die Seite am Beamer zuerst ohne Lösungen zeigen möchtest.
 - Gleichstand bei einem Restwert von ca. 21,2 % (50.800 €)
 
 Eingaben werden nur lokal im Browser gespeichert (localStorage).
+
+---
+
+## Weiteres Material: Juniorenfirma – Abrechnung
+
+Im Ordner [`juniorenfirma/`](juniorenfirma/) liegt ein Abrechnungstool für die Juniorenfirma
+(Einnahmen/Ausgaben, Rechnungen, Angebote, Einkauf, Inventar, Einnahmen-Überschuss-Rechnung).
+Einrichtung und Bedienung: [`juniorenfirma/README.md`](juniorenfirma/README.md).

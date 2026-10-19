@@ -1,0 +1,1626 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Juniorenfirma Abrechnung</title>
+<style>
+:root{
+  --bg:#f3f5f8;--panel:#fff;--text:#1c2433;--muted:#5d6879;--line:#dde2ea;--line2:#c6cedb;
+  --brand:#1f5fae;--brand-d:#184c8c;--brand-l:#e9f1fb;
+  --ok:#1b7443;--ok-l:#e5f3eb;--bad:#b2261d;--bad-l:#fbeae9;--warn:#8f5b00;--warn-l:#fff3d9;
+  --side:#14233b;--side-2:#1e3354;--side-3:#2a4874;
+  --radius:8px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font:15px/1.45 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+h1{font-size:23px;margin:0}
+h2{font-size:18px;margin:0}
+h3{font-size:15px;margin:18px 0 8px}
+p{margin:0 0 10px}
+a{color:var(--brand)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.pos{color:var(--ok)}
+.neg{color:var(--bad)}
+.r{text-align:right}
+.nowrap{white-space:nowrap}
+.hidden{display:none!important}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh}
+.side{background:var(--side);color:#d5deec;display:flex;flex-direction:column;padding:16px 10px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{display:flex;gap:10px;align-items:center;padding:4px 8px 16px;border-bottom:1px solid var(--side-2);margin-bottom:10px}
+.brand img{width:40px;height:40px;object-fit:contain;background:#fff;border-radius:6px;padding:2px}
+.brand-name{font-weight:600;color:#fff;line-height:1.2}
+.brand-sub{font-size:12px;color:#9fb0c8}
+.nav button{display:block;width:100%;text-align:left;background:none;border:0;color:inherit;padding:9px 12px;border-radius:6px;font:inherit;cursor:pointer;margin-bottom:2px}
+.nav button:hover{background:var(--side-2)}
+.nav button.active{background:var(--side-3);color:#fff;font-weight:600}
+.side-foot{margin-top:auto;padding:12px 8px 0;border-top:1px solid var(--side-2);font-size:13px}
+.save-status{margin-bottom:10px;line-height:1.5}
+.save-status .fname{color:#9fb0c8;font-size:12px;word-break:break-all}
+.save-status .btn{margin-top:6px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:0}
+.dot.ok{background:#4cc27f}.dot.warn{background:#f1b33c}.dot.bad{background:#ff6b5e}
+.user{color:#fff;margin-bottom:4px}
+.side-btns{display:flex;gap:12px;flex-wrap:wrap}
+.link{background:none;border:0;padding:0;color:#9fc1f0;font:inherit;cursor:pointer;text-decoration:underline}
+.main{padding:24px 28px 60px;min-width:0}
+.page-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Controls */
+.btn{display:inline-flex;align-items:center;gap:6px;justify-content:center;border:1px solid var(--line2);background:#fff;color:var(--text);padding:7px 14px;border-radius:6px;font:inherit;font-weight:500;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{background:#f2f5f9}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary:hover{background:var(--brand-d)}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.bad{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.danger{color:var(--bad);border-color:#e5b7b3}
+.btn.danger:hover{background:var(--bad-l)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--brand)}
+.btn.ghost:hover{background:var(--brand-l)}
+.btn.small{padding:4px 9px;font-size:13px}
+.btn.big{padding:11px 18px;font-size:16px;width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.icon-btn{border:0;background:none;cursor:pointer;color:var(--muted);font-size:16px;padding:4px 8px;border-radius:5px}
+.icon-btn:hover{background:#eef1f5;color:var(--text)}
+input,select,textarea{font:inherit;padding:7px 9px;border:1px solid var(--line2);border-radius:6px;background:#fff;color:var(--text);width:100%;min-width:0}
+textarea{resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid #9cc0ee;outline-offset:0;border-color:var(--brand)}
+input[type=checkbox]{width:auto}
+label.fld{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);margin-bottom:10px}
+label.fld>input,label.fld>select,label.fld>textarea{color:var(--text);font-size:15px}
+label.check{display:flex;gap:8px;align-items:center;font-size:14px;margin:4px 0 12px;cursor:pointer}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:0 14px}
+.span2{grid-column:span 2}
+
+/* Cards, KPIs */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px}
+.card>h2{margin-bottom:12px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+.kpi .label{color:var(--muted);font-size:13px}
+.kpi .val{font-size:23px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi .sub{font-size:12px;color:var(--muted)}
+.quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px}
+.quick button{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px;text-align:left;cursor:pointer;font:inherit}
+.quick button:hover{border-color:var(--brand);background:var(--brand-l)}
+.quick b{display:block;font-size:15px}
+.quick span{font-size:12.5px;color:var(--muted)}
+.cols2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.card{min-width:0;overflow-x:auto}
+
+/* Tables */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+table.list{width:100%;border-collapse:collapse}
+table.list th,table.list td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+table.list th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.03em;background:#f8f9fb;font-weight:600;white-space:nowrap}
+table.list td.r,table.list th.r{text-align:right;font-variant-numeric:tabular-nums}
+table.list tr:last-child td{border-bottom:0}
+table.list tbody tr:hover{background:#fafbfd}
+table.list tfoot td{font-weight:600;background:#f8f9fb;border-top:2px solid var(--line)}
+table.list .acts{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+tr.storno td{color:var(--muted);text-decoration:line-through}
+tr.storno td.acts-cell{text-decoration:none}
+tr.low td{background:var(--warn-l)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge.ok{background:var(--ok-l);color:var(--ok)}
+.badge.bad{background:var(--bad-l);color:var(--bad)}
+.badge.warn{background:var(--warn-l);color:var(--warn)}
+.badge.info{background:var(--brand-l);color:var(--brand-d)}
+.badge.muted{background:#eceff3;color:var(--muted)}
+
+/* Filters */
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px 0;margin-bottom:12px}
+.filters label.fld{min-width:140px;flex:0 1 170px}
+.filters label.fld.grow{flex:1 1 220px}
+.filters .btn{margin-bottom:10px}
+.presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.sumbar{display:flex;gap:22px;flex-wrap:wrap;margin:0 0 12px;font-size:14px}
+.sumbar b{font-variant-numeric:tabular-nums}
+
+/* Alerts */
+.alert{padding:10px 14px;border-radius:6px;margin:10px 0;font-size:14px;border:1px solid}
+.alert.warn{background:var(--warn-l);border-color:#efd391;color:#5e3c00}
+.alert.bad{background:var(--bad-l);border-color:#efc0bc;color:#7d1a14}
+.alert.info{background:var(--brand-l);border-color:#c3d7f1;color:#163f72}
+.alert ul{margin:4px 0 0;padding-left:18px}
+.form-err:empty{display:none}
+
+/* Start / login */
+.center-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.start{width:min(520px,100%);padding:28px}
+.start h1{margin-bottom:6px}
+.start .btn{margin-top:10px}
+.start .hint{font-size:13px;color:var(--muted);margin-top:18px;line-height:1.5}
+
+/* Modal */
+.modal-back{position:fixed;inset:0;background:rgba(14,24,40,.45);display:flex;align-items:flex-start;justify-content:center;padding:4vh 16px;overflow:auto;z-index:50}
+.modal{background:#fff;border-radius:10px;width:min(580px,100%);box-shadow:0 18px 50px rgba(0,0,0,.25);display:flex;flex-direction:column;max-width:100%}
+.modal.wide{width:min(1060px,100%)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)}
+.modal-body{padding:16px 18px}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--line);background:#f8f9fb;border-radius:0 0 10px 10px;flex-wrap:wrap}
+.modal-foot .left{margin-right:auto}
+
+/* Positions editor */
+table.positems{width:100%;border-collapse:collapse;margin-bottom:8px}
+table.positems th{font-size:12px;color:var(--muted);text-align:left;padding:4px;font-weight:600}
+table.positems td{padding:3px 4px;vertical-align:middle}
+table.positems .c-art{width:26%}.positems .c-menge{width:9%}.positems .c-einh{width:11%}.positems .c-preis{width:12%}.positems .c-sum{width:11%;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pos-total{text-align:right;font-variant-numeric:tabular-nums;line-height:1.6}
+.pos-total b{font-size:17px}
+.row-between{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}
+
+/* Toast */
+#toasts{position:fixed;bottom:18px;right:18px;display:flex;flex-direction:column;gap:8px;z-index:80}
+.toast{background:#1c2a40;color:#fff;padding:10px 16px;border-radius:7px;box-shadow:0 6px 20px rgba(0,0,0,.2);font-size:14px;max-width:360px}
+.toast.bad{background:var(--bad)}
+.demo-banner{background:var(--warn-l);border:1px solid #efd391;color:#5e3c00;padding:8px 14px;border-radius:6px;margin-bottom:14px;font-size:14px}
+
+/* Report bars */
+.bar{height:8px;background:#e5eaf1;border-radius:4px;overflow:hidden;min-width:60px}
+.bar>i{display:block;height:100%}
+.bar.e>i{background:#3a9a64}.bar.a>i{background:#d1574e}
+.result{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .side{position:static;height:auto;padding:10px}
+  .brand{border:0;padding-bottom:6px;margin-bottom:4px}
+  .nav{display:flex;flex-wrap:wrap;gap:4px}
+  .nav button{width:auto;padding:6px 10px;font-size:14px}
+  .side-foot{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+  .main{padding:16px}
+  .grid2,.grid3,.grid4,.cols2{grid-template-columns:1fr}
+  .span2{grid-column:auto}
+  table.positems thead{display:none}
+  table.positems tr{display:grid;grid-template-columns:1fr 1fr;gap:4px;border-bottom:1px solid var(--line);padding:6px 0}
+  table.positems td{width:auto!important}
+}
+
+/* Print */
+#print-root{display:none}
+@media print{
+  @page{size:A4;margin:16mm 18mm 18mm}
+  body{background:#fff;font-size:10.5pt}
+  body.printing #app,body.printing #modal-root,body.printing #toasts{display:none!important}
+  body.printing #print-root{display:block}
+}
+.pdoc{color:#111;font-size:10.5pt;line-height:1.45}
+.p-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12mm}
+.p-logo{max-height:22mm;max-width:60mm}
+.p-firm{text-align:right;font-size:9pt;color:#333}
+.p-fname{font-size:14pt;font-weight:700;color:#111}
+.p-addr-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10mm;margin-bottom:10mm}
+.p-addr{width:85mm;min-height:35mm}
+.p-sender{font-size:7.5pt;border-bottom:1px solid #999;padding-bottom:1mm;margin-bottom:3mm;color:#333}
+.p-meta{font-size:9.5pt;border-collapse:collapse}
+.p-meta td{padding:1px 0 1px 8mm}
+.p-meta td:first-child{color:#555;padding-left:0}
+.p-title{font-size:15pt;margin:0 0 5mm}
+.p-storno{border:2px solid #b2261d;color:#b2261d;font-weight:700;display:inline-block;padding:1mm 4mm;margin-bottom:4mm;letter-spacing:.1em}
+.p-pos,.p-tab{width:100%;border-collapse:collapse;margin:3mm 0 5mm}
+.p-pos th,.p-tab th{border-bottom:1.5px solid #333;text-align:left;padding:1.5mm 2mm;font-size:9pt}
+.p-pos td,.p-tab td{border-bottom:1px solid #ddd;padding:1.5mm 2mm;vertical-align:top}
+.p-pos .r,.p-tab .r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.p-pos tfoot td{border:0;padding-top:1mm}
+.p-pos tr.p-total td{border-top:1.5px solid #333;font-weight:700;font-size:11.5pt}
+.p-tab tfoot td{font-weight:700;border-top:1.5px solid #333;border-bottom:0}
+.p-small{font-size:9pt;color:#444}
+.p-foot{margin-top:14mm;border-top:1px solid #999;padding-top:2mm;display:flex;justify-content:space-between;gap:6mm;font-size:7.5pt;color:#444}
+.p-report h1{font-size:16pt;margin:0 0 2mm}
+.p-report h2{font-size:12pt;margin:6mm 0 1mm}
+.p-sign{margin-top:18mm;display:flex;gap:20mm}
+.p-sign div{border-top:1px solid #333;padding-top:1mm;width:60mm;font-size:8.5pt}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal-root"></div>
+<div id="toasts"></div>
+<div id="print-root"></div>
+<script>
+'use strict';
+(function(){
+
+/* ===================== Hilfsfunktionen ===================== */
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const js=v=>esc(JSON.stringify(v));
+const nl2br=s=>esc(s).replace(/\n/g,'<br>');
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const r2=n=>Math.round((+n||0)*100+((+n||0)>=0?1e-7:-1e-7))/100;
+const eur=n=>(+n||0).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
+const fmtNum=n=>(+n||0).toLocaleString('de-DE',{maximumFractionDigits:3});
+const pad=n=>String(n).padStart(2,'0');
+const isoDate=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today=()=>isoDate(new Date());
+const fmtD=s=>s?String(s).slice(0,10).split('-').reverse().join('.'):'';
+const addDays=(s,n)=>{const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+(+n||0));return isoDate(d);};
+const nowStamp=()=>new Date().toISOString();
+const fmtTs=s=>{if(!s)return'';const d=new Date(s);return d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});};
+const firstLine=s=>String(s||'').split('\n')[0].trim();
+const clone=o=>JSON.parse(JSON.stringify(o));
+const sum=(arr,f)=>r2(arr.reduce((s,x)=>s+(+f(x)||0),0));
+const reEsc=s=>String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const MONATE=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const ROLE={lehrkraft:'Lehrkraft',schueler:'Schüler/in'};
+const ZA={bar:'bar (Kasse)',bank:'Bank/Überweisung'};
+const BEW_ART={anfang:'Anfangsbestand',einkauf:'Einkauf',verkauf:'Verkauf',korrektur:'Korrektur'};
+const canFS=typeof window.showOpenFilePicker==='function'&&typeof window.showSaveFilePicker==='function';
+
+/* SHA-256 (Fallback, falls crypto.subtle nicht verfügbar ist) */
+function sha256js(str){
+  const rr=(v,a)=>(v>>>a)|(v<<(32-a));
+  const bytes=new TextEncoder().encode(str);
+  const H=[],K=[];let n=2,c=0;
+  const isP=x=>{for(let i=2;i*i<=x;i++)if(x%i===0)return false;return true;};
+  while(c<64){if(isP(n)){if(c<8)H[c]=(Math.pow(n,1/2)*4294967296)|0;K[c]=(Math.pow(n,1/3)*4294967296)|0;c++;}n++;}
+  const l=bytes.length,buf=new Uint8Array(((l+9+63)>>6)<<6);buf.set(bytes);buf[l]=0x80;
+  const dv=new DataView(buf.buffer);dv.setUint32(buf.length-4,(l*8)>>>0);dv.setUint32(buf.length-8,Math.floor(l*8/4294967296));
+  const w=new Array(64);
+  for(let i=0;i<buf.length;i+=64){
+    for(let j=0;j<16;j++)w[j]=dv.getUint32(i+j*4);
+    for(let j=16;j<64;j++){const s0=rr(w[j-15],7)^rr(w[j-15],18)^(w[j-15]>>>3),s1=rr(w[j-2],17)^rr(w[j-2],19)^(w[j-2]>>>10);w[j]=(w[j-16]+s0+w[j-7]+s1)|0;}
+    let[a,b,cc,d,e,f,g,h]=H;
+    for(let j=0;j<64;j++){
+      const t1=(h+(rr(e,6)^rr(e,11)^rr(e,25))+((e&f)^(~e&g))+K[j]+w[j])|0;
+      const t2=((rr(a,2)^rr(a,13)^rr(a,22))+((a&b)^(a&cc)^(b&cc)))|0;
+      h=g;g=f;f=e;e=(d+t1)|0;d=cc;cc=b;b=a;a=(t1+t2)|0;
+    }
+    H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+cc)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;
+  }
+  return H.map(x=>(x>>>0).toString(16).padStart(8,'0')).join('');
+}
+async function sha256(str){
+  try{
+    if(window.crypto&&crypto.subtle){
+      const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+      return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+    }
+  }catch(e){}
+  return sha256js(str);
+}
+const hashPw=(salt,pw)=>sha256(salt+':'+pw);
+
+/* ===================== Datenmodell ===================== */
+function defaultDB(){
+  return{
+    app:'juniorenfirma-abrechnung',version:1,
+    meta:{created:nowStamp(),lastSaved:null,saveId:null},
+    settings:{
+      firma:{name:'Meine Juniorenfirma',zusatz:'',strasse:'',plzOrt:'',telefon:'',email:'',web:'',bank:'',inhaber:'',iban:'',bic:'',logo:''},
+      prefix:{rechnung:'RE',angebot:'AN',einkauf:'EK',buchung:'BU'},
+      zahlungszielTage:14,angebotGueltigTage:30,
+      steuerhinweis:'Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.',
+      textRechnung:'Vielen Dank für Ihren Auftrag. Wir berechnen Ihnen folgende Leistungen:',
+      textAngebot:'Vielen Dank für Ihre Anfrage. Gerne unterbreiten wir Ihnen folgendes Angebot:',
+      katEinnahmen:['Umsatzerlöse','Spenden','Zuschüsse','Sonstige Einnahmen'],
+      katAusgaben:['Wareneinkauf','Material & Verbrauch','Werbung','Gebühren','Veranstaltungen','Sonstige Ausgaben'],
+      einheiten:['Stück','Packung','Set','Stunde','Pauschal'],
+      anfangBar:0,anfangBank:0
+    },
+    users:[],kontakte:[],artikel:[],bewegungen:[],buchungen:[],einkaeufe:[],dokumente:[],protokoll:[]
+  };
+}
+function migrate(data){
+  if(!data||typeof data!=='object'||!Array.isArray(data.buchungen))throw new Error('Die Datei ist keine gültige Datendatei der Juniorenfirma-Abrechnung.');
+  const d=defaultDB();
+  const out=Object.assign(d,data);
+  out.meta=Object.assign(defaultDB().meta,data.meta||{});
+  out.settings=Object.assign(defaultDB().settings,data.settings||{});
+  out.settings.firma=Object.assign(defaultDB().settings.firma,(data.settings||{}).firma||{});
+  out.settings.prefix=Object.assign(defaultDB().settings.prefix,(data.settings||{}).prefix||{});
+  ['users','kontakte','artikel','bewegungen','buchungen','einkaeufe','dokumente','protokoll'].forEach(k=>{if(!Array.isArray(out[k]))out[k]=[];});
+  return out;
+}
+
+/* ===================== Zustand ===================== */
+let DB=null,currentUser=null,view='dashboard';
+let fileHandle=null,fileName='',lastMod=0,lastSaveId=null,dirty=false,saving=false,pendingSave=false,saveError=false,lastSavedAt='';
+let lastHandle=null,demoMode=false,saveTimer=null;
+const F={
+  buchungen:{von:'',bis:'',typ:'',kat:'',za:'',q:''},
+  verkauf:{von:'',bis:'',status:'',q:''},
+  angebote:{status:'',q:''},
+  einkauf:{von:'',bis:'',status:'',q:''},
+  inventar:{q:'',inaktiv:false},
+  kontakte:{typ:'',q:''},
+  auswertung:{von:'',bis:''}
+};
+const S=()=>DB.settings;
+const artikelById=id=>DB.artikel.find(a=>a.id===id);
+const kontaktById=id=>DB.kontakte.find(k=>k.id===id);
+const docById=id=>DB.dokumente.find(d=>d.id===id);
+const ekById=id=>DB.einkaeufe.find(e=>e.id===id);
+const isLK=()=>!!currentUser&&currentUser.role==='lehrkraft';
+
+/* ===================== IndexedDB (zuletzt verwendete Datei merken) ===================== */
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('jf-abrechnung',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function idbGet(k){try{const db=await idb();return await new Promise(res=>{const t=db.transaction('kv').objectStore('kv').get(k);t.onsuccess=()=>res(t.result);t.onerror=()=>res(null);});}catch(e){return null;}}
+async function idbSet(k,v){try{const db=await idb();db.transaction('kv','readwrite').objectStore('kv').put(v,k);}catch(e){}}
+
+/* ===================== Speichern ===================== */
+function log(text){
+  DB.protokoll.push({ts:nowStamp(),user:currentUser?currentUser.name:'-',text});
+  if(DB.protokoll.length>2000)DB.protokoll.splice(0,DB.protokoll.length-2000);
+}
+function commit(logText){
+  if(logText)log(logText);
+  dirty=true;
+  try{localStorage.setItem('jf_arbeitskopie',JSON.stringify(DB));}catch(e){}
+  updateSaveStatus();
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>saveNow(),350);
+}
+async function readExternal(){
+  // liefert die Daten aus der Datei, falls sie von jemand anderem geändert wurde, sonst null
+  const f=await fileHandle.getFile();
+  if(f.lastModified===lastMod)return null;
+  const data=JSON.parse(await f.text());
+  if(data&&data.meta&&data.meta.saveId&&data.meta.saveId===lastSaveId){lastMod=f.lastModified;return null;}
+  return data;
+}
+async function saveNow(force){
+  if(!fileHandle){updateSaveStatus();return;}
+  if(saving){pendingSave=true;return;}
+  saving=true;saveError=false;
+  try{
+    if(!force&&lastMod){
+      const ext=await readExternal();
+      if(ext){saving=false;showConflict();return;}
+    }
+    DB.meta.lastSaved=nowStamp();
+    DB.meta.saveId=uid();
+    const w=await fileHandle.createWritable();
+    await w.write(JSON.stringify(DB));
+    await w.close();
+    lastSaveId=DB.meta.saveId;
+    lastMod=(await fileHandle.getFile()).lastModified;
+    dirty=false;
+    lastSavedAt=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){
+    saveError=true;console.error(e);
+    toast('Speichern fehlgeschlagen: '+(e.message||e),'bad');
+  }
+  saving=false;updateSaveStatus();
+  if(pendingSave){pendingSave=false;saveNow();}
+}
+function showConflict(){
+  const m=openModal('Daten wurden zwischenzeitlich geändert',
+    `<p>Die Datendatei wurde inzwischen an einem anderen Arbeitsplatz geändert. Ihre letzte Änderung ist noch <b>nicht</b> gespeichert.</p>
+     <p><b>Neu laden</b> übernimmt den aktuellen Stand der Datei (Ihre letzte Änderung geht verloren und muss ggf. erneut eingegeben werden).<br>
+     <b>Überschreiben</b> speichert Ihren Stand – die Änderungen des anderen Arbeitsplatzes gehen dann verloren.</p>`,
+    `<button class="btn danger left" data-act="over">Überschreiben</button><button class="btn primary" data-act="reload">Neu laden (empfohlen)</button>`);
+  m.querySelector('[data-act=reload]').onclick=async()=>{closeModal();try{const f=await fileHandle.getFile();DB=migrate(JSON.parse(await f.text()));lastMod=f.lastModified;lastSaveId=DB.meta.saveId;dirty=false;checkUserStillValid();render();toast('Aktueller Stand geladen.');}catch(e){toast('Fehler: '+e.message,'bad');}};
+  m.querySelector('[data-act=over]').onclick=()=>{closeModal();saveNow(true);};
+  void ext;
+}
+function checkUserStillValid(){
+  if(currentUser){const u=DB.users.find(x=>x.id===currentUser.id&&x.active!==false);if(!u)currentUser=null;else currentUser={id:u.id,name:u.name,role:u.role};}
+}
+function download(content,filename,type){
+  const blob=content instanceof Blob?content:new Blob([content],{type});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+}
+async function saveAs(){
+  if(canFS){
+    try{
+      const h=await showSaveFilePicker({suggestedName:fileName||'juniorenfirma-daten.json',types:[{description:'Juniorenfirma-Daten',accept:{'application/json':['.json']}}]});
+      fileHandle=h;fileName=h.name;lastMod=0;demoMode=false;
+      await saveNow(true);idbSet('lastHandle',h);render();toast('Gespeichert in '+h.name);
+    }catch(e){if(e.name!=='AbortError')toast('Fehler: '+e.message,'bad');}
+  }else{
+    DB.meta.lastSaved=nowStamp();
+    download(JSON.stringify(DB),fileName||'juniorenfirma-daten.json','application/json');
+    dirty=false;updateSaveStatus();
+  }
+}
+function saveStatusHTML(){
+  if(fileHandle){
+    if(saveError)return`<span class="dot bad"></span>Fehler beim Speichern<br><button class="btn small" onclick="App.saveNow()">Erneut versuchen</button>`;
+    if(dirty)return`<span class="dot warn"></span>Speichere …<div class="fname">${esc(fileHandle.name)}</div>`;
+    return`<span class="dot ok"></span>Gespeichert${lastSavedAt?' '+lastSavedAt:''}<div class="fname">${esc(fileHandle.name)}</div>`;
+  }
+  return`${dirty?'<span class="dot warn"></span>Nicht gespeicherte Änderungen':'<span class="dot ok"></span>Keine offenen Änderungen'}
+    <div class="fname">${demoMode?'Beispieldaten (nicht gespeichert)':esc(fileName||'noch nicht gespeichert')}</div>
+    <button class="btn small" onclick="App.saveAs()">${canFS?'Speichern unter …':'Datei speichern (Download)'}</button>`;
+}
+function updateSaveStatus(){const el=$('#saveStatus');if(el)el.innerHTML=saveStatusHTML();}
+
+/* ===================== UI-Basics: Modal, Toast, Bestätigung ===================== */
+const modals=[];
+function openModal(title,body,footer,opts={}){
+  const wrap=document.createElement('div');
+  wrap.className='modal-back';
+  wrap.innerHTML=`<div class="modal ${opts.wide?'wide':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+    <div class="modal-head"><h2>${esc(title)}</h2><button type="button" class="icon-btn" data-close aria-label="Schließen">✕</button></div>
+    <div class="modal-body">${body}</div>
+    ${footer!==null?`<div class="modal-foot">${footer||'<button class="btn" data-close>Schließen</button>'}</div>`:''}</div>`;
+  wrap.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeModal();});
+  $('#modal-root').appendChild(wrap);modals.push(wrap);
+  const f=wrap.querySelector('.modal-body input:not([type=hidden]):not([readonly]),.modal-body select,.modal-body textarea');
+  if(f&&!opts.noFocus)setTimeout(()=>f.focus(),20);
+  return wrap;
+}
+function closeModal(){const m=modals.pop();if(m)m.remove();}
+function closeAllModals(){while(modals.length)closeModal();}
+function ask(text,okLabel='OK',danger=false){
+  return new Promise(res=>{
+    const m=openModal('Bitte bestätigen',`<p>${text}</p>`,`<button class="btn" data-act="no">Abbrechen</button><button class="btn ${danger?'bad':'primary'}" data-act="yes">${esc(okLabel)}</button>`,{noFocus:true});
+    m.querySelector('[data-act=yes]').onclick=()=>{closeModal();res(true);};
+    m.querySelector('[data-act=no]').onclick=()=>{closeModal();res(false);};
+    m.querySelector('[data-close]').onclick=()=>{res(false);};
+    setTimeout(()=>m.querySelector('[data-act=yes]').focus(),20);
+  });
+}
+function toast(msg,kind){
+  const t=document.createElement('div');t.className='toast '+(kind||'');t.textContent=msg;
+  $('#toasts').appendChild(t);setTimeout(()=>t.remove(),kind==='bad'?6000:3200);
+}
+function formErr(list){
+  const el=$$('.modal-back').pop()?.querySelector('.form-err');
+  if(!el){toast(Array.isArray(list)?list.join(' '):list,'bad');return;}
+  const arr=Array.isArray(list)?list:[list];
+  el.innerHTML=`<div class="alert bad">${arr.length>1?`<b>${esc(arr[0])}</b><ul>${arr.slice(1).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:esc(arr[0])}</div>`;
+  el.scrollIntoView({block:'nearest'});
+}
+const val=id=>{const el=document.getElementById(id);return el?(el.type==='checkbox'?el.checked:el.value):'';};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modals.length)closeModal();});
+
+/* ===================== Nummernkreise, Summen, Bestand ===================== */
+function nextNr(prefix,list,datum,key='nr'){
+  const y=(datum||today()).slice(0,4);
+  const re=new RegExp('^'+reEsc(prefix)+'-'+y+'-(\\d+)$');
+  let max=0;list.forEach(x=>{const m=re.exec(x[key]||'');if(m)max=Math.max(max,+m[1]);});
+  return`${prefix}-${y}-${String(max+1).padStart(3,'0')}`;
+}
+function nextArtNr(){let max=0;DB.artikel.forEach(a=>{const m=/^A-(\d+)$/.exec(a.nr||'');if(m)max=Math.max(max,+m[1]);});return'A-'+String(max+1).padStart(3,'0');}
+const posSum=p=>r2((+p.menge||0)*(+p.preis||0));
+function docSum(d){
+  const zw=sum(d.positionen||[],posSum);
+  const rabatt=r2(zw*(+d.rabatt||0)/100);
+  return{zwischen:zw,rabatt,gesamt:r2(zw-rabatt)};
+}
+const ekSum=e=>sum(e.positionen||[],posSum);
+function stockMap(){const m={};DB.bewegungen.forEach(b=>{m[b.artikelId]=(m[b.artikelId]||0)+(+b.menge||0);});for(const k in m)m[k]=Math.round(m[k]*1000)/1000;return m;}
+const isLager=a=>a&&a.lager!==false;
+function movesFor(positionen,sign){
+  return(positionen||[]).filter(p=>p.artikelId&&isLager(artikelById(p.artikelId))).map(p=>({artikelId:p.artikelId,menge:sign*(+p.menge||0)}));
+}
+function stockProblems(bezugId,newMoves){
+  const m={};
+  DB.bewegungen.forEach(b=>{if(b.bezug!==bezugId)m[b.artikelId]=(m[b.artikelId]||0)+(+b.menge||0);});
+  newMoves.forEach(x=>{m[x.artikelId]=(m[x.artikelId]||0)+x.menge;});
+  const affected=new Set([...DB.bewegungen.filter(b=>b.bezug===bezugId).map(b=>b.artikelId),...newMoves.map(x=>x.artikelId)]);
+  const out=[];
+  affected.forEach(id=>{const a=artikelById(id);if(isLager(a)&&m[id]<-1e-9){
+    const vorh=r2((m[id]||0)-newMoves.filter(x=>x.artikelId===id).reduce((s,x)=>s+x.menge,0));
+    out.push(`${a.name}: verfügbar ${fmtNum(vorh)} ${a.einheit||''}, benötigt ${fmtNum(-newMoves.filter(x=>x.artikelId===id).reduce((s,x)=>s+x.menge,0))} → Bestand wäre ${fmtNum(m[id])}`);}});
+  return out;
+}
+function syncDoc(d){
+  DB.bewegungen=DB.bewegungen.filter(b=>b.bezug!==d.id);
+  DB.buchungen=DB.buchungen.filter(b=>!(b.quelle&&b.quelle.id===d.id));
+  if(d.typ!=='rechnung'||d.status==='storniert')return;
+  movesFor(d.positionen,-1).forEach(x=>DB.bewegungen.push({id:uid(),datum:d.datum,artikelId:x.artikelId,menge:x.menge,art:'verkauf',bezug:d.id,text:'Rechnung '+d.nr+' – '+firstLine(d.empfaenger),created:nowStamp()}));
+  if(d.status==='bezahlt')DB.buchungen.push({id:uid(),datum:d.bezahltAm,typ:'einnahme',betrag:docSum(d).gesamt,kategorie:'Umsatzerlöse',
+    beschreibung:'Rechnung '+d.nr+' – '+firstLine(d.empfaenger),beleg:d.nr,zahlungsart:d.zahlungsart||'bar',kontaktId:d.kundeId||null,
+    quelle:{art:'rechnung',id:d.id},user:d.user,created:nowStamp()});
+}
+function syncEinkauf(e){
+  DB.bewegungen=DB.bewegungen.filter(b=>b.bezug!==e.id);
+  DB.buchungen=DB.buchungen.filter(b=>!(b.quelle&&b.quelle.id===e.id));
+  movesFor(e.positionen,1).forEach(x=>DB.bewegungen.push({id:uid(),datum:e.datum,artikelId:x.artikelId,menge:x.menge,art:'einkauf',bezug:e.id,text:'Einkauf '+e.nr+' – '+e.lieferantName,created:nowStamp()}));
+  if(e.status==='bezahlt')DB.buchungen.push({id:uid(),datum:e.bezahltAm,typ:'ausgabe',betrag:ekSum(e),kategorie:e.kategorie||'Wareneinkauf',
+    beschreibung:'Einkauf '+e.nr+' – '+e.lieferantName+(e.beleg?' (Beleg '+e.beleg+')':''),beleg:e.nr,zahlungsart:e.zahlungsart||'bar',kontaktId:e.lieferantId||null,
+    quelle:{art:'einkauf',id:e.id},user:e.user,created:nowStamp()});
+}
+function kassenstand(){
+  const r={bar:+S().anfangBar||0,bank:+S().anfangBank||0};
+  DB.buchungen.forEach(b=>{const k=b.zahlungsart==='bank'?'bank':'bar';r[k]+=(b.typ==='einnahme'?1:-1)*(+b.betrag||0);});
+  r.bar=r2(r.bar);r.bank=r2(r.bank);return r;
+}
+function rechnungStatus(d){
+  if(d.status==='storniert')return'storniert';
+  if(d.status==='bezahlt')return'bezahlt';
+  return d.faellig&&d.faellig<today()?'ueberfaellig':'offen';
+}
+function statusBadge(d){
+  if(d.typ==='rechnung'){
+    const s=rechnungStatus(d);
+    if(s==='storniert')return'<span class="badge muted">storniert</span>';
+    if(s==='bezahlt')return`<span class="badge ok">bezahlt ${fmtD(d.bezahltAm)} · ${d.zahlungsart==='bank'?'Bank':'bar'}</span>`;
+    if(s==='ueberfaellig')return`<span class="badge bad">überfällig seit ${fmtD(d.faellig)}</span>`;
+    return`<span class="badge warn">offen · fällig ${fmtD(d.faellig)}</span>`;
+  }
+  if(d.status==='angenommen'){const r=docById(d.rechnungId);return`<span class="badge ok">angenommen${r?' → '+esc(r.nr):''}</span>`;}
+  if(d.status==='abgelehnt')return'<span class="badge muted">abgelehnt</span>';
+  if(d.gueltigBis&&d.gueltigBis<today())return`<span class="badge bad">abgelaufen ${fmtD(d.gueltigBis)}</span>`;
+  return`<span class="badge info">offen · gültig bis ${fmtD(d.gueltigBis)}</span>`;
+}
+
+/* ===================== CSV ===================== */
+function csv(rows,filename){
+  const cell=c=>{
+    let v=typeof c==='number'?c.toFixed(2).replace('.',','):String(c??'');
+    if(typeof c!=='number'&&/^[=+@\t\r]/.test(v))v="'"+v;
+    if(/[";\n\r]/.test(v))v='"'+v.replace(/"/g,'""')+'"';
+    return v;
+  };
+  download('﻿'+rows.map(r=>r.map(cell).join(';')).join('\r\n'),filename,'text/csv;charset=utf-8');
+}
+
+/* ===================== Drucken ===================== */
+function doPrint(html,title){
+  const pr=$('#print-root');pr.innerHTML=html;
+  document.body.classList.add('printing');
+  const old=document.title;document.title=title;
+  const done=()=>{document.body.classList.remove('printing');pr.innerHTML='';document.title=old;window.removeEventListener('afterprint',done);};
+  window.addEventListener('afterprint',done);
+  const imgs=$$('img',pr).map(i=>i.complete?Promise.resolve():new Promise(r=>{i.onload=i.onerror=r;}));
+  Promise.all(imgs).then(()=>setTimeout(()=>window.print(),60));
+}
+function firmaFooter(){
+  const f=S().firma;
+  const kontakt=[f.telefon&&'Tel. '+f.telefon,f.email,f.web].filter(Boolean).map(esc).join('<br>');
+  const bank=f.iban?`${f.bank?esc(f.bank)+'<br>':''}${f.inhaber?'Kontoinhaber: '+esc(f.inhaber)+'<br>':''}IBAN: ${esc(f.iban)}${f.bic?'<br>BIC: '+esc(f.bic):''}`:'';
+  return`<footer class="p-foot"><div>${[f.name,f.zusatz,[f.strasse,f.plzOrt].filter(Boolean).join(' · ')].filter(Boolean).map(esc).join('<br>')}</div><div>${kontakt}</div><div>${bank}</div></footer>`;
+}
+function firmaHead(){
+  const f=S().firma;
+  return`<header class="p-head"><div>${f.logo?`<img class="p-logo" src="${esc(f.logo)}" alt="">`:''}</div>
+    <div class="p-firm"><div class="p-fname">${esc(f.name)}</div>${f.zusatz?`<div>${esc(f.zusatz)}</div>`:''}<div>${esc(f.strasse)}</div><div>${esc(f.plzOrt)}</div>
+    ${f.telefon?`<div>Tel. ${esc(f.telefon)}</div>`:''}${f.email?`<div>${esc(f.email)}</div>`:''}${f.web?`<div>${esc(f.web)}</div>`:''}</div></header>`;
+}
+function docPrintHTML(d){
+  const f=S().firma,s=docSum(d),isR=d.typ==='rechnung';
+  const absender=[f.name,f.strasse,f.plzOrt].filter(Boolean).map(esc).join(' · ');
+  const rows=d.positionen.map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.bezeichnung)}</td><td class="r">${fmtNum(p.menge)}</td><td>${esc(p.einheit)}</td><td class="r">${eur(p.preis)}</td><td class="r">${eur(posSum(p))}</td></tr>`).join('');
+  let zahlung;
+  if(isR){
+    if(d.status==='bezahlt')zahlung=`<p>Den Rechnungsbetrag haben wir am ${fmtD(d.bezahltAm)} ${d.zahlungsart==='bar'?'bar ':''}erhalten. Vielen Dank!</p>`;
+    else if(!(+d.zielTage))zahlung=`<p>Der Rechnungsbetrag ist sofort ohne Abzug fällig.</p>`;
+    else zahlung=`<p>Bitte überweisen Sie den Rechnungsbetrag bis zum <b>${fmtD(d.faellig)}</b> ohne Abzug unter Angabe der Rechnungsnummer${f.iban?' auf das unten genannte Konto':''}.</p>`;
+  }else zahlung=`<p>Dieses Angebot ist gültig bis zum ${fmtD(d.gueltigBis)}. Wir freuen uns auf Ihren Auftrag.</p>`;
+  return`<div class="pdoc">${firmaHead()}
+    <div class="p-addr-row"><div class="p-addr"><div class="p-sender">${absender}</div><div>${nl2br(d.empfaenger)}</div></div>
+      <table class="p-meta"><tr><td>${isR?'Rechnungs-Nr.':'Angebots-Nr.'}</td><td>${esc(d.nr)}</td></tr>
+      <tr><td>Datum</td><td>${fmtD(d.datum)}</td></tr>
+      ${isR&&d.lieferdatum?`<tr><td>Liefer-/Leistungsdatum</td><td>${fmtD(d.lieferdatum)}</td></tr>`:''}
+      ${!isR&&d.gueltigBis?`<tr><td>Gültig bis</td><td>${fmtD(d.gueltigBis)}</td></tr>`:''}
+      <tr><td>Bearbeitet von</td><td>${esc(d.user)}</td></tr></table></div>
+    <h1 class="p-title">${isR?'Rechnung':'Angebot'} ${esc(d.nr)}</h1>
+    ${d.status==='storniert'?'<div class="p-storno">STORNIERT</div>':''}
+    ${d.einleitung?`<p>${nl2br(d.einleitung)}</p>`:''}
+    <table class="p-pos"><thead><tr><th>Pos.</th><th>Bezeichnung</th><th class="r">Menge</th><th>Einheit</th><th class="r">Einzelpreis</th><th class="r">Gesamt</th></tr></thead>
+    <tbody>${rows}</tbody><tfoot>
+    ${s.rabatt?`<tr><td colspan="5" class="r">Zwischensumme</td><td class="r">${eur(s.zwischen)}</td></tr><tr><td colspan="5" class="r">abzüglich ${fmtNum(d.rabatt)} % Rabatt</td><td class="r">− ${eur(s.rabatt)}</td></tr>`:''}
+    <tr class="p-total"><td colspan="5" class="r">${isR?'Rechnungsbetrag':'Gesamtbetrag'}</td><td class="r">${eur(s.gesamt)}</td></tr></tfoot></table>
+    ${S().steuerhinweis?`<p class="p-small">${esc(S().steuerhinweis)}</p>`:''}
+    ${zahlung}
+    ${d.bemerkung?`<p>${nl2br(d.bemerkung)}</p>`:''}
+    <p>Mit freundlichen Grüßen<br>${esc(f.name)}</p>
+    ${firmaFooter()}</div>`;
+}
+
+/* ===================== Rendering ===================== */
+const app=$('#app');
+const NAV=[['dashboard','Übersicht'],['verkauf','Verkauf & Rechnungen'],['angebote','Angebote'],['einkauf','Einkauf'],['inventar','Inventar'],['buchungen','Einnahmen & Ausgaben'],['auswertung','Auswertung'],['kontakte','Kunden & Lieferanten'],['einstellungen','Einstellungen',true]];
+function render(){
+  if(!DB)return renderStart();
+  if(!DB.users.length)return renderSetup();
+  if(!currentUser)return renderLogin();
+  if(view==='einstellungen'&&!isLK())view='dashboard';
+  const V={dashboard:vDashboard,verkauf:vVerkauf,angebote:vAngebote,einkauf:vEinkauf,inventar:vInventar,buchungen:vBuchungen,auswertung:vAuswertung,kontakte:vKontakte,einstellungen:vEinstellungen};
+  const scrollY=window.scrollY;
+  app.innerHTML=shell((V[view]||vDashboard)());
+  window.scrollTo(0,scrollY);
+}
+function shell(content){
+  const f=S().firma;
+  return`<div class="layout"><aside class="side">
+    <div class="brand">${f.logo?`<img src="${esc(f.logo)}" alt="">`:''}<div><div class="brand-name">${esc(f.name)}</div><div class="brand-sub">Abrechnung</div></div></div>
+    <nav class="nav">${NAV.filter(n=>!n[2]||isLK()).map(([k,l])=>`<button class="${view===k?'active':''}" onclick="App.go('${k}')">${l}</button>`).join('')}</nav>
+    <div class="side-foot">
+      <div class="save-status" id="saveStatus">${saveStatusHTML()}</div>
+      <div><div class="user">${esc(currentUser.name)} · ${ROLE[currentUser.role]}</div>
+      <div class="side-btns"><button class="link" onclick="App.myAccount()">Passwort ändern</button><button class="link" onclick="App.logout()">Abmelden</button></div></div>
+    </div></aside>
+    <main class="main" id="main">${demoMode?`<div class="demo-banner"><b>Beispieldaten:</b> Änderungen werden nicht gespeichert. Mit „Speichern unter …“ (links unten) können Sie die Daten als Datei ablegen. Anmeldung: <b>lehrer</b> / <b>demo</b> oder <b>schueler</b> / <b>demo</b>.</div>`:''}${content}</main></div>`;
+}
+function pageHead(title,buttons=''){return`<div class="page-head"><h1>${title}</h1><div class="btns">${buttons}</div></div>`;}
+function table(head,rows,foot,emptyText='Noch keine Einträge vorhanden.'){
+  if(!rows.length)return`<div class="table-wrap"><div class="empty">${emptyText}</div></div>`;
+  return`<div class="table-wrap"><table class="list"><thead><tr>${head.map(h=>{const [t,c]=Array.isArray(h)?h:[h,''];return`<th class="${c}">${t}</th>`;}).join('')}</tr></thead><tbody>${rows.join('')}</tbody>${foot?`<tfoot>${foot}</tfoot>`:''}</table></div>`;
+}
+/* Filter-Bausteine */
+const fDate=(v,k,l)=>`<label class="fld">${l}<input type="date" value="${esc(F[v][k])}" onchange="App.setF('${v}','${k}',this.value)"></label>`;
+const fText=(v,k,l,ph)=>`<label class="fld grow">${l}<input type="search" value="${esc(F[v][k])}" placeholder="${esc(ph||'')}" onchange="App.setF('${v}','${k}',this.value)"></label>`;
+const fSel=(v,k,l,opts)=>`<label class="fld">${l}<select onchange="App.setF('${v}','${k}',this.value)">${opts.map(([o,t])=>`<option value="${esc(o)}" ${F[v][k]===o?'selected':''}>${esc(t)}</option>`).join('')}</select></label>`;
+const fReset=v=>`<button class="btn ghost" onclick="App.resetF('${v}')">Filter zurücksetzen</button>`;
+const inRange=(d,von,bis)=>(!von||d>=von)&&(!bis||d<=bis);
+
+/* ---------- Start / Einrichtung / Anmeldung ---------- */
+function renderStart(){
+  app.innerHTML=`<div class="center-wrap"><div class="card start">
+    <h1>Juniorenfirma – Abrechnung</h1>
+    <p class="muted">Einnahmen & Ausgaben, Rechnungen, Angebote, Einkauf, Inventar und Jahresüberschuss – gespeichert in einer Datei auf dem Schulserver.</p>
+    ${lastHandle?`<button class="btn primary big" onclick="App.reopenLast()">„${esc(lastHandle.name)}“ öffnen</button>`:''}
+    <button class="btn ${lastHandle?'':'primary'} big" onclick="App.openFile()">Datendatei öffnen …</button>
+    <button class="btn big" onclick="App.newFile()">Neue Datendatei anlegen …</button>
+    <button class="btn ghost big" onclick="App.demo()">Mit Beispieldaten ausprobieren</button>
+    <input type="file" id="fileIn" accept=".json,application/json" hidden onchange="App.fileInput(this)">
+    ${canFS?'':`<div class="alert warn">Dieser Browser kann Änderungen nicht direkt in die Datei auf dem Server schreiben. Sie können trotzdem arbeiten, müssen die Datei aber über <b>„Datei speichern“</b> herunterladen und wieder im Ordner ablegen. Empfohlen: <b>Microsoft Edge</b> oder <b>Google Chrome</b>.</div>`}
+    <div class="hint"><b>So funktioniert’s:</b> Die Lehrkraft legt einmalig eine Datendatei (z. B. <i>juniorenfirma-daten.json</i>) im gemeinsamen Ordner der Juniorenfirma auf dem Schulserver an. Danach öffnen alle diese Datei – jede Änderung wird sofort automatisch gespeichert.</div>
+  </div></div>`;
+}
+function renderSetup(){
+  app.innerHTML=`<div class="center-wrap"><form class="card start" onsubmit="event.preventDefault();App.setup()">
+    <h1>Ersteinrichtung</h1>
+    <p class="muted">Legen Sie den Namen der Juniorenfirma und das erste Konto (Lehrkraft) an. Weitere Konten für Schülerinnen und Schüler können danach unter „Einstellungen“ angelegt werden.</p>
+    <div class="form-err" id="setupErr"></div>
+    <label class="fld">Name der Juniorenfirma<input id="s_firma" required value="${esc(S().firma.name==='Meine Juniorenfirma'?'':S().firma.name)}"></label>
+    <label class="fld">Ihr Name (Lehrkraft)<input id="s_name" required placeholder="z. B. Frau Müller"></label>
+    <label class="fld">Benutzername<input id="s_login" required autocomplete="username"></label>
+    <div class="grid2"><label class="fld">Passwort<input id="s_pw" type="password" required autocomplete="new-password"></label>
+    <label class="fld">Passwort wiederholen<input id="s_pw2" type="password" required autocomplete="new-password"></label></div>
+    <button class="btn primary big">Einrichtung abschließen</button>
+    <button type="button" class="btn ghost big" onclick="App.closeFile()">Zurück</button>
+  </form></div>`;
+}
+function renderLogin(){
+  app.innerHTML=`<div class="center-wrap"><form class="card start" onsubmit="event.preventDefault();App.login()">
+    <h1>${esc(S().firma.name)}</h1>
+    <p class="muted">Bitte melden Sie sich an.</p>
+    <div class="form-err" id="loginErr"></div>
+    <label class="fld">Benutzername<input id="l_login" required autocomplete="username"></label>
+    <label class="fld">Passwort<input id="l_pw" type="password" required autocomplete="current-password"></label>
+    <button class="btn primary big">Anmelden</button>
+    <button type="button" class="btn ghost big" onclick="App.closeFile()">Andere Datei öffnen</button>
+    ${demoMode?'<div class="hint">Beispieldaten – Anmeldung mit <b>lehrer</b> / <b>demo</b> (Lehrkraft) oder <b>schueler</b> / <b>demo</b>.</div>':`<div class="hint">Passwort vergessen? Die Lehrkraft kann es unter „Einstellungen → Benutzer“ zurücksetzen.</div>`}
+  </form></div>`;
+  setTimeout(()=>{const el=$('#l_login');if(el)el.focus();},20);
+}
+
+/* ---------- Übersicht ---------- */
+function vDashboard(){
+  const y=today().slice(0,4);
+  const bs=DB.buchungen.filter(b=>b.datum&&b.datum.startsWith(y));
+  const ein=sum(bs.filter(b=>b.typ==='einnahme'),b=>b.betrag),aus=sum(bs.filter(b=>b.typ==='ausgabe'),b=>b.betrag);
+  const kb=kassenstand();
+  const offen=DB.dokumente.filter(d=>d.typ==='rechnung'&&d.status==='offen');
+  const ueber=offen.filter(d=>d.faellig&&d.faellig<today());
+  const m=stockMap();
+  const low=DB.artikel.filter(a=>a.aktiv!==false&&isLager(a)&&((m[a.id]||0)<=0||(+a.mindestbestand>0&&(m[a.id]||0)<=+a.mindestbestand)));
+  const recent=DB.buchungen.slice().sort((a,b)=>b.datum.localeCompare(a.datum)||(b.created||'').localeCompare(a.created||'')).slice(0,8);
+  const erg=r2(ein-aus);
+  return pageHead('Übersicht')+`
+  <div class="quick">
+    <button onclick="App.docEditor('rechnung',null,{bar:true})"><b>Barverkauf</b><span>Ware verkaufen, sofort bezahlt</span></button>
+    <button onclick="App.docEditor('rechnung')"><b>Rechnung schreiben</b><span>Kunde zahlt später</span></button>
+    <button onclick="App.docEditor('angebot')"><b>Angebot erstellen</b><span>für Kundenanfragen</span></button>
+    <button onclick="App.einkaufEditor()"><b>Einkauf erfassen</b><span>Ware kaufen, Bestand erhöhen</span></button>
+    <button onclick="App.buchung(null,'einnahme')"><b>Sonstige Einnahme</b><span>z. B. Spende, Zuschuss</span></button>
+    <button onclick="App.buchung(null,'ausgabe')"><b>Sonstige Ausgabe</b><span>z. B. Werbung, Gebühren</span></button>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="label">Kasse (bar)</div><div class="val">${eur(kb.bar)}</div><div class="sub">aktueller Bestand</div></div>
+    <div class="kpi"><div class="label">Bankkonto</div><div class="val">${eur(kb.bank)}</div><div class="sub">aktueller Bestand</div></div>
+    <div class="kpi"><div class="label">Einnahmen ${y}</div><div class="val pos">${eur(ein)}</div></div>
+    <div class="kpi"><div class="label">Ausgaben ${y}</div><div class="val neg">${eur(aus)}</div></div>
+    <div class="kpi"><div class="label">${erg>=0?'Überschuss':'Fehlbetrag'} ${y}</div><div class="val ${erg>=0?'pos':'neg'}">${eur(erg)}</div></div>
+    <div class="kpi"><div class="label">Offene Rechnungen</div><div class="val">${eur(sum(offen,d=>docSum(d).gesamt))}</div><div class="sub">${offen.length} Rechnung(en)${ueber.length?`, <span class="neg">${ueber.length} überfällig</span>`:''}</div></div>
+  </div>
+  <div class="cols2">
+    <div class="card"><h2>Letzte Buchungen</h2>${recent.length?`<table class="list">${recent.map(b=>`<tr><td class="nowrap">${fmtD(b.datum)}</td><td>${esc(b.beschreibung)}</td><td class="r nowrap ${b.typ==='einnahme'?'pos':'neg'}">${b.typ==='einnahme'?'+':'−'} ${eur(b.betrag)}</td></tr>`).join('')}</table>`:'<p class="muted">Noch keine Buchungen.</p>'}
+      <p style="margin-top:10px"><button class="btn small" onclick="App.go('buchungen')">Alle Einnahmen & Ausgaben</button></p></div>
+    <div class="card"><h2>Lagerhinweise</h2>${low.length?`<table class="list">${low.map(a=>`<tr><td>${esc(a.name)}</td><td class="r nowrap"><span class="badge ${(m[a.id]||0)<=0?'bad':'warn'}">Bestand ${fmtNum(m[a.id]||0)} ${esc(a.einheit)}</span></td></tr>`).join('')}</table>
+      <p style="margin-top:10px"><button class="btn small" onclick="App.einkaufEditor()">Einkauf erfassen</button></p>`:'<p class="muted">Alle Artikel sind ausreichend vorrätig.</p>'}
+      ${ueber.length?`<h3>Überfällige Rechnungen</h3><table class="list">${ueber.map(d=>`<tr><td>${esc(d.nr)}</td><td>${esc(firstLine(d.empfaenger))}</td><td class="r">${eur(docSum(d).gesamt)}</td></tr>`).join('')}</table>`:''}
+    </div>
+  </div>`;
+}
+
+/* ---------- Verkauf & Rechnungen ---------- */
+function filteredRechnungen(){
+  const f=F.verkauf;
+  let list=DB.dokumente.filter(d=>d.typ==='rechnung'&&inRange(d.datum,f.von,f.bis));
+  if(f.status)list=list.filter(d=>rechnungStatus(d)===f.status||(f.status==='offen'&&rechnungStatus(d)==='ueberfaellig'));
+  if(f.q){const q=f.q.toLowerCase();list=list.filter(d=>(d.nr+' '+d.empfaenger+' '+d.positionen.map(p=>p.bezeichnung).join(' ')).toLowerCase().includes(q));}
+  return list.sort((a,b)=>b.datum.localeCompare(a.datum)||b.nr.localeCompare(a.nr));
+}
+function vVerkauf(){
+  const list=filteredRechnungen();
+  const aktiv=list.filter(d=>d.status!=='storniert');
+  const rows=list.map(d=>{
+    const st=d.status;
+    const a=[`<button class="btn small" onclick="App.printDoc('${d.id}')">Drucken / PDF</button>`];
+    if(st==='offen')a.push(`<button class="btn small ok" onclick="App.bezahlt('${d.id}')">Bezahlt</button>`,`<button class="btn small" onclick="App.docEditor('rechnung','${d.id}')">Bearbeiten</button>`);
+    if(st!=='storniert')a.push(`<button class="btn small danger" onclick="App.storno('${d.id}')">Stornieren</button>`);
+    if(st==='bezahlt'&&isLK())a.push(`<button class="btn small" onclick="App.zahlungZurueck('${d.id}')" title="Nur Lehrkraft">Zahlung zurücknehmen</button>`);
+    if(isLK())a.push(`<button class="btn small danger" onclick="App.delDoc('${d.id}')" title="Nur Lehrkraft">Löschen</button>`);
+    return`<tr class="${st==='storniert'?'storno':''}"><td class="nowrap"><b>${esc(d.nr)}</b></td><td class="nowrap">${fmtD(d.datum)}</td><td>${esc(firstLine(d.empfaenger))}</td>
+      <td class="small">${esc(d.positionen.map(p=>fmtNum(p.menge)+'× '+p.bezeichnung).join(', '))}</td><td class="r nowrap">${eur(docSum(d).gesamt)}</td><td>${statusBadge(d)}</td><td class="acts-cell"><div class="acts">${a.join('')}</div></td></tr>`;
+  });
+  return pageHead('Verkauf & Rechnungen',`<button class="btn primary" onclick="App.docEditor('rechnung',null,{bar:true})">+ Barverkauf</button><button class="btn primary" onclick="App.docEditor('rechnung')">+ Rechnung</button><button class="btn" onclick="App.csvRechnungen()">CSV-Export</button>`)+
+  `<p class="muted small">Jeder Verkauf wird als Rechnung erfasst und verringert den Lagerbestand. Die Einnahme wird gebucht, sobald die Rechnung bezahlt ist (beim Barverkauf sofort).</p>
+  <div class="filters">${fDate('verkauf','von','Von')}${fDate('verkauf','bis','Bis')}${fSel('verkauf','status','Status',[['','alle'],['offen','offen'],['ueberfaellig','überfällig'],['bezahlt','bezahlt'],['storniert','storniert']])}${fText('verkauf','q','Suche','Nr., Kunde, Artikel …')}${fReset('verkauf')}</div>
+  <div class="sumbar"><span>${list.length} Rechnung(en)</span><span>Summe (ohne Stornos): <b>${eur(sum(aktiv,d=>docSum(d).gesamt))}</b></span><span>davon offen: <b class="neg">${eur(sum(aktiv.filter(d=>d.status==='offen'),d=>docSum(d).gesamt))}</b></span></div>`+
+  table(['Nr.','Datum','Kunde','Positionen',['Betrag','r'],'Status',['','r']],rows,'','Noch keine Verkäufe. Mit „+ Barverkauf“ oder „+ Rechnung“ starten.');
+}
+
+/* ---------- Angebote ---------- */
+function vAngebote(){
+  const f=F.angebote;
+  let list=DB.dokumente.filter(d=>d.typ==='angebot');
+  if(f.status)list=list.filter(d=>f.status==='abgelaufen'?(d.status==='offen'&&d.gueltigBis<today()):d.status===f.status);
+  if(f.q){const q=f.q.toLowerCase();list=list.filter(d=>(d.nr+' '+d.empfaenger).toLowerCase().includes(q));}
+  list.sort((a,b)=>b.datum.localeCompare(a.datum)||b.nr.localeCompare(a.nr));
+  const rows=list.map(d=>{
+    const a=[`<button class="btn small" onclick="App.printDoc('${d.id}')">Drucken / PDF</button>`];
+    if(d.status==='offen')a.push(`<button class="btn small ok" onclick="App.angebotZuRechnung('${d.id}')">→ Rechnung</button>`,`<button class="btn small" onclick="App.docEditor('angebot','${d.id}')">Bearbeiten</button>`,`<button class="btn small" onclick="App.angebotStatus('${d.id}','abgelehnt')">Abgelehnt</button>`);
+    if(d.status==='abgelehnt')a.push(`<button class="btn small" onclick="App.angebotStatus('${d.id}','offen')">Wieder öffnen</button>`);
+    a.push(`<button class="btn small" onclick="App.angebotKopie('${d.id}')">Kopieren</button>`);
+    if(isLK())a.push(`<button class="btn small danger" onclick="App.delDoc('${d.id}')">Löschen</button>`);
+    return`<tr><td class="nowrap"><b>${esc(d.nr)}</b></td><td class="nowrap">${fmtD(d.datum)}</td><td>${esc(firstLine(d.empfaenger))}</td><td class="r nowrap">${eur(docSum(d).gesamt)}</td><td>${statusBadge(d)}</td><td class="acts-cell"><div class="acts">${a.join('')}</div></td></tr>`;
+  });
+  return pageHead('Angebote',`<button class="btn primary" onclick="App.docEditor('angebot')">+ Angebot</button>`)+
+  `<p class="muted small">Ein Angebot verändert weder Bestand noch Buchungen. Nimmt der Kunde an, wird es per Klick auf „→ Rechnung“ in eine Rechnung umgewandelt.</p>
+  <div class="filters">${fSel('angebote','status','Status',[['','alle'],['offen','offen'],['abgelaufen','abgelaufen'],['angenommen','angenommen'],['abgelehnt','abgelehnt']])}${fText('angebote','q','Suche','Nr., Kunde …')}${fReset('angebote')}</div>`+
+  table(['Nr.','Datum','Kunde',['Betrag','r'],'Status',['','r']],rows,'','Noch keine Angebote.');
+}
+
+/* ---------- Einkauf ---------- */
+function filteredEinkaeufe(){
+  const f=F.einkauf;
+  let list=DB.einkaeufe.filter(e=>inRange(e.datum,f.von,f.bis));
+  if(f.status)list=list.filter(e=>e.status===f.status);
+  if(f.q){const q=f.q.toLowerCase();list=list.filter(e=>(e.nr+' '+e.lieferantName+' '+(e.beleg||'')+' '+e.positionen.map(p=>p.bezeichnung).join(' ')).toLowerCase().includes(q));}
+  return list.sort((a,b)=>b.datum.localeCompare(a.datum)||b.nr.localeCompare(a.nr));
+}
+function vEinkauf(){
+  const list=filteredEinkaeufe();
+  const rows=list.map(e=>{
+    const a=[`<button class="btn small" onclick="App.einkaufEditor('${e.id}')">Bearbeiten</button>`];
+    if(e.status==='offen')a.push(`<button class="btn small ok" onclick="App.ekBezahlt('${e.id}')">Bezahlt</button>`);
+    if(isLK())a.push(`<button class="btn small danger" onclick="App.delEinkauf('${e.id}')">Löschen</button>`);
+    return`<tr><td class="nowrap"><b>${esc(e.nr)}</b></td><td class="nowrap">${fmtD(e.datum)}</td><td>${esc(e.lieferantName)}</td><td>${esc(e.beleg||'')}</td>
+      <td class="small">${esc(e.positionen.map(p=>fmtNum(p.menge)+'× '+p.bezeichnung).join(', '))}</td><td class="r nowrap">${eur(ekSum(e))}</td>
+      <td>${e.status==='bezahlt'?`<span class="badge ok">bezahlt ${fmtD(e.bezahltAm)} · ${e.zahlungsart==='bank'?'Bank':'bar'}</span>`:'<span class="badge warn">noch nicht bezahlt</span>'}</td><td class="acts-cell"><div class="acts">${a.join('')}</div></td></tr>`;
+  });
+  return pageHead('Einkauf',`<button class="btn primary" onclick="App.einkaufEditor()">+ Einkauf</button><button class="btn" onclick="App.csvEinkauf()">CSV-Export</button>`)+
+  `<p class="muted small">Eingekaufte Artikel werden dem Lagerbestand zugebucht. Die Ausgabe wird gebucht, sobald der Einkauf bezahlt ist.</p>
+  <div class="filters">${fDate('einkauf','von','Von')}${fDate('einkauf','bis','Bis')}${fSel('einkauf','status','Status',[['','alle'],['bezahlt','bezahlt'],['offen','noch nicht bezahlt']])}${fText('einkauf','q','Suche','Nr., Lieferant, Artikel …')}${fReset('einkauf')}</div>
+  <div class="sumbar"><span>${list.length} Einkauf/Einkäufe</span><span>Summe: <b>${eur(sum(list,ekSum))}</b></span><span>davon offen: <b class="neg">${eur(sum(list.filter(e=>e.status==='offen'),ekSum))}</b></span></div>`+
+  table(['Nr.','Datum','Lieferant','Beleg Lieferant','Positionen',['Betrag','r'],'Status',['','r']],rows,'','Noch keine Einkäufe erfasst.');
+}
+
+/* ---------- Inventar ---------- */
+function vInventar(){
+  const f=F.inventar,m=stockMap();
+  let list=DB.artikel.filter(a=>f.inaktiv||a.aktiv!==false);
+  if(f.q){const q=f.q.toLowerCase();list=list.filter(a=>(a.nr+' '+a.name+' '+(a.beschreibung||'')).toLowerCase().includes(q));}
+  list.sort((a,b)=>(a.nr||'').localeCompare(b.nr||'',undefined,{numeric:true}));
+  let wert=0;
+  const rows=list.map(a=>{
+    const lager=isLager(a),best=m[a.id]||0,w=lager?r2(best*(+a.ekPreis||0)):0;wert+=w;
+    const low=lager&&a.aktiv!==false&&(best<=0||(+a.mindestbestand>0&&best<=+a.mindestbestand));
+    const marge=r2((+a.vkPreis||0)-(+a.ekPreis||0));
+    const act=[`<button class="btn small" onclick="App.artikelForm('${a.id}')">Bearbeiten</button>`];
+    if(lager)act.push(`<button class="btn small" onclick="App.korrektur('${a.id}')">Bestand korrigieren</button>`);
+    act.push(`<button class="btn small" onclick="App.verlauf('${a.id}')">Verlauf</button>`);
+    if(isLK())act.push(`<button class="btn small danger" onclick="App.delArtikel('${a.id}')">Löschen</button>`);
+    return`<tr class="${low?'low':''}"><td class="nowrap">${esc(a.nr)}</td><td><b>${esc(a.name)}</b>${a.aktiv===false?' <span class="badge muted">inaktiv</span>':''}${a.beschreibung?`<div class="small muted">${esc(a.beschreibung)}</div>`:''}</td>
+      <td class="r">${eur(a.ekPreis)}</td><td class="r">${eur(a.vkPreis)}</td><td class="r ${marge<0?'neg':''}">${eur(marge)}</td>
+      <td class="r nowrap">${lager?`<b>${fmtNum(best)}</b> ${esc(a.einheit)}`:'<span class="muted">– (Dienstleistung)</span>'}</td><td class="r">${lager&&+a.mindestbestand?fmtNum(a.mindestbestand):''}</td><td class="r">${lager?eur(w):''}</td>
+      <td class="acts-cell"><div class="acts">${act.join('')}</div></td></tr>`;
+  });
+  return pageHead('Inventar',`<button class="btn primary" onclick="App.artikelForm()">+ Artikel</button><button class="btn" onclick="App.printInventur()">Inventurliste drucken</button><button class="btn" onclick="App.csvInventar()">CSV-Export</button>`)+
+  `<p class="muted small">Der Bestand ergibt sich automatisch aus Anfangsbestand, Einkäufen, Verkäufen und Korrekturen. Gelb markiert: Bestand am oder unter dem Mindestbestand.</p>
+  <div class="filters">${fText('inventar','q','Suche','Artikel-Nr., Bezeichnung …')}<label class="check" style="margin-bottom:14px"><input type="checkbox" ${f.inaktiv?'checked':''} onchange="App.setF('inventar','inaktiv',this.checked)"> inaktive Artikel anzeigen</label></div>`+
+  table(['Art.-Nr.','Bezeichnung',['EK-Preis','r'],['VK-Preis','r'],['Rohgewinn/Stk.','r'],['Bestand','r'],['Mindest','r'],['Lagerwert (EK)','r'],['','r']],rows,
+    `<tr><td colspan="7">Lagerwert gesamt (zu Einkaufspreisen)</td><td class="r">${eur(wert)}</td><td></td></tr>`,'Noch keine Artikel angelegt. Mit „+ Artikel“ beginnen.');
+}
+
+/* ---------- Einnahmen & Ausgaben ---------- */
+function filteredBuchungen(){
+  const f=F.buchungen;
+  let list=DB.buchungen.filter(b=>inRange(b.datum,f.von,f.bis));
+  if(f.typ)list=list.filter(b=>b.typ===f.typ);
+  if(f.kat)list=list.filter(b=>b.kategorie===f.kat);
+  if(f.za)list=list.filter(b=>(b.zahlungsart||'bar')===f.za);
+  if(f.q){const q=f.q.toLowerCase();list=list.filter(b=>((b.beschreibung||'')+' '+(b.beleg||'')+' '+(b.kategorie||'')).toLowerCase().includes(q));}
+  return list.sort((a,b)=>b.datum.localeCompare(a.datum)||(b.created||'').localeCompare(a.created||''));
+}
+function vBuchungen(){
+  const list=filteredBuchungen();
+  const ein=sum(list.filter(b=>b.typ==='einnahme'),b=>b.betrag),aus=sum(list.filter(b=>b.typ==='ausgabe'),b=>b.betrag);
+  const kats=[...new Set([...S().katEinnahmen,...S().katAusgaben,...DB.buchungen.map(b=>b.kategorie)])].filter(Boolean);
+  const rows=list.map(b=>{
+    let act;
+    if(b.quelle){const v=b.quelle.art==='rechnung'?'verkauf':'einkauf';act=`<button class="btn small ghost" onclick="App.goFind('${v}',${js(b.beleg)})">→ ${b.quelle.art==='rechnung'?'Rechnung':'Einkauf'}</button>`;}
+    else act=`<button class="btn small" onclick="App.buchung('${b.id}')">Bearbeiten</button>${isLK()?`<button class="btn small danger" onclick="App.delBuchung('${b.id}')">Löschen</button>`:''}`;
+    return`<tr><td class="nowrap">${fmtD(b.datum)}</td><td class="nowrap">${esc(b.beleg||'')}</td><td>${b.typ==='einnahme'?'<span class="badge ok">Einnahme</span>':'<span class="badge bad">Ausgabe</span>'}</td>
+      <td>${esc(b.kategorie)}</td><td>${esc(b.beschreibung)}</td><td>${b.zahlungsart==='bank'?'Bank':'bar'}</td>
+      <td class="r nowrap ${b.typ==='einnahme'?'pos':'neg'}">${b.typ==='einnahme'?'+':'−'} ${eur(b.betrag)}</td><td class="acts-cell"><div class="acts">${act}</div></td></tr>`;
+  });
+  return pageHead('Einnahmen & Ausgaben',`<button class="btn ok" onclick="App.buchung(null,'einnahme')">+ Einnahme</button><button class="btn bad" onclick="App.buchung(null,'ausgabe')">+ Ausgabe</button><button class="btn" onclick="App.csvBuchungen()">CSV-Export</button>`)+
+  `<p class="muted small">Hier stehen alle Zahlungen. Einnahmen aus bezahlten Rechnungen und Ausgaben aus bezahlten Einkäufen werden automatisch gebucht und dort bearbeitet. Sonstige Einnahmen und Ausgaben (z. B. Spenden, Werbung, Gebühren) erfassen Sie hier direkt.</p>
+  <div class="filters">${fDate('buchungen','von','Von')}${fDate('buchungen','bis','Bis')}${fSel('buchungen','typ','Art',[['','alle'],['einnahme','Einnahmen'],['ausgabe','Ausgaben']])}
+   ${fSel('buchungen','kat','Kategorie',[['','alle'],...kats.map(k=>[k,k])])}${fSel('buchungen','za','Zahlungsart',[['','alle'],['bar','bar'],['bank','Bank']])}${fText('buchungen','q','Suche','Text, Beleg …')}${fReset('buchungen')}</div>
+  <div class="sumbar"><span>Einnahmen: <b class="pos">${eur(ein)}</b></span><span>Ausgaben: <b class="neg">${eur(aus)}</b></span><span>Saldo: <b class="${ein-aus>=0?'pos':'neg'}">${eur(ein-aus)}</b></span></div>`+
+  table(['Datum','Beleg','Art','Kategorie','Beschreibung','Zahlung',['Betrag','r'],['','r']],rows,'','Keine Buchungen im gewählten Zeitraum.');
+}
+
+/* ---------- Auswertung ---------- */
+function presetRange(p){
+  const d=new Date(),y=d.getFullYear(),mo=d.getMonth()+1;
+  if(p==='jahr')return[`${y}-01-01`,`${y}-12-31`];
+  if(p==='vorjahr')return[`${y-1}-01-01`,`${y-1}-12-31`];
+  if(p==='schuljahr'){const s=mo>=8?y:y-1;return[`${s}-08-01`,`${s+1}-07-31`];}
+  if(p==='vorschuljahr'){const s=(mo>=8?y:y-1)-1;return[`${s}-08-01`,`${s+1}-07-31`];}
+  if(p==='monat'){const last=new Date(y,mo,0).getDate();return[`${y}-${pad(mo)}-01`,`${y}-${pad(mo)}-${pad(last)}`];}
+  return['',''];
+}
+function auswertungData(von,bis){
+  const bs=DB.buchungen.filter(b=>inRange(b.datum,von,bis));
+  const group=t=>{const g={};bs.filter(b=>b.typ===t).forEach(b=>{g[b.kategorie]=(g[b.kategorie]||0)+(+b.betrag||0);});return Object.entries(g).map(([k,v])=>[k,r2(v)]).sort((a,b)=>b[1]-a[1]);};
+  const ein=group('einnahme'),aus=group('ausgabe');
+  const sE=sum(ein,x=>x[1]),sA=sum(aus,x=>x[1]);
+  const months={};bs.forEach(b=>{const k=b.datum.slice(0,7);months[k]=months[k]||{e:0,a:0};months[k][b.typ==='einnahme'?'e':'a']+=(+b.betrag||0);});
+  const art={};
+  DB.dokumente.filter(d=>d.typ==='rechnung'&&d.status!=='storniert'&&inRange(d.datum,von,bis)).forEach(d=>{
+    const f=1-(+d.rabatt||0)/100;
+    d.positionen.forEach(p=>{const k=p.artikelId||('frei:'+p.bezeichnung);art[k]=art[k]||{name:p.artikelId&&artikelById(p.artikelId)?artikelById(p.artikelId).name:p.bezeichnung,menge:0,umsatz:0,einheit:p.einheit};art[k].menge+=+p.menge||0;art[k].umsatz+=posSum(p)*f;});
+  });
+  const offeneR=DB.dokumente.filter(d=>d.typ==='rechnung'&&d.status==='offen'&&(!bis||d.datum<=bis));
+  const offeneE=DB.einkaeufe.filter(e=>e.status==='offen'&&(!bis||e.datum<=bis));
+  const m=stockMap();
+  const warenwert=sum(DB.artikel.filter(isLager),a=>(m[a.id]||0)*(+a.ekPreis||0));
+  return{bs,ein,aus,sE,sA,erg:r2(sE-sA),months:Object.entries(months).sort(),art:Object.values(art).sort((a,b)=>b.umsatz-a.umsatz),offeneR,offeneE,warenwert};
+}
+function rangeLabel(von,bis){if(!von&&!bis)return'gesamter Zeitraum';return`${von?fmtD(von):'Beginn'} – ${bis?fmtD(bis):'heute'}`;}
+function vAuswertung(){
+  const f=F.auswertung;
+  if(!f.von&&!f.bis&&!f.init){[f.von,f.bis]=presetRange('jahr');f.init=true;}
+  const d=auswertungData(f.von,f.bis);
+  const max=Math.max(1,...d.ein.map(x=>x[1]),...d.aus.map(x=>x[1]));
+  const catRows=(list,cls)=>list.map(([k,v])=>`<tr><td>${esc(k)}</td><td style="width:40%"><div class="bar ${cls}"><i style="width:${(v/max*100).toFixed(1)}%"></i></div></td><td class="r">${eur(v)}</td></tr>`).join('')||'<tr><td colspan="3" class="muted">keine</td></tr>';
+  const pr=[['monat','Aktueller Monat'],['jahr','Kalenderjahr '+new Date().getFullYear()],['vorjahr','Vorjahr'],['schuljahr','Aktuelles Schuljahr'],['vorschuljahr','Letztes Schuljahr'],['alle','Gesamter Zeitraum']];
+  return pageHead('Auswertung',`<button class="btn" onclick="App.printReport()">Drucken / PDF</button><button class="btn" onclick="App.csvReport()">CSV-Export</button>`)+
+  `<div class="filters">${fDate('auswertung','von','Von')}${fDate('auswertung','bis','Bis')}
+    <div class="presets" style="flex-basis:100%">${pr.map(([k,l])=>`<button class="btn small" onclick="App.preset('${k}')">${l}</button>`).join('')}</div></div>
+  <div class="card"><h2>Einnahmen-Überschuss-Rechnung · ${rangeLabel(f.von,f.bis)}</h2>
+    <p class="muted small">Maßgeblich ist das Zahlungsdatum (Zuflussprinzip): Erfasst werden alle tatsächlich erhaltenen und geleisteten Zahlungen im Zeitraum.</p>
+    <div class="kpis"><div class="kpi"><div class="label">Summe Einnahmen</div><div class="val pos">${eur(d.sE)}</div></div>
+    <div class="kpi"><div class="label">Summe Ausgaben</div><div class="val neg">${eur(d.sA)}</div></div>
+    <div class="kpi"><div class="label">${d.erg>=0?'Überschuss':'Fehlbetrag'}</div><div class="result ${d.erg>=0?'pos':'neg'}">${eur(d.erg)}</div></div></div>
+    <div class="cols2"><div><h3>Einnahmen nach Kategorie</h3><table class="list">${catRows(d.ein,'e')}</table></div>
+    <div><h3>Ausgaben nach Kategorie</h3><table class="list">${catRows(d.aus,'a')}</table></div></div>
+  </div>
+  <div class="cols2">
+    <div class="card"><h2>Monatsübersicht</h2>${d.months.length?`<table class="list"><thead><tr><th>Monat</th><th class="r">Einnahmen</th><th class="r">Ausgaben</th><th class="r">Saldo</th></tr></thead><tbody>${d.months.map(([k,v])=>`<tr><td>${MONATE[+k.slice(5)-1]} ${k.slice(0,4)}</td><td class="r pos">${eur(v.e)}</td><td class="r neg">${eur(v.a)}</td><td class="r ${v.e-v.a>=0?'pos':'neg'}">${eur(v.e-v.a)}</td></tr>`).join('')}</tbody></table>`:'<p class="muted">Keine Buchungen im Zeitraum.</p>'}</div>
+    <div class="card"><h2>Verkaufte Artikel</h2><p class="muted small">nach Rechnungsdatum, ohne Stornos, nach Rabatt</p>${d.art.length?`<table class="list"><thead><tr><th>Artikel</th><th class="r">Menge</th><th class="r">Umsatz</th></tr></thead><tbody>${d.art.map(a=>`<tr><td>${esc(a.name)}</td><td class="r">${fmtNum(a.menge)} ${esc(a.einheit)}</td><td class="r">${eur(a.umsatz)}</td></tr>`).join('')}</tbody></table>`:'<p class="muted">Keine Verkäufe im Zeitraum.</p>'}</div>
+  </div>
+  <div class="card"><h2>Zusatzinformationen</h2><p class="muted small">Nicht Teil der Einnahmen-Überschuss-Rechnung, aber wichtig für die Beurteilung der Lage.</p>
+    <div class="kpis"><div class="kpi"><div class="label">Offene Forderungen</div><div class="val">${eur(sum(d.offeneR,x=>docSum(x).gesamt))}</div><div class="sub">${d.offeneR.length} unbezahlte Rechnung(en)</div></div>
+    <div class="kpi"><div class="label">Offene Verbindlichkeiten</div><div class="val">${eur(sum(d.offeneE,ekSum))}</div><div class="sub">${d.offeneE.length} unbezahlte(r) Einkauf/Einkäufe</div></div>
+    <div class="kpi"><div class="label">Warenbestand (zu EK, aktuell)</div><div class="val">${eur(d.warenwert)}</div></div></div>
+  </div>`;
+}
+
+/* ---------- Kontakte ---------- */
+function vKontakte(){
+  const f=F.kontakte;
+  let list=DB.kontakte.slice();
+  if(f.typ)list=list.filter(k=>k.typ===f.typ);
+  if(f.q){const q=f.q.toLowerCase();list=list.filter(k=>Object.values(k).join(' ').toLowerCase().includes(q));}
+  list.sort((a,b)=>a.name.localeCompare(b.name));
+  const rows=list.map(k=>`<tr><td><b>${esc(k.name)}</b>${k.ansprechpartner?`<div class="small muted">${esc(k.ansprechpartner)}</div>`:''}</td><td>${k.typ==='lieferant'?'<span class="badge info">Lieferant</span>':'<span class="badge ok">Kunde</span>'}</td>
+    <td>${esc(k.strasse)}${k.plzOrt?', '+esc(k.plzOrt):''}</td><td>${esc(k.email)}</td><td>${esc(k.telefon)}</td>
+    <td class="acts-cell"><div class="acts"><button class="btn small" onclick="App.kontaktForm('${k.id}')">Bearbeiten</button>${isLK()?`<button class="btn small danger" onclick="App.delKontakt('${k.id}')">Löschen</button>`:''}</div></td></tr>`);
+  return pageHead('Kunden & Lieferanten',`<button class="btn primary" onclick="App.kontaktForm(null,'kunde')">+ Kunde</button><button class="btn primary" onclick="App.kontaktForm(null,'lieferant')">+ Lieferant</button><button class="btn" onclick="App.csvKontakte()">CSV-Export</button>`)+
+  `<div class="filters">${fSel('kontakte','typ','Typ',[['','alle'],['kunde','Kunden'],['lieferant','Lieferanten']])}${fText('kontakte','q','Suche','Name, Ort …')}${fReset('kontakte')}</div>`+
+  table(['Name','Typ','Anschrift','E-Mail','Telefon',['','r']],rows,'','Noch keine Kunden oder Lieferanten angelegt.');
+}
+
+/* ---------- Einstellungen ---------- */
+function vEinstellungen(){
+  const s=S(),f=s.firma;
+  const inp=(id,l,v,extra='')=>`<label class="fld">${l}<input id="${id}" value="${esc(v)}" ${extra}></label>`;
+  const users=DB.users.slice().sort((a,b)=>a.role.localeCompare(b.role)||a.name.localeCompare(b.name)).map(u=>`<tr><td><b>${esc(u.name)}</b></td><td>${esc(u.login)}</td><td>${ROLE[u.role]}</td><td>${u.active===false?'<span class="badge muted">deaktiviert</span>':'<span class="badge ok">aktiv</span>'}</td>
+    <td class="acts-cell"><div class="acts"><button class="btn small" onclick="App.userForm('${u.id}')">Bearbeiten</button><button class="btn small" onclick="App.resetPw('${u.id}')">Passwort setzen</button>${u.id!==currentUser.id?`<button class="btn small danger" onclick="App.delUser('${u.id}')">Löschen</button>`:''}</div></td></tr>`);
+  const prot=DB.protokoll.slice(-200).reverse().map(p=>`<tr><td class="nowrap">${fmtTs(p.ts)}</td><td class="nowrap">${esc(p.user)}</td><td>${esc(p.text)}</td></tr>`);
+  return pageHead('Einstellungen')+`
+  <div class="card"><h2>Firmendaten</h2><p class="muted small">Erscheinen im Kopf und Fuß von Rechnungen und Angeboten.</p>
+    <div class="grid2">${inp('e_name','Name der Juniorenfirma *',f.name)}${inp('e_zusatz','Zusatz (z. B. „Juniorenfirma der Kaufmännischen Schule …“)',f.zusatz)}
+    ${inp('e_strasse','Straße und Hausnummer',f.strasse)}${inp('e_plzOrt','PLZ und Ort',f.plzOrt)}
+    ${inp('e_telefon','Telefon',f.telefon)}${inp('e_email','E-Mail',f.email)}${inp('e_web','Internet',f.web)}${inp('e_inhaber','Kontoinhaber',f.inhaber)}
+    ${inp('e_bank','Bank',f.bank)}${inp('e_iban','IBAN',f.iban)}${inp('e_bic','BIC',f.bic)}
+    <div><label class="fld">Logo (PNG/JPG, max. 300 KB)<input type="file" id="e_logo" accept="image/png,image/jpeg,image/gif,image/svg+xml" onchange="App.logo(this)"></label>
+      <div id="logoPrev">${f.logo?`<img src="${esc(f.logo)}" style="max-height:60px;max-width:200px" alt="Logo"> <button class="btn small danger" onclick="App.logo(null)">Logo entfernen</button>`:'<span class="muted small">kein Logo</span>'}</div></div></div>
+  </div>
+  <div class="card"><h2>Belege</h2>
+    <div class="grid4">${inp('e_pR','Kürzel Rechnungen',s.prefix.rechnung,'maxlength="6"')}${inp('e_pA','Kürzel Angebote',s.prefix.angebot,'maxlength="6"')}${inp('e_pE','Kürzel Einkäufe',s.prefix.einkauf,'maxlength="6"')}${inp('e_pB','Kürzel sonst. Buchungen',s.prefix.buchung,'maxlength="6"')}</div>
+    <p class="muted small" style="margin-top:-4px">Nummern werden pro Jahr fortlaufend vergeben, z. B. ${esc(s.prefix.rechnung)}-${today().slice(0,4)}-001.</p>
+    <div class="grid2">${inp('e_ziel','Zahlungsziel Rechnungen (Tage)',s.zahlungszielTage,'type="number" min="0"')}${inp('e_gueltig','Gültigkeit Angebote (Tage)',s.angebotGueltigTage,'type="number" min="0"')}</div>
+    ${inp('e_steuer','Steuerhinweis auf Belegen',s.steuerhinweis)}
+    <div class="grid2"><label class="fld">Einleitungstext Rechnung<textarea id="e_tR" rows="2">${esc(s.textRechnung)}</textarea></label><label class="fld">Einleitungstext Angebot<textarea id="e_tA" rows="2">${esc(s.textAngebot)}</textarea></label></div>
+  </div>
+  <div class="card"><h2>Kategorien, Einheiten & Anfangsbestände</h2>
+    <div class="grid3"><label class="fld">Kategorien Einnahmen (eine pro Zeile)<textarea id="e_kE" rows="6">${esc(s.katEinnahmen.join('\n'))}</textarea></label>
+    <label class="fld">Kategorien Ausgaben (eine pro Zeile)<textarea id="e_kA" rows="6">${esc(s.katAusgaben.join('\n'))}</textarea></label>
+    <label class="fld">Einheiten (eine pro Zeile)<textarea id="e_einh" rows="6">${esc(s.einheiten.join('\n'))}</textarea></label></div>
+    <div class="grid2">${inp('e_aBar','Anfangsbestand Kasse (€)',s.anfangBar,'type="number" step="0.01"')}${inp('e_aBank','Anfangsbestand Bankkonto (€)',s.anfangBank,'type="number" step="0.01"')}</div>
+    <p class="muted small">Die Anfangsbestände sind das Geld, das zu Beginn der Aufzeichnungen in Kasse und auf dem Konto vorhanden war. Sie zählen nicht als Einnahme.</p>
+  </div>
+  <p><button class="btn primary" onclick="App.saveSettings()">Einstellungen speichern</button></p>
+  <div class="card"><div class="page-head"><h2>Benutzer</h2><button class="btn primary small" onclick="App.userForm()">+ Benutzer</button></div>
+    <p class="muted small"><b>Lehrkraft:</b> alle Funktionen, inkl. Einstellungen, Benutzerverwaltung und Löschen. <b>Schüler/in:</b> erfassen, bearbeiten, stornieren, drucken – aber nicht löschen.</p>
+    ${table(['Name','Benutzername','Rolle','Status',['','r']],users)}</div>
+  <div class="card"><h2>Datensicherung</h2>
+    <p class="muted small">Laden Sie regelmäßig (z. B. am Ende jedes Monats und zum Schuljahresende) eine Sicherung herunter und bewahren Sie diese getrennt auf.</p>
+    <div class="btns"><button class="btn" onclick="App.backup()">Sicherung herunterladen</button><button class="btn danger" onclick="document.getElementById('restoreIn').click()">Sicherung einspielen …</button>
+    <input type="file" id="restoreIn" accept=".json,application/json" hidden onchange="App.restore(this)"></div></div>
+  <div class="card"><h2>Protokoll</h2><p class="muted small">Die letzten 200 Änderungen – wer hat wann was getan.</p>${table(['Zeitpunkt','Benutzer','Aktion'],prot)}</div>`;
+}
+
+/* ===================== Formulare: Positionen ===================== */
+function einheitenDatalist(id){return`<datalist id="${id}">${S().einheiten.map(e=>`<option value="${esc(e)}">`).join('')}</datalist>`;}
+function artOptions(sel,mode){
+  const m=stockMap();
+  return`<option value="">— freie Position —</option>`+DB.artikel.filter(a=>a.aktiv!==false||a.id===sel).slice().sort((a,b)=>(a.nr||'').localeCompare(b.nr||'',undefined,{numeric:true}))
+    .map(a=>`<option value="${a.id}" ${a.id===sel?'selected':''}>${esc((a.nr?a.nr+' · ':'')+a.name)}${isLager(a)?` (Bestand ${fmtNum(m[a.id]||0)})`:''}</option>`).join('');
+}
+function posRowHTML(p,mode){
+  p=p||{};
+  return`<tr class="posrow"><td class="c-art"><select class="pos-art" aria-label="Artikel" onchange="App.posArt(this,'${mode}')">${artOptions(p.artikelId,mode)}</select></td>
+    <td><input class="pos-bez" aria-label="Bezeichnung" value="${esc(p.bezeichnung||'')}" placeholder="Bezeichnung"></td>
+    <td class="c-menge"><input class="pos-menge" aria-label="Menge" type="number" step="any" min="0" value="${p.menge??1}" oninput="App.posCalc()"></td>
+    <td class="c-einh"><input class="pos-einh" aria-label="Einheit" value="${esc(p.einheit||'Stück')}" list="einheitenList"></td>
+    <td class="c-preis"><input class="pos-preis" aria-label="Einzelpreis" type="number" step="0.01" min="0" value="${p.preis??''}" placeholder="0,00" oninput="App.posCalc()"></td>
+    <td class="c-sum pos-sum"></td>
+    <td><button type="button" class="icon-btn" title="Position entfernen" onclick="this.closest('tr').remove();App.posCalc()">✕</button></td></tr>`;
+}
+function posEditorHTML(positions,mode){
+  return`<table class="positems"><thead><tr><th>Artikel aus Inventar</th><th>Bezeichnung</th><th>Menge</th><th>Einheit</th><th>${mode==='ek'?'EK-Preis':'Einzelpreis'} €</th><th style="text-align:right">Gesamt</th><th></th></tr></thead>
+    <tbody id="posBody">${(positions.length?positions:[{}]).map(p=>posRowHTML(p,mode)).join('')}</tbody></table>
+    <div class="row-between"><div class="btns"><button type="button" class="btn small" onclick="App.addPos('${mode}')">+ Position</button>${mode==='ek'?`<button type="button" class="btn small ghost" onclick="App.quickArtikel()">+ Neuen Artikel anlegen</button>`:''}</div>
+    <div class="pos-total" id="posTotal"></div></div>${einheitenDatalist('einheitenList')}`;
+}
+function readPositions(){
+  return $$('#posBody .posrow').map(tr=>({
+    artikelId:tr.querySelector('.pos-art').value||null,
+    bezeichnung:tr.querySelector('.pos-bez').value.trim(),
+    menge:Math.round((parseFloat(tr.querySelector('.pos-menge').value)||0)*1000)/1000,
+    einheit:tr.querySelector('.pos-einh').value.trim(),
+    preis:r2(parseFloat(tr.querySelector('.pos-preis').value)||0)
+  })).filter(p=>p.artikelId||p.bezeichnung||p.preis);
+}
+function kontaktOptions(typ,sel){
+  return`<option value="">${typ==='kunde'?'— ohne / Laufkundschaft —':'— anderer Lieferant —'}</option>`+DB.kontakte.filter(k=>k.typ===typ).sort((a,b)=>a.name.localeCompare(b.name)).map(k=>`<option value="${k.id}" ${k.id===sel?'selected':''}>${esc(k.name)}</option>`).join('');
+}
+const anschrift=k=>[k.name,k.ansprechpartner,k.strasse,k.plzOrt].filter(Boolean).join('\n');
+const zaOptions=sel=>Object.entries(ZA).map(([k,l])=>`<option value="${k}" ${k===sel?'selected':''}>${l}</option>`).join('');
+
+/* ===================== Aktionen ===================== */
+const App={
+  go(v){view=v;closeAllModals();render();window.scrollTo(0,0);},
+  goFind(v,q){F[v]=Object.fromEntries(Object.keys(F[v]).map(k=>[k,typeof F[v][k]==='boolean'?false:'']));F[v].q=q;App.go(v);},
+  setF(v,k,x){F[v][k]=x;render();},
+  resetF(v){Object.keys(F[v]).forEach(k=>F[v][k]=typeof F[v][k]==='boolean'?false:'');render();},
+  preset(p){[F.auswertung.von,F.auswertung.bis]=presetRange(p);F.auswertung.init=true;render();},
+  saveNow:()=>saveNow(),saveAs,
+
+  /* ---- Datei ---- */
+  async openFile(){
+    if(!canFS){$('#fileIn').click();return;}
+    try{const[h]=await showOpenFilePicker({types:[{description:'Juniorenfirma-Daten',accept:{'application/json':['.json']}}]});await loadFromHandle(h);}
+    catch(e){if(e.name!=='AbortError')toast('Datei konnte nicht geöffnet werden: '+e.message,'bad');}
+  },
+  async reopenLast(){
+    try{
+      let p=await lastHandle.queryPermission({mode:'readwrite'});
+      if(p!=='granted')p=await lastHandle.requestPermission({mode:'readwrite'});
+      if(p!=='granted'){toast('Kein Zugriff auf die Datei erlaubt.','bad');return;}
+      await loadFromHandle(lastHandle);
+    }catch(e){toast('Datei konnte nicht geöffnet werden: '+e.message+' – bitte über „Datendatei öffnen“ auswählen.','bad');}
+  },
+  async newFile(){
+    if(!canFS){DB=defaultDB();fileHandle=null;fileName='juniorenfirma-daten.json';demoMode=false;dirty=true;render();return;}
+    try{
+      const h=await showSaveFilePicker({suggestedName:'juniorenfirma-daten.json',types:[{description:'Juniorenfirma-Daten',accept:{'application/json':['.json']}}]});
+      DB=defaultDB();fileHandle=h;fileName=h.name;lastMod=0;demoMode=false;
+      await saveNow(true);idbSet('lastHandle',h);lastHandle=h;render();
+    }catch(e){if(e.name!=='AbortError')toast('Fehler: '+e.message,'bad');}
+  },
+  fileInput(inp){
+    const file=inp.files[0];if(!file)return;
+    const r=new FileReader();
+    r.onload=()=>{try{DB=migrate(JSON.parse(r.result));fileHandle=null;fileName=file.name;demoMode=false;dirty=false;autoLogin();render();}catch(e){toast(e.message,'bad');}};
+    r.readAsText(file);inp.value='';
+  },
+  async demo(){DB=await buildDemo();fileHandle=null;fileName='';demoMode=true;dirty=false;currentUser=null;view='dashboard';render();},
+  async closeFile(){
+    if(dirty&&!fileHandle&&!(await ask('Es gibt nicht gespeicherte Änderungen. Trotzdem schließen?','Schließen',true)))return;
+    DB=null;fileHandle=null;currentUser=null;demoMode=false;dirty=false;sessionStorage.removeItem('jf_user');render();
+  },
+
+  /* ---- Anmeldung ---- */
+  async setup(){
+    const firma=val('s_firma').trim(),name=val('s_name').trim(),login=val('s_login').trim().toLowerCase(),pw=val('s_pw');
+    const err=m=>{$('#setupErr').innerHTML=`<div class="alert bad">${esc(m)}</div>`;};
+    if(!firma||!name||!login)return err('Bitte alle Felder ausfüllen.');
+    if(pw.length<4)return err('Das Passwort muss mindestens 4 Zeichen lang sein.');
+    if(pw!==val('s_pw2'))return err('Die Passwörter stimmen nicht überein.');
+    const salt=uid();
+    const u={id:uid(),name,login,role:'lehrkraft',salt,hash:await hashPw(salt,pw),active:true};
+    DB.users.push(u);S().firma.name=firma;
+    currentUser={id:u.id,name:u.name,role:u.role};rememberUser();
+    commit('Ersteinrichtung durchgeführt');render();
+  },
+  async login(){
+    const login=val('l_login').trim().toLowerCase(),pw=val('l_pw');
+    const u=DB.users.find(x=>x.login===login&&x.active!==false);
+    if(!u||(await hashPw(u.salt,pw))!==u.hash){$('#loginErr').innerHTML='<div class="alert bad">Benutzername oder Passwort ist falsch.</div>';$('#l_pw').value='';$('#l_pw').focus();return;}
+    currentUser={id:u.id,name:u.name,role:u.role};rememberUser();view='dashboard';render();
+  },
+  logout(){currentUser=null;sessionStorage.removeItem('jf_user');closeAllModals();render();},
+  myAccount(){
+    openModal('Passwort ändern',`<div class="form-err"></div><label class="fld">Aktuelles Passwort<input type="password" id="m_old" autocomplete="current-password"></label>
+      <label class="fld">Neues Passwort<input type="password" id="m_new" autocomplete="new-password"></label><label class="fld">Neues Passwort wiederholen<input type="password" id="m_new2" autocomplete="new-password"></label>`,
+      `<button class="btn" data-close>Abbrechen</button><button class="btn primary" onclick="App.saveMyPw()">Passwort ändern</button>`);
+  },
+  async saveMyPw(){
+    const u=DB.users.find(x=>x.id===currentUser.id);
+    if((await hashPw(u.salt,val('m_old')))!==u.hash)return formErr('Das aktuelle Passwort ist falsch.');
+    if(val('m_new').length<4)return formErr('Das neue Passwort muss mindestens 4 Zeichen lang sein.');
+    if(val('m_new')!==val('m_new2'))return formErr('Die neuen Passwörter stimmen nicht überein.');
+    u.salt=uid();u.hash=await hashPw(u.salt,val('m_new'));commit('Eigenes Passwort geändert');closeModal();toast('Passwort geändert.');
+  },
+
+  /* ---- Positionen ---- */
+  addPos(mode){$('#posBody').insertAdjacentHTML('beforeend',posRowHTML({},mode));App.posCalc();const rows=$$('#posBody .posrow');rows[rows.length-1].querySelector('select').focus();},
+  posArt(sel,mode){
+    const tr=sel.closest('tr'),a=artikelById(sel.value);
+    if(a){tr.querySelector('.pos-bez').value=a.name;tr.querySelector('.pos-einh').value=a.einheit||'Stück';tr.querySelector('.pos-preis').value=mode==='ek'?(a.ekPreis||''):(a.vkPreis||'');}
+    App.posCalc();
+  },
+  posCalc(){
+    let zw=0;
+    $$('#posBody .posrow').forEach(tr=>{const s=r2((parseFloat(tr.querySelector('.pos-menge').value)||0)*(parseFloat(tr.querySelector('.pos-preis').value)||0));zw+=s;tr.querySelector('.pos-sum').textContent=eur(s);});
+    zw=r2(zw);
+    const rp=document.getElementById('f_rabatt')?Math.min(100,Math.max(0,parseFloat(val('f_rabatt'))||0)):0,rb=r2(zw*rp/100);
+    const el=$('#posTotal');if(el)el.innerHTML=rb?`Zwischensumme ${eur(zw)}<br>Rabatt ${fmtNum(rp)} %: − ${eur(rb)}<br><b>Gesamt ${eur(zw-rb)}</b>`:`<b>Gesamt ${eur(zw)}</b>`;
+  },
+
+  /* ---- Rechnungen & Angebote ---- */
+  docEditor(typ,id,opts={}){
+    const d=id?docById(id):null,src=opts.from||null,s=S(),isR=typ==='rechnung';
+    if(d&&isR&&d.status!=='offen'){toast('Bezahlte oder stornierte Rechnungen können nicht mehr bearbeitet werden.','bad');return;}
+    const base=d||src||{};
+    const title=d?`${isR?'Rechnung':'Angebot'} ${d.nr} bearbeiten`:isR?(opts.bar?'Barverkauf erfassen':src?`Rechnung aus Angebot ${src.nr}`:'Neue Rechnung'):'Neues Angebot';
+    const empf=d?d.empfaenger:src?src.empfaenger:opts.bar?'Barverkauf':'';
+    openModal(title,`<div class="form-err"></div>
+      ${opts.bar?'<div class="alert info">Barverkauf: Die Ware wird sofort bezahlt. Bestand und Kasse werden automatisch angepasst. Eine Quittung/Rechnung kann gedruckt werden.</div>':''}
+      <div class="grid2">
+        <div><label class="fld">Kunde<select id="f_kunde" onchange="App.kundeChanged(this)">${kontaktOptions('kunde',base.kundeId)}</select></label>
+          <label class="fld">Anschrift auf dem Beleg${opts.bar?'':' *'}<textarea id="f_empf" rows="4" placeholder="Name&#10;Straße&#10;PLZ Ort">${esc(empf)}</textarea></label></div>
+        <div class="grid2">
+          <label class="fld">${isR?'Rechnungsdatum':'Angebotsdatum'}<input type="date" id="f_datum" value="${d?d.datum:today()}"></label>
+          ${isR?`<label class="fld">Liefer-/Leistungsdatum<input type="date" id="f_liefer" value="${esc(d?d.lieferdatum:'')}"></label>
+            <label class="fld">Zahlungsziel (Tage)<input type="number" min="0" id="f_ziel" value="${d?d.zielTage:s.zahlungszielTage}"></label>
+            ${!d?`<label class="fld">Zahlung<select id="f_zahlung"><option value="offen" ${opts.bar?'':'selected'}>offen – Kunde zahlt später</option><option value="bar" ${opts.bar?'selected':''}>sofort bar bezahlt</option><option value="bank">sofort per Überweisung/Karte</option></select></label>`:''}`
+          :`<label class="fld">Gültig bis<input type="date" id="f_gueltig" value="${d?d.gueltigBis:addDays(today(),s.angebotGueltigTage)}"></label>`}
+        </div>
+      </div>
+      <label class="fld">Einleitungstext<textarea id="f_einl" rows="2">${esc(d?d.einleitung:(isR?s.textRechnung:s.textAngebot))}</textarea></label>
+      <h3>Positionen</h3>${posEditorHTML(base.positionen?clone(base.positionen):[],'vk')}
+      <div class="grid2" style="margin-top:10px"><label class="fld">Rabatt in %<input type="number" id="f_rabatt" min="0" max="100" step="0.1" value="${+base.rabatt||0}" oninput="App.posCalc()"></label>
+        <label class="fld">Schlusstext / Bemerkung (optional)<textarea id="f_bem" rows="2">${esc(base.bemerkung||'')}</textarea></label></div>
+      <input type="hidden" id="f_aus" value="${src?src.id:''}">`,
+      `<button class="btn" data-close>Abbrechen</button><button class="btn" onclick="App.saveDoc('${typ}',${js(id||'')},false)">Speichern</button><button class="btn primary" onclick="App.saveDoc('${typ}',${js(id||'')},true)">Speichern & drucken</button>`,{wide:true});
+    App.posCalc();
+  },
+  kundeChanged(sel){const k=kontaktById(sel.value);if(k)$('#f_empf').value=anschrift(k);},
+  saveDoc(typ,id,andPrint){
+    const isR=typ==='rechnung',pos=readPositions(),e=[];
+    if(!pos.length)e.push('Bitte mindestens eine Position erfassen.');
+    pos.forEach((p,i)=>{if(!p.bezeichnung)e.push(`Position ${i+1}: Bezeichnung fehlt.`);if(!(p.menge>0))e.push(`Position ${i+1}: Menge muss größer als 0 sein.`);});
+    const datum=val('f_datum');if(!datum)e.push('Bitte ein Datum angeben.');
+    const zahlung=document.getElementById('f_zahlung')?val('f_zahlung'):null;
+    const empf=val('f_empf').trim();
+    if(!empf&&!(isR&&zahlung&&zahlung!=='offen'))e.push('Bitte Kunde bzw. Anschrift angeben.');
+    if(e.length)return formErr(e.length>1?['Bitte prüfen:',...e]:e);
+    const old=id?docById(id):null;
+    const d=old?clone(old):{id:uid(),typ,created:nowStamp(),user:currentUser.name,status:'offen'};
+    Object.assign(d,{kundeId:val('f_kunde')||null,empfaenger:empf||'Barverkauf',datum,positionen:pos,
+      rabatt:Math.min(100,Math.max(0,parseFloat(val('f_rabatt'))||0)),einleitung:val('f_einl').trim(),bemerkung:val('f_bem').trim(),changed:nowStamp()});
+    if(isR){
+      d.lieferdatum=val('f_liefer');d.zielTage=Math.max(0,parseInt(val('f_ziel'),10)||0);d.faellig=addDays(datum,d.zielTage);
+      if(!old){if(zahlung&&zahlung!=='offen'){d.status='bezahlt';d.bezahltAm=datum;d.zahlungsart=zahlung;}if(val('f_aus'))d.ausAngebot=val('f_aus');}
+      const probs=stockProblems(d.id,movesFor(d.positionen,-1));
+      if(probs.length)return formErr(['Nicht genügend Ware auf Lager:',...probs,'Bitte zuerst einen Einkauf erfassen oder den Bestand im Inventar korrigieren.']);
+    }else d.gueltigBis=val('f_gueltig');
+    if(!old)d.nr=nextNr(isR?S().prefix.rechnung:S().prefix.angebot,DB.dokumente.filter(x=>x.typ===typ),datum);
+    if(old)DB.dokumente[DB.dokumente.indexOf(old)]=d;else DB.dokumente.push(d);
+    if(d.ausAngebot&&!old){const an=docById(d.ausAngebot);if(an){an.status='angenommen';an.rechnungId=d.id;}}
+    syncDoc(d);
+    commit(`${isR?'Rechnung':'Angebot'} ${d.nr} ${old?'geändert':'erstellt'} (${eur(docSum(d).gesamt)})`);
+    closeModal();render();toast(`${isR?'Rechnung':'Angebot'} ${d.nr} gespeichert.`);
+    if(andPrint)App.printDoc(d.id);
+  },
+  printDoc(id){const d=docById(id);doPrint(docPrintHTML(d),`${d.typ==='rechnung'?'Rechnung':'Angebot'} ${d.nr}`);},
+  bezahlt(id){
+    const d=docById(id);
+    openModal(`Zahlungseingang ${d.nr}`,`<div class="form-err"></div><p>Rechnungsbetrag: <b>${eur(docSum(d).gesamt)}</b> – ${esc(firstLine(d.empfaenger))}</p>
+      <div class="grid2"><label class="fld">Zahlungsdatum<input type="date" id="p_datum" value="${today()}"></label><label class="fld">Zahlungsart<select id="p_za">${zaOptions('bank')}</select></label></div>
+      <p class="muted small">Die Einnahme wird mit diesem Datum gebucht.</p>`,
+      `<button class="btn" data-close>Abbrechen</button><button class="btn ok" onclick="App.saveBezahlt('${id}')">Zahlung buchen</button>`);
+  },
+  saveBezahlt(id){
+    const d=docById(id);if(!val('p_datum'))return formErr('Bitte ein Datum angeben.');
+    d.status='bezahlt';d.bezahltAm=val('p_datum');d.zahlungsart=val('p_za');syncDoc(d);
+    commit(`Zahlung zu Rechnung ${d.nr} gebucht (${eur(docSum(d).gesamt)})`);closeModal();render();toast('Zahlung gebucht.');
+  },
+  async zahlungZurueck(id){
+    const d=docById(id);
+    if(!(await ask(`Zahlung zu Rechnung ${esc(d.nr)} zurücknehmen? Die Einnahme wird entfernt und die Rechnung ist wieder offen.`,'Zurücknehmen',true)))return;
+    d.status='offen';delete d.bezahltAm;delete d.zahlungsart;syncDoc(d);commit(`Zahlung zu Rechnung ${d.nr} zurückgenommen`);render();
+  },
+  async storno(id){
+    const d=docById(id);
+    const extra=d.status==='bezahlt'?' Die zugehörige Einnahme wird ebenfalls entfernt (z. B. weil das Geld zurückgegeben wurde).':'';
+    if(!(await ask(`Rechnung ${esc(d.nr)} stornieren? Die Ware wird dem Lager wieder zugebucht.${extra} Die Rechnung bleibt als „storniert“ sichtbar.`,'Stornieren',true)))return;
+    d.status='storniert';d.storniertAm=today();syncDoc(d);commit(`Rechnung ${d.nr} storniert`);render();toast('Rechnung storniert.');
+  },
+  async delDoc(id){
+    if(!isLK())return;
+    const d=docById(id);
+    if(!(await ask(`${d.typ==='rechnung'?'Rechnung':'Angebot'} ${esc(d.nr)} endgültig löschen? ${d.typ==='rechnung'?'Bestandsänderungen und Buchungen dieser Rechnung werden ebenfalls entfernt. ':''}Dies kann nicht rückgängig gemacht werden. Tipp: Rechnungen besser stornieren.`,'Endgültig löschen',true)))return;
+    DB.dokumente=DB.dokumente.filter(x=>x.id!==id);
+    DB.bewegungen=DB.bewegungen.filter(b=>b.bezug!==id);DB.buchungen=DB.buchungen.filter(b=>!(b.quelle&&b.quelle.id===id));
+    DB.dokumente.forEach(x=>{if(x.rechnungId===id){x.status='offen';delete x.rechnungId;}});
+    commit(`${d.typ==='rechnung'?'Rechnung':'Angebot'} ${d.nr} gelöscht`);render();
+  },
+  angebotZuRechnung(id){const a=docById(id);App.docEditor('rechnung',null,{from:a});},
+  angebotStatus(id,st){const a=docById(id);a.status=st;commit(`Angebot ${a.nr}: Status „${st}“`);render();},
+  angebotKopie(id){const a=docById(id);const c=clone(a);c.kundeId=a.kundeId;delete c.id;App.docEditor('angebot',null,{});
+    // Felder mit Kopie füllen
+    $('#f_kunde').value=c.kundeId||'';$('#f_empf').value=c.empfaenger;$('#f_einl').value=c.einleitung||'';$('#f_bem').value=c.bemerkung||'';$('#f_rabatt').value=c.rabatt||0;
+    $('#posBody').innerHTML=c.positionen.map(p=>posRowHTML(p,'vk')).join('');App.posCalc();},
+
+  /* ---- Einkauf ---- */
+  einkaufEditor(id){
+    const e=id?ekById(id):null,s=S();
+    const kats=[...new Set([...s.katAusgaben,...(e?[e.kategorie]:[])])];
+    openModal(e?`Einkauf ${e.nr} bearbeiten`:'Einkauf erfassen',`<div class="form-err"></div>
+      <div class="grid2">
+        <div><label class="fld">Lieferant<select id="f_lief" onchange="App.liefChanged(this)">${kontaktOptions('lieferant',e?e.lieferantId:'')}</select></label>
+          <label class="fld">Name des Lieferanten *<input id="f_lname" value="${esc(e?e.lieferantName:'')}" placeholder="z. B. Großmarkt Musterstadt"></label>
+          <label class="fld">Belegnummer des Lieferanten (Rechnung/Kassenbon)<input id="f_beleg" value="${esc(e?e.beleg:'')}"></label></div>
+        <div><div class="grid2"><label class="fld">Einkaufsdatum<input type="date" id="f_datum" value="${e?e.datum:today()}"></label>
+          <label class="fld">Kategorie<select id="f_kat">${kats.map(k=>`<option ${k===(e?e.kategorie:'Wareneinkauf')?'selected':''}>${esc(k)}</option>`).join('')}</select></label></div>
+          <div class="grid2"><label class="fld">Zahlung<select id="f_zahlung" onchange="document.getElementById('f_bezAmWrap').classList.toggle('hidden',this.value==='offen')">
+            <option value="bar" ${e&&e.status==='bezahlt'&&e.zahlungsart==='bar'||!e?'selected':''}>bezahlt – bar (Kasse)</option>
+            <option value="bank" ${e&&e.status==='bezahlt'&&e.zahlungsart==='bank'?'selected':''}>bezahlt – Bank/Überweisung</option>
+            <option value="offen" ${e&&e.status==='offen'?'selected':''}>noch nicht bezahlt</option></select></label>
+          <label class="fld ${e&&e.status==='offen'?'hidden':''}" id="f_bezAmWrap">Bezahlt am<input type="date" id="f_bezAm" value="${e&&e.bezahltAm?e.bezahltAm:''}" placeholder="wie Einkaufsdatum"></label></div>
+          <label class="fld">Notiz<input id="f_notiz" value="${esc(e?e.notiz:'')}"></label></div>
+      </div>
+      <h3>Positionen</h3>${posEditorHTML(e?clone(e.positionen):[],'ek')}
+      <label class="check"><input type="checkbox" id="f_updEK" checked> Einkaufspreise im Inventar auf diese Preise aktualisieren</label>`,
+      `<button class="btn" data-close>Abbrechen</button><button class="btn primary" onclick="App.saveEinkauf(${js(id||'')})">Speichern</button>`,{wide:true});
+    App.posCalc();
+  },
+  liefChanged(sel){const k=kontaktById(sel.value);if(k)$('#f_lname').value=k.name;},
+  saveEinkauf(id){
+    const pos=readPositions(),e=[];
+    if(!pos.length)e.push('Bitte mindestens eine Position erfassen.');
+    pos.forEach((p,i)=>{if(!p.bezeichnung)e.push(`Position ${i+1}: Bezeichnung fehlt.`);if(!(p.menge>0))e.push(`Position ${i+1}: Menge muss größer als 0 sein.`);});
+    const lname=val('f_lname').trim();if(!lname)e.push('Bitte den Lieferanten angeben.');
+    const datum=val('f_datum');if(!datum)e.push('Bitte ein Datum angeben.');
+    if(e.length)return formErr(e.length>1?['Bitte prüfen:',...e]:e);
+    const old=id?ekById(id):null;
+    const x=old?clone(old):{id:uid(),created:nowStamp(),user:currentUser.name};
+    const z=val('f_zahlung');
+    Object.assign(x,{lieferantId:val('f_lief')||null,lieferantName:lname,beleg:val('f_beleg').trim(),datum,kategorie:val('f_kat'),positionen:pos,notiz:val('f_notiz').trim(),changed:nowStamp(),
+      status:z==='offen'?'offen':'bezahlt',zahlungsart:z==='offen'?null:z,bezahltAm:z==='offen'?null:(val('f_bezAm')||datum)});
+    const probs=stockProblems(x.id,movesFor(pos,1));
+    if(probs.length)return formErr(['Diese Änderung ist nicht möglich, weil die Ware schon verkauft wurde:',...probs]);
+    if(!old)x.nr=nextNr(S().prefix.einkauf,DB.einkaeufe,datum);
+    if(old)DB.einkaeufe[DB.einkaeufe.indexOf(old)]=x;else DB.einkaeufe.push(x);
+    if(val('f_updEK'))pos.forEach(p=>{const a=artikelById(p.artikelId);if(a&&p.preis>0)a.ekPreis=p.preis;});
+    syncEinkauf(x);
+    commit(`Einkauf ${x.nr} ${old?'geändert':'erfasst'} (${eur(ekSum(x))})`);closeModal();render();toast(`Einkauf ${x.nr} gespeichert.`);
+  },
+  ekBezahlt(id){
+    const e=ekById(id);
+    openModal(`Zahlung Einkauf ${e.nr}`,`<div class="form-err"></div><p>Betrag: <b>${eur(ekSum(e))}</b> an ${esc(e.lieferantName)}</p>
+      <div class="grid2"><label class="fld">Zahlungsdatum<input type="date" id="p_datum" value="${today()}"></label><label class="fld">Zahlungsart<select id="p_za">${zaOptions('bank')}</select></label></div>`,
+      `<button class="btn" data-close>Abbrechen</button><button class="btn ok" onclick="App.saveEkBezahlt('${id}')">Zahlung buchen</button>`);
+  },
+  saveEkBezahlt(id){
+    const e=ekById(id);if(!val('p_datum'))return formErr('Bitte ein Datum angeben.');
+    e.status='bezahlt';e.bezahltAm=val('p_datum');e.zahlungsart=val('p_za');syncEinkauf(e);
+    commit(`Zahlung zu Einkauf ${e.nr} gebucht`);closeModal();render();toast('Zahlung gebucht.');
+  },
+  async delEinkauf(id){
+    if(!isLK())return;
+    const e=ekById(id),probs=stockProblems(id,[]);
+    if(probs.length){openModal('Löschen nicht möglich',`<div class="alert bad"><b>Die Ware aus diesem Einkauf wurde bereits verkauft.</b><ul>${probs.map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div>`);return;}
+    if(!(await ask(`Einkauf ${esc(e.nr)} endgültig löschen? Bestand und Ausgabe werden zurückgenommen.`,'Löschen',true)))return;
+    DB.einkaeufe=DB.einkaeufe.filter(x=>x.id!==id);DB.bewegungen=DB.bewegungen.filter(b=>b.bezug!==id);DB.buchungen=DB.buchungen.filter(b=>!(b.quelle&&b.quelle.id===id));
+    commit(`Einkauf ${e.nr} gelöscht`);render();
+  },
+
+  /* ---- Inventar ---- */
+  artikelForm(id){
+    const a=id?artikelById(id):null;
+    openModal(a?'Artikel bearbeiten':'Neuer Artikel',`<div class="form-err"></div>${artikelFormHTML(a,'a_',false)}`,
+      `<button class="btn" data-close>Abbrechen</button><button class="btn primary" onclick="App.saveArtikel(${js(id||'')},'a_')">Speichern</button>`);
+  },
+  quickArtikel(){
+    openModal('Neuen Artikel anlegen',`<div class="form-err"></div>${artikelFormHTML(null,'q_',true)}`,
+      `<button class="btn" data-close>Abbrechen</button><button class="btn primary" onclick="App.saveArtikel('','q_')">Anlegen & übernehmen</button>`);
+  },
+  saveArtikel(id,p){
+    const name=val(p+'name').trim();if(!name)return formErr('Bitte eine Bezeichnung angeben.');
+    const nr=val(p+'nr').trim();
+    if(nr&&DB.artikel.some(a=>a.nr===nr&&a.id!==id))return formErr(`Die Artikel-Nr. ${nr} ist bereits vergeben.`);
+    const old=id?artikelById(id):null;
+    const a=old||{id:uid(),created:nowStamp()};
+    Object.assign(a,{nr,name,beschreibung:val(p+'beschr').trim(),einheit:val(p+'einh').trim()||'Stück',ekPreis:r2(parseFloat(val(p+'ek'))||0),vkPreis:r2(parseFloat(val(p+'vk'))||0),
+      lager:!!val(p+'lager'),mindestbestand:Math.max(0,parseFloat(val(p+'min'))||0),aktiv:old?!!val(p+'aktiv'):true});
+    if(!old){
+      DB.artikel.push(a);
+      const anf=parseFloat(val(p+'anf'))||0;
+      if(anf>0&&a.lager)DB.bewegungen.push({id:uid(),datum:today(),artikelId:a.id,menge:anf,art:'anfang',bezug:null,text:'Anfangsbestand',created:nowStamp()});
+    }
+    commit(`Artikel ${a.nr} ${a.name} ${old?'geändert':'angelegt'}`);closeModal();
+    if(p==='q_'){
+      $$('#posBody .pos-art').forEach(sel=>{const v=sel.value;sel.innerHTML=artOptions(v,'ek');sel.value=v;});
+      let row=$$('#posBody .posrow').find(tr=>!tr.querySelector('.pos-art').value&&!tr.querySelector('.pos-bez').value.trim());
+      if(!row){App.addPos('ek');row=$$('#posBody .posrow').pop();}
+      const sel=row.querySelector('.pos-art');sel.value=a.id;App.posArt(sel,'ek');
+      row.querySelector('.pos-menge').focus();
+    }else render();
+    toast(`Artikel „${a.name}“ gespeichert.`);
+  },
+  korrektur(id){
+    const a=artikelById(id),best=stockMap()[id]||0;
+    openModal(`Bestand korrigieren: ${a.name}`,`<div class="form-err"></div>
+      <p>Aktueller Bestand laut System: <b>${fmtNum(best)} ${esc(a.einheit)}</b></p>
+      <div class="grid2"><label class="fld">Tatsächlicher Bestand (gezählt)<input type="number" step="any" min="0" id="k_ist" value="${best}"></label><label class="fld">Datum<input type="date" id="k_datum" value="${today()}"></label></div>
+      <label class="fld">Grund<select id="k_grund"><option>Inventur (Zählung)</option><option>Schwund / Diebstahl</option><option>Beschädigung / Verderb</option><option>Eigenverbrauch / Probe</option><option>Rückgabe an Lieferant</option><option>Sonstiges</option></select></label>
+      <label class="fld">Bemerkung<input id="k_bem"></label>
+      <p class="muted small">Eine Bestandskorrektur verändert nur den Lagerbestand – es wird keine Einnahme oder Ausgabe gebucht.</p>`,
+      `<button class="btn" data-close>Abbrechen</button><button class="btn primary" onclick="App.saveKorrektur('${id}')">Bestand übernehmen</button>`);
+  },
+  saveKorrektur(id){
+    const a=artikelById(id),best=stockMap()[id]||0,ist=parseFloat(val('k_ist'));
+    if(!(ist>=0))return formErr('Bitte einen Bestand von 0 oder mehr angeben.');
+    const diff=Math.round((ist-best)*1000)/1000;
+    if(!diff){closeModal();toast('Bestand unverändert.');return;}
+    const text=val('k_grund')+(val('k_bem').trim()?': '+val('k_bem').trim():'');
+    DB.bewegungen.push({id:uid(),datum:val('k_datum')||today(),artikelId:id,menge:diff,art:'korrektur',bezug:null,text,created:nowStamp(),user:currentUser.name});
+    commit(`Bestand ${a.name} korrigiert: ${diff>0?'+':''}${fmtNum(diff)} (${text})`);closeModal();render();toast('Bestand korrigiert.');
+  },
+  verlauf(id){
+    const a=artikelById(id);let run=0;
+    const list=DB.bewegungen.filter(b=>b.artikelId===id).sort((x,y)=>x.datum.localeCompare(y.datum)||(x.created||'').localeCompare(y.created||''));
+    const rows=list.map(b=>{run=Math.round((run+b.menge)*1000)/1000;return`<tr><td class="nowrap">${fmtD(b.datum)}</td><td>${BEW_ART[b.art]||b.art}</td><td>${esc(b.text)}</td><td class="r ${b.menge>=0?'pos':'neg'}">${b.menge>0?'+':''}${fmtNum(b.menge)}</td><td class="r"><b>${fmtNum(run)}</b></td></tr>`;});
+    openModal(`Bestandsverlauf: ${a.name}`,table(['Datum','Art','Vorgang',['Menge','r'],['Bestand','r']],rows.reverse(),'','Noch keine Bewegungen.'),'',{wide:true});
+  },
+  async delArtikel(id){
+    if(!isLK())return;
+    const a=artikelById(id);
+    const used=DB.dokumente.some(d=>d.positionen.some(p=>p.artikelId===id))||DB.einkaeufe.some(e=>e.positionen.some(p=>p.artikelId===id))||DB.bewegungen.some(b=>b.artikelId===id&&b.art!=='anfang');
+    if(used){
+      if(await ask(`„${esc(a.name)}“ wird bereits in Belegen verwendet und kann deshalb nicht gelöscht werden. Stattdessen als <b>inaktiv</b> markieren? Er erscheint dann nicht mehr in der Auswahl.`,'Inaktiv setzen')){a.aktiv=false;commit(`Artikel ${a.name} deaktiviert`);render();}
+      return;
+    }
+    if(!(await ask(`Artikel „${esc(a.name)}“ endgültig löschen?`,'Löschen',true)))return;
+    DB.artikel=DB.artikel.filter(x=>x.id!==id);DB.bewegungen=DB.bewegungen.filter(b=>b.artikelId!==id);
+    commit(`Artikel ${a.name} gelöscht`);render();
+  },
+
+  /* ---- Buchungen ---- */
+  buchung(id,typ){
+    const b=id?DB.buchungen.find(x=>x.id===id):null;
+    if(b&&b.quelle)return;
+    typ=b?b.typ:typ;
+    const kats=[...new Set([...(typ==='einnahme'?S().katEinnahmen:S().katAusgaben),...(b?[b.kategorie]:[])])];
+    const defKat=typ==='einnahme'?(kats.find(k=>k!=='Umsatzerlöse')||kats[0]):(kats.find(k=>k!=='Wareneinkauf')||kats[0]);
+    openModal(b?'Buchung bearbeiten':typ==='einnahme'?'Sonstige Einnahme erfassen':'Sonstige Ausgabe erfassen',`<div class="form-err"></div>
+      ${!b?`<p class="muted small">${typ==='einnahme'?'Für Warenverkäufe bitte „Barverkauf“ oder „Rechnung“ verwenden, damit der Bestand angepasst wird.':'Für Wareneinkäufe bitte „Einkauf erfassen“ verwenden, damit der Bestand angepasst wird.'}</p>`:''}
+      <div class="grid2"><label class="fld">Datum der Zahlung<input type="date" id="b_datum" value="${b?b.datum:today()}"></label><label class="fld">Betrag in € *<input type="number" step="0.01" min="0.01" id="b_betrag" value="${b?b.betrag:''}" placeholder="0,00"></label></div>
+      <label class="fld">Beschreibung *<input id="b_beschr" value="${esc(b?b.beschreibung:'')}" placeholder="${typ==='einnahme'?'z. B. Spende Förderverein':'z. B. Druck von Werbeflyern'}"></label>
+      <div class="grid2"><label class="fld">Kategorie<select id="b_kat">${kats.map(k=>`<option ${k===(b?b.kategorie:defKat)?'selected':''}>${esc(k)}</option>`).join('')}</select></label>
+      <label class="fld">Zahlungsart<select id="b_za">${zaOptions(b?b.zahlungsart:'bar')}</select></label></div>
+      <div class="grid2"><label class="fld">Belegnummer<input id="b_beleg" value="${esc(b?b.beleg:nextNr(S().prefix.buchung,DB.buchungen,today(),'beleg'))}"></label>
+      <label class="fld">${typ==='einnahme'?'Zahler':'Empfänger'} (optional)<select id="b_kontakt"><option value="">—</option>${DB.kontakte.slice().sort((x,y)=>x.name.localeCompare(y.name)).map(k=>`<option value="${k.id}" ${b&&b.kontaktId===k.id?'selected':''}>${esc(k.name)}</option>`).join('')}</select></label></div>`,
+      `<button class="btn" data-close>Abbrechen</button><button class="btn ${typ==='einnahme'?'ok':'bad'}" onclick="App.saveBuchung(${js(id||'')},'${typ}')">Speichern</button>`);
+  },
+  saveBuchung(id,typ){
+    const betrag=r2(parseFloat(val('b_betrag'))),e=[];
+    if(!(betrag>0))e.push('Bitte einen Betrag größer als 0 angeben.');
+    if(!val('b_datum'))e.push('Bitte ein Datum angeben.');
+    if(!val('b_beschr').trim())e.push('Bitte eine Beschreibung angeben.');
+    if(e.length)return formErr(e.length>1?['Bitte prüfen:',...e]:e);
+    const old=id?DB.buchungen.find(x=>x.id===id):null;
+    const b=old||{id:uid(),typ,created:nowStamp(),user:currentUser.name,quelle:null};
+    Object.assign(b,{datum:val('b_datum'),betrag,beschreibung:val('b_beschr').trim(),kategorie:val('b_kat'),zahlungsart:val('b_za'),beleg:val('b_beleg').trim(),kontaktId:val('b_kontakt')||null});
+    if(!old)DB.buchungen.push(b);
+    commit(`${typ==='einnahme'?'Einnahme':'Ausgabe'} ${b.beleg} ${old?'geändert':'erfasst'}: ${b.beschreibung} (${eur(betrag)})`);closeModal();render();toast('Buchung gespeichert.');
+  },
+  async delBuchung(id){
+    if(!isLK())return;
+    const b=DB.buchungen.find(x=>x.id===id);
+    if(!(await ask(`Buchung „${esc(b.beschreibung)}“ über ${eur(b.betrag)} löschen?`,'Löschen',true)))return;
+    DB.buchungen=DB.buchungen.filter(x=>x.id!==id);commit(`Buchung ${b.beleg} gelöscht: ${b.beschreibung} (${eur(b.betrag)})`);render();
+  },
+
+  /* ---- Kontakte ---- */
+  kontaktForm(id,typ){
+    const k=id?kontaktById(id):null;typ=k?k.typ:typ;
+    const inp=(f,l,ph='')=>`<label class="fld">${l}<input id="k_${f}" value="${esc(k?k[f]:'')}" placeholder="${ph}"></label>`;
+    openModal(k?'Kontakt bearbeiten':typ==='kunde'?'Neuer Kunde':'Neuer Lieferant',`<div class="form-err"></div>
+      <label class="fld">Typ<select id="k_typ"><option value="kunde" ${typ==='kunde'?'selected':''}>Kunde</option><option value="lieferant" ${typ==='lieferant'?'selected':''}>Lieferant</option></select></label>
+      ${inp('name','Name / Firma *')}${inp('ansprechpartner','Ansprechpartner/in')}
+      <div class="grid2">${inp('strasse','Straße und Hausnummer')}${inp('plzOrt','PLZ und Ort')}${inp('email','E-Mail')}${inp('telefon','Telefon')}</div>
+      <label class="fld">Notiz<textarea id="k_notiz" rows="2">${esc(k?k.notiz:'')}</textarea></label>`,
+      `<button class="btn" data-close>Abbrechen</button><button class="btn primary" onclick="App.saveKontakt(${js(id||'')})">Speichern</button>`);
+  },
+  saveKontakt(id){
+    if(!val('k_name').trim())return formErr('Bitte einen Namen angeben.');
+    const old=id?kontaktById(id):null,k=old||{id:uid(),created:nowStamp()};
+    ['typ','name','ansprechpartner','strasse','plzOrt','email','telefon','notiz'].forEach(f=>k[f]=val('k_'+f).trim());
+    if(!old)DB.kontakte.push(k);
+    commit(`${k.typ==='kunde'?'Kunde':'Lieferant'} ${k.name} ${old?'geändert':'angelegt'}`);closeModal();render();toast('Kontakt gespeichert.');
+  },
+  async delKontakt(id){
+    if(!isLK())return;
+    const k=kontaktById(id);
+    if(!(await ask(`„${esc(k.name)}“ löschen? Bereits erstellte Belege behalten die Anschrift.`,'Löschen',true)))return;
+    DB.kontakte=DB.kontakte.filter(x=>x.id!==id);commit(`Kontakt ${k.name} gelöscht`);render();
+  },
+
+  /* ---- Einstellungen ---- */
+  logo(inp){
+    if(!inp){S().firma.logo='';commit('Logo entfernt');render();return;}
+    const f=inp.files[0];if(!f)return;
+    if(f.size>300*1024){toast('Das Logo ist zu groß (max. 300 KB). Bitte verkleinern.','bad');inp.value='';return;}
+    const r=new FileReader();r.onload=()=>{S().firma.logo=r.result;commit('Logo geändert');render();};r.readAsDataURL(f);
+  },
+  saveSettings(){
+    const s=S(),f=s.firma;
+    const name=val('e_name').trim();if(!name){toast('Bitte den Namen der Juniorenfirma angeben.','bad');return;}
+    const pref={rechnung:val('e_pR').trim(),angebot:val('e_pA').trim(),einkauf:val('e_pE').trim(),buchung:val('e_pB').trim()};
+    if(Object.values(pref).some(p=>!/^[A-Za-z0-9]{1,6}$/.test(p))){toast('Kürzel dürfen nur Buchstaben und Ziffern enthalten (1–6 Zeichen).','bad');return;}
+    if(new Set(Object.values(pref)).size<4){toast('Die Kürzel müssen unterschiedlich sein.','bad');return;}
+    Object.assign(f,{name,zusatz:val('e_zusatz').trim(),strasse:val('e_strasse').trim(),plzOrt:val('e_plzOrt').trim(),telefon:val('e_telefon').trim(),email:val('e_email').trim(),web:val('e_web').trim(),
+      inhaber:val('e_inhaber').trim(),bank:val('e_bank').trim(),iban:val('e_iban').trim(),bic:val('e_bic').trim()});
+    const lines=id=>[...new Set(val(id).split('\n').map(x=>x.trim()).filter(Boolean))];
+    const kE=lines('e_kE'),kA=lines('e_kA'),ei=lines('e_einh');
+    if(!kE.length||!kA.length){toast('Es muss mindestens eine Kategorie für Einnahmen und Ausgaben geben.','bad');return;}
+    Object.assign(s,{prefix:pref,zahlungszielTage:Math.max(0,parseInt(val('e_ziel'),10)||0),angebotGueltigTage:Math.max(0,parseInt(val('e_gueltig'),10)||0),
+      steuerhinweis:val('e_steuer').trim(),textRechnung:val('e_tR').trim(),textAngebot:val('e_tA').trim(),katEinnahmen:kE,katAusgaben:kA,einheiten:ei.length?ei:['Stück'],
+      anfangBar:r2(parseFloat(val('e_aBar'))||0),anfangBank:r2(parseFloat(val('e_aBank'))||0)});
+    commit('Einstellungen geändert');render();toast('Einstellungen gespeichert.');
+  },
+  userForm(id){
+    const u=id?DB.users.find(x=>x.id===id):null;
+    openModal(u?'Benutzer bearbeiten':'Neuer Benutzer',`<div class="form-err"></div>
+      <label class="fld">Name *<input id="u_name" value="${esc(u?u.name:'')}" placeholder="z. B. Lena Schmidt"></label>
+      <div class="grid2"><label class="fld">Benutzername *<input id="u_login" value="${esc(u?u.login:'')}" autocomplete="off"></label>
+      <label class="fld">Rolle<select id="u_role"><option value="schueler" ${!u||u.role==='schueler'?'selected':''}>Schüler/in</option><option value="lehrkraft" ${u&&u.role==='lehrkraft'?'selected':''}>Lehrkraft</option></select></label></div>
+      ${u?`<label class="check"><input type="checkbox" id="u_active" ${u.active!==false?'checked':''}> Konto aktiv (deaktivierte Konten können sich nicht anmelden)</label>`:`<label class="fld">Startpasswort *<input id="u_pw" type="text" autocomplete="off"></label>`}`,
+      `<button class="btn" data-close>Abbrechen</button><button class="btn primary" onclick="App.saveUser(${js(id||'')})">Speichern</button>`);
+  },
+  async saveUser(id){
+    const name=val('u_name').trim(),login=val('u_login').trim().toLowerCase(),role=val('u_role');
+    if(!name||!login)return formErr('Bitte Name und Benutzername angeben.');
+    if(DB.users.some(x=>x.login===login&&x.id!==id))return formErr('Dieser Benutzername ist bereits vergeben.');
+    const old=id?DB.users.find(x=>x.id===id):null;
+    if(old){
+      const active=!!val('u_active');
+      const otherLK=DB.users.some(x=>x.id!==id&&x.role==='lehrkraft'&&x.active!==false);
+      if((role!=='lehrkraft'||!active)&&old.role==='lehrkraft'&&!otherLK)return formErr('Es muss mindestens eine aktive Lehrkraft geben.');
+      Object.assign(old,{name,login,role,active});
+      if(old.id===currentUser.id)currentUser={id:old.id,name,role};
+    }else{
+      const pw=val('u_pw');if(pw.length<4)return formErr('Das Startpasswort muss mindestens 4 Zeichen lang sein.');
+      const salt=uid();DB.users.push({id:uid(),name,login,role,salt,hash:await hashPw(salt,pw),active:true});
+    }
+    commit(`Benutzer ${name} ${old?'geändert':'angelegt'}`);closeModal();render();toast('Benutzer gespeichert.');
+  },
+  resetPw(id){
+    const u=DB.users.find(x=>x.id===id);
+    openModal(`Passwort setzen: ${u.name}`,`<div class="form-err"></div><label class="fld">Neues Passwort<input id="r_pw" type="text" autocomplete="off"></label><p class="muted small">Teilen Sie das Passwort der Person mit. Sie kann es danach selbst ändern.</p>`,
+      `<button class="btn" data-close>Abbrechen</button><button class="btn primary" onclick="App.saveResetPw('${id}')">Passwort setzen</button>`);
+  },
+  async saveResetPw(id){
+    const pw=val('r_pw');if(pw.length<4)return formErr('Das Passwort muss mindestens 4 Zeichen lang sein.');
+    const u=DB.users.find(x=>x.id===id);u.salt=uid();u.hash=await hashPw(u.salt,pw);commit(`Passwort für ${u.name} neu gesetzt`);closeModal();toast('Passwort gesetzt.');
+  },
+  async delUser(id){
+    const u=DB.users.find(x=>x.id===id);
+    if(u.role==='lehrkraft'&&!DB.users.some(x=>x.id!==id&&x.role==='lehrkraft'&&x.active!==false)){toast('Es muss mindestens eine aktive Lehrkraft geben.','bad');return;}
+    if(!(await ask(`Benutzer „${esc(u.name)}“ löschen? Die erfassten Vorgänge bleiben erhalten.`,'Löschen',true)))return;
+    DB.users=DB.users.filter(x=>x.id!==id);commit(`Benutzer ${u.name} gelöscht`);render();
+  },
+  backup(){download(JSON.stringify(DB,null,1),`juniorenfirma-sicherung-${today()}.json`,'application/json');log('Sicherung heruntergeladen');commit();},
+  restore(inp){
+    const file=inp.files[0];if(!file)return;inp.value='';
+    const r=new FileReader();
+    r.onload=async()=>{
+      let data;try{data=migrate(JSON.parse(r.result));}catch(e){toast(e.message,'bad');return;}
+      if(!(await ask(`Sicherung „${esc(file.name)}“ einspielen? <b>Alle aktuellen Daten werden durch den Stand der Sicherung ersetzt.</b> Laden Sie vorher ggf. eine Sicherung des aktuellen Stands herunter.`,'Sicherung einspielen',true)))return;
+      const me=currentUser;DB=data;
+      if(!DB.users.find(u=>u.id===me.id))currentUser=null;
+      commit(`Sicherung ${file.name} eingespielt`);render();toast('Sicherung eingespielt.');
+    };
+    r.readAsText(file);
+  },
+
+  /* ---- Exporte & Druck ---- */
+  csvBuchungen(){
+    const rows=[['Datum','Beleg','Art','Kategorie','Beschreibung','Zahlungsart','Einnahme','Ausgabe','Erfasst von']];
+    filteredBuchungen().slice().reverse().forEach(b=>rows.push([fmtD(b.datum),b.beleg,b.typ==='einnahme'?'Einnahme':'Ausgabe',b.kategorie,b.beschreibung,b.zahlungsart==='bank'?'Bank':'bar',b.typ==='einnahme'?+b.betrag:'',b.typ==='ausgabe'?+b.betrag:'',b.user||'']));
+    csv(rows,`einnahmen-ausgaben-${today()}.csv`);
+  },
+  csvRechnungen(){
+    const rows=[['Rechnungs-Nr.','Datum','Kunde','Positionen','Zwischensumme','Rabatt','Betrag','Status','Fällig','Bezahlt am','Zahlungsart']];
+    filteredRechnungen().slice().reverse().forEach(d=>{const s=docSum(d);rows.push([d.nr,fmtD(d.datum),firstLine(d.empfaenger),d.positionen.map(p=>fmtNum(p.menge)+'x '+p.bezeichnung).join(', '),s.zwischen,s.rabatt,s.gesamt,{offen:'offen',ueberfaellig:'überfällig',bezahlt:'bezahlt',storniert:'storniert'}[rechnungStatus(d)],fmtD(d.faellig),fmtD(d.bezahltAm),d.zahlungsart?(d.zahlungsart==='bank'?'Bank':'bar'):'']);});
+    csv(rows,`rechnungen-${today()}.csv`);
+  },
+  csvEinkauf(){
+    const rows=[['Nr.','Datum','Lieferant','Beleg Lieferant','Kategorie','Positionen','Betrag','Status','Bezahlt am','Zahlungsart']];
+    filteredEinkaeufe().slice().reverse().forEach(e=>rows.push([e.nr,fmtD(e.datum),e.lieferantName,e.beleg||'',e.kategorie,e.positionen.map(p=>fmtNum(p.menge)+'x '+p.bezeichnung).join(', '),ekSum(e),e.status==='bezahlt'?'bezahlt':'offen',fmtD(e.bezahltAm),e.zahlungsart?(e.zahlungsart==='bank'?'Bank':'bar'):'']));
+    csv(rows,`einkaeufe-${today()}.csv`);
+  },
+  csvInventar(){
+    const m=stockMap(),rows=[['Art.-Nr.','Bezeichnung','Beschreibung','Einheit','EK-Preis','VK-Preis','Bestand','Mindestbestand','Lagerwert (EK)','Aktiv']];
+    DB.artikel.forEach(a=>rows.push([a.nr,a.name,a.beschreibung||'',a.einheit,+a.ekPreis||0,+a.vkPreis||0,isLager(a)?fmtNum(m[a.id]||0):'',isLager(a)?fmtNum(a.mindestbestand||0):'',isLager(a)?r2((m[a.id]||0)*(+a.ekPreis||0)):'',a.aktiv===false?'nein':'ja']));
+    csv(rows,`inventar-${today()}.csv`);
+  },
+  csvKontakte(){
+    const rows=[['Typ','Name','Ansprechpartner','Straße','PLZ Ort','E-Mail','Telefon','Notiz']];
+    DB.kontakte.forEach(k=>rows.push([k.typ==='kunde'?'Kunde':'Lieferant',k.name,k.ansprechpartner,k.strasse,k.plzOrt,k.email,k.telefon,k.notiz]));
+    csv(rows,`kontakte-${today()}.csv`);
+  },
+  csvReport(){
+    const f=F.auswertung,d=auswertungData(f.von,f.bis);
+    const rows=[['Einnahmen-Überschuss-Rechnung',S().firma.name],['Zeitraum',rangeLabel(f.von,f.bis)],[],['Einnahmen','Betrag']];
+    d.ein.forEach(([k,v])=>rows.push([k,v]));rows.push(['Summe Einnahmen',d.sE],[],['Ausgaben','Betrag']);
+    d.aus.forEach(([k,v])=>rows.push([k,v]));rows.push(['Summe Ausgaben',d.sA],[],[d.erg>=0?'Überschuss':'Fehlbetrag',d.erg],[],['Monat','Einnahmen','Ausgaben','Saldo']);
+    d.months.forEach(([k,v])=>rows.push([MONATE[+k.slice(5)-1]+' '+k.slice(0,4),r2(v.e),r2(v.a),r2(v.e-v.a)]));
+    rows.push([],['Buchungen im Zeitraum'],['Datum','Beleg','Art','Kategorie','Beschreibung','Zahlungsart','Betrag']);
+    d.bs.slice().sort((a,b)=>a.datum.localeCompare(b.datum)).forEach(b=>rows.push([fmtD(b.datum),b.beleg,b.typ==='einnahme'?'Einnahme':'Ausgabe',b.kategorie,b.beschreibung,b.zahlungsart==='bank'?'Bank':'bar',(b.typ==='einnahme'?1:-1)*b.betrag]));
+    csv(rows,`auswertung-${f.von||'beginn'}-bis-${f.bis||today()}.csv`);
+  },
+  printReport(){
+    const f=F.auswertung,d=auswertungData(f.von,f.bis);
+    const cat=list=>list.map(([k,v])=>`<tr><td>${esc(k)}</td><td class="r">${eur(v)}</td></tr>`).join('')||'<tr><td colspan="2">keine</td></tr>';
+    const html=`<div class="pdoc p-report">${firmaHead()}
+      <h1>Einnahmen-Überschuss-Rechnung</h1><p>Zeitraum: <b>${rangeLabel(f.von,f.bis)}</b> · erstellt am ${fmtD(today())} von ${esc(currentUser.name)}</p>
+      <h2>Einnahmen</h2><table class="p-tab"><tbody>${cat(d.ein)}</tbody><tfoot><tr><td>Summe Einnahmen</td><td class="r">${eur(d.sE)}</td></tr></tfoot></table>
+      <h2>Ausgaben</h2><table class="p-tab"><tbody>${cat(d.aus)}</tbody><tfoot><tr><td>Summe Ausgaben</td><td class="r">${eur(d.sA)}</td></tr></tfoot></table>
+      <table class="p-tab"><tfoot><tr><td style="font-size:12.5pt">${d.erg>=0?'Überschuss':'Fehlbetrag'}</td><td class="r" style="font-size:12.5pt">${eur(d.erg)}</td></tr></tfoot></table>
+      ${d.months.length?`<h2>Monatsübersicht</h2><table class="p-tab"><thead><tr><th>Monat</th><th class="r">Einnahmen</th><th class="r">Ausgaben</th><th class="r">Saldo</th></tr></thead><tbody>${d.months.map(([k,v])=>`<tr><td>${MONATE[+k.slice(5)-1]} ${k.slice(0,4)}</td><td class="r">${eur(v.e)}</td><td class="r">${eur(v.a)}</td><td class="r">${eur(v.e-v.a)}</td></tr>`).join('')}</tbody></table>`:''}
+      <h2>Zusatzinformationen</h2><table class="p-tab"><tbody><tr><td>Offene Forderungen (${d.offeneR.length} Rechnungen)</td><td class="r">${eur(sum(d.offeneR,x=>docSum(x).gesamt))}</td></tr>
+      <tr><td>Offene Verbindlichkeiten (${d.offeneE.length} Einkäufe)</td><td class="r">${eur(sum(d.offeneE,ekSum))}</td></tr><tr><td>Warenbestand zu Einkaufspreisen (Stand ${fmtD(today())})</td><td class="r">${eur(d.warenwert)}</td></tr></tbody></table>
+      <h2>Einzelbuchungen</h2><table class="p-tab"><thead><tr><th>Datum</th><th>Beleg</th><th>Kategorie</th><th>Beschreibung</th><th class="r">Einnahme</th><th class="r">Ausgabe</th></tr></thead>
+      <tbody>${d.bs.slice().sort((a,b)=>a.datum.localeCompare(b.datum)).map(b=>`<tr><td>${fmtD(b.datum)}</td><td>${esc(b.beleg)}</td><td>${esc(b.kategorie)}</td><td>${esc(b.beschreibung)}</td><td class="r">${b.typ==='einnahme'?eur(b.betrag):''}</td><td class="r">${b.typ==='ausgabe'?eur(b.betrag):''}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td colspan="4">Summen</td><td class="r">${eur(d.sE)}</td><td class="r">${eur(d.sA)}</td></tr></tfoot></table>
+      <div class="p-sign"><div>Datum, Unterschrift Geschäftsführung</div><div>Datum, Unterschrift betreuende Lehrkraft</div></div></div>`;
+    doPrint(html,`EÜR ${S().firma.name} ${rangeLabel(f.von,f.bis)}`);
+  },
+  printInventur(){
+    const m=stockMap();let w=0;
+    const rows=DB.artikel.filter(a=>isLager(a)&&a.aktiv!==false).sort((a,b)=>(a.nr||'').localeCompare(b.nr||'',undefined,{numeric:true})).map(a=>{const b=m[a.id]||0,v=r2(b*(+a.ekPreis||0));w+=v;
+      return`<tr><td>${esc(a.nr)}</td><td>${esc(a.name)}</td><td>${esc(a.einheit)}</td><td class="r">${fmtNum(b)}</td><td style="width:22mm;border-bottom:1px solid #333"></td><td class="r">${eur(a.ekPreis)}</td><td class="r">${eur(v)}</td></tr>`;}).join('');
+    doPrint(`<div class="pdoc p-report">${firmaHead()}<h1>Inventurliste</h1><p>Stand laut System: ${fmtD(today())}</p>
+      <table class="p-tab"><thead><tr><th>Art.-Nr.</th><th>Bezeichnung</th><th>Einheit</th><th class="r">Soll-Bestand</th><th>Ist (gezählt)</th><th class="r">EK-Preis</th><th class="r">Wert (Soll)</th></tr></thead><tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="6">Lagerwert gesamt</td><td class="r">${eur(w)}</td></tr></tfoot></table>
+      <div class="p-sign"><div>Gezählt von (Datum, Unterschrift)</div><div>Geprüft von (Datum, Unterschrift)</div></div></div>`,`Inventurliste ${today()}`);
+  }
+};
+window.App=App;
+
+function artikelFormHTML(a,p,quick){
+  const chk=a?a.lager!==false:true;
+  return`<div class="grid3"><label class="fld">Artikel-Nr.<input id="${p}nr" value="${esc(a?a.nr:nextArtNr())}"></label><label class="fld span2">Bezeichnung *<input id="${p}name" value="${esc(a?a.name:'')}" placeholder="z. B. Kaffeebecher mit Schullogo"></label></div>
+    <label class="fld">Beschreibung (optional)<input id="${p}beschr" value="${esc(a?a.beschreibung:'')}"></label>
+    <div class="grid3"><label class="fld">Einheit<input id="${p}einh" list="einheitenList2" value="${esc(a?a.einheit:'Stück')}"></label>
+    <label class="fld">Einkaufspreis (€)<input type="number" step="0.01" min="0" id="${p}ek" value="${a?a.ekPreis:''}" placeholder="0,00"></label>
+    <label class="fld">Verkaufspreis (€)<input type="number" step="0.01" min="0" id="${p}vk" value="${a?a.vkPreis:''}" placeholder="0,00"></label></div>
+    <label class="check"><input type="checkbox" id="${p}lager" ${chk?'checked':''}> Lagerbestand führen (abwählen bei Dienstleistungen wie Catering oder Service)</label>
+    <div class="grid3">${!a&&!quick?`<label class="fld">Anfangsbestand<input type="number" step="any" min="0" id="${p}anf" value="0"></label>`:''}
+    <label class="fld">Mindestbestand (Warnung)<input type="number" step="any" min="0" id="${p}min" value="${a?a.mindestbestand||0:0}"></label></div>
+    ${a?`<label class="check"><input type="checkbox" id="${p}aktiv" ${a.aktiv!==false?'checked':''}> aktiv (in Verkauf und Einkauf auswählbar)</label>`:''}
+    ${quick?'<p class="muted small">Der Bestand wird durch diesen Einkauf erhöht.</p>':''}${einheitenDatalist('einheitenList2')}`;
+}
+function rememberUser(){try{sessionStorage.setItem('jf_user',currentUser.id+'|'+DB.meta.created);}catch(e){}}
+function autoLogin(){
+  try{const[id,c]=(sessionStorage.getItem('jf_user')||'').split('|');const u=DB.users.find(x=>x.id===id&&x.active!==false);
+    if(u&&c===DB.meta.created)currentUser={id:u.id,name:u.name,role:u.role};else currentUser=null;}catch(e){currentUser=null;}
+}
+async function loadFromHandle(h){
+  const f=await h.getFile();
+  const data=migrate(JSON.parse(await f.text()));
+  DB=data;fileHandle=h;fileName=h.name;lastMod=f.lastModified;lastSaveId=DB.meta.saveId;dirty=false;saveError=false;demoMode=false;
+  lastHandle=h;idbSet('lastHandle',h);
+  autoLogin();view='dashboard';render();
+}
+
+/* ===================== Beispieldaten ===================== */
+async function buildDemo(){
+  const keep=DB,keepUser=currentUser;
+  DB=defaultDB();
+  const ago=n=>addDays(today(),-n);
+  Object.assign(DB.settings.firma,{name:'Schulkiosk & Merch JF',zusatz:'Juniorenfirma der Kaufmännischen Schule Musterstadt',strasse:'Schulstraße 1',plzOrt:'12345 Musterstadt',
+    telefon:'01234 56789-0',email:'juniorenfirma@schule-musterstadt.de',bank:'Sparkasse Musterstadt',inhaber:'Förderverein KS Musterstadt e. V.',iban:'DE12 3456 7890 1234 5678 90',bic:'SPKADE2MXXX'});
+  DB.settings.anfangBar=100;DB.settings.anfangBank=250;
+  const s1=uid(),s2=uid();
+  DB.users.push({id:s1,name:'Frau Beispiel',login:'lehrer',role:'lehrkraft',salt:s1,hash:await hashPw(s1,'demo'),active:true});
+  DB.users.push({id:s2,name:'Max Muster',login:'schueler',role:'schueler',salt:s2,hash:await hashPw(s2,'demo'),active:true});
+  const K=(typ,name,ap,str,ort,mail)=>{const k={id:uid(),typ,name,ansprechpartner:ap,strasse:str,plzOrt:ort,email:mail,telefon:'',notiz:''};DB.kontakte.push(k);return k;};
+  const kFV=K('kunde','Förderverein der KS Musterstadt e. V.','Herr Klein','Schulstraße 1','12345 Musterstadt','');
+  const kMu=K('kunde','Müller Bürobedarf GmbH','Frau Müller','Industrieweg 7','12345 Musterstadt','info@mueller-buero.de');
+  const kEB=K('kunde','Elternbeirat der KS Musterstadt','Frau Yilmaz','Schulstraße 1','12345 Musterstadt','');
+  const lWe=K('lieferant','Werbemittel Schmidt GmbH','Herr Schmidt','Hauptstraße 22','54321 Beispielhausen','bestellung@werbemittel-schmidt.de');
+  const lGm=K('lieferant','Großmarkt Musterstadt','','Gewerbepark 3','12345 Musterstadt','');
+  const A=(nr,name,einh,ek,vk,min,lager=true)=>{const a={id:uid(),nr,name,beschreibung:'',einheit:einh,ekPreis:ek,vkPreis:vk,lager,mindestbestand:min,aktiv:true,created:nowStamp()};DB.artikel.push(a);return a;};
+  const aB=A('A-001','Kaffeebecher mit Schullogo','Stück',3.2,7,10),aK=A('A-002','Kugelschreiber mit Logo','Stück',0.45,1.5,30),aT=A('A-003','Turnbeutel mit Logo','Stück',2.8,6.5,10),
+        aC=A('A-004','Collegeblock A4, kariert','Stück',0.9,2,20),aW=A('A-005','Mineralwasser 0,5 l','Flasche',0.35,1,24),aS=A('D-001','Catering-Service','Stunde',0,15,0,false);
+  const P=(a,m,preis)=>({artikelId:a.id,bezeichnung:a.name,menge:m,einheit:a.einheit,preis:preis??a.vkPreis});
+  const EK=(datum,l,beleg,pos,za)=>{const e={id:uid(),nr:nextNr('EK',DB.einkaeufe,datum),datum,lieferantId:l.id,lieferantName:l.name,beleg,kategorie:'Wareneinkauf',positionen:pos,notiz:'',status:za?'bezahlt':'offen',zahlungsart:za||null,bezahltAm:za?datum:null,user:'Max Muster',created:nowStamp()};DB.einkaeufe.push(e);syncEinkauf(e);};
+  EK(ago(70),lWe,'R-88123',[P(aB,50,3.2),P(aK,200,0.45),P(aT,40,2.8)],'bank');
+  EK(ago(40),lGm,'Bon 4711',[P(aC,100,0.9),P(aW,120,0.35)],'bar');
+  EK(ago(6),lWe,'R-88790',[P(aB,30,3.2)],null);
+  const R=(datum,k,pos,o={})=>{const d=Object.assign({id:uid(),typ:'rechnung',nr:nextNr('RE',DB.dokumente.filter(x=>x.typ==='rechnung'),datum),datum,kundeId:k?k.id:null,empfaenger:k?anschrift(k):'Barverkauf',
+    positionen:pos,rabatt:0,einleitung:DB.settings.textRechnung,bemerkung:'',lieferdatum:'',zielTage:14,faellig:addDays(datum,14),status:'offen',user:'Max Muster',created:nowStamp()},o);DB.dokumente.push(d);syncDoc(d);return d;};
+  R(ago(60),null,[P(aK,25),P(aC,18)],{status:'bezahlt',bezahltAm:ago(60),zahlungsart:'bar'});
+  R(ago(52),null,[P(aB,6),P(aW,40)],{status:'bezahlt',bezahltAm:ago(52),zahlungsart:'bar'});
+  R(ago(45),kFV,[P(aB,20),P(aT,15)],{rabatt:5,status:'bezahlt',bezahltAm:ago(33),zahlungsart:'bank'});
+  R(ago(30),kMu,[P(aK,100,1.2)],{});
+  R(ago(12),null,[P(aW,35),P(aC,22),P(aT,4)],{status:'bezahlt',bezahltAm:ago(12),zahlungsart:'bar'});
+  R(ago(8),kEB,[P(aS,4),P(aW,48)],{bemerkung:'Leistung: Getränkeverkauf beim Elternabend.'});
+  DB.dokumente.push({id:uid(),typ:'angebot',nr:nextNr('AN',[],ago(3)),datum:ago(3),kundeId:kMu.id,empfaenger:anschrift(kMu),positionen:[P(aT,30,6)],rabatt:0,einleitung:DB.settings.textAngebot,bemerkung:'',gueltigBis:addDays(ago(3),30),status:'offen',user:'Max Muster',created:nowStamp()});
+  const B=(datum,typ,betrag,kat,beschr,za,beleg,k)=>DB.buchungen.push({id:uid(),datum,typ,betrag,kategorie:kat,beschreibung:beschr,zahlungsart:za,beleg,kontaktId:k?k.id:null,quelle:null,user:'Frau Beispiel',created:nowStamp()});
+  B(ago(65),'einnahme',150,'Spenden','Spende Förderverein für Startkapital','bank','BU-'+ago(65).slice(0,4)+'-001',kFV);
+  B(ago(50),'ausgabe',24.9,'Werbung','Druck Werbeflyer (Copyshop)','bar','BU-'+ago(50).slice(0,4)+'-002',null);
+  B(ago(20),'ausgabe',5,'Gebühren','Kontoführungsgebühr','bank','BU-'+ago(20).slice(0,4)+'-003',null);
+  DB.protokoll.push({ts:nowStamp(),user:'System',text:'Beispieldaten erzeugt'});
+  const out=DB;DB=keep;currentUser=keepUser;return out;
+}
+
+/* ===================== Start ===================== */
+window.addEventListener('beforeunload',e=>{if(DB&&dirty&&!demoMode){e.preventDefault();e.returnValue='';}});
+setInterval(async()=>{
+  // Änderungen von anderen Arbeitsplätzen übernehmen, wenn hier gerade nichts bearbeitet wird
+  if(!fileHandle||dirty||saving||modals.length||document.hidden)return;
+  const ae=document.activeElement;if(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))return;
+  try{const ext=await readExternal();if(ext){DB=migrate(ext);lastMod=(await fileHandle.getFile()).lastModified;lastSaveId=DB.meta.saveId;checkUserStillValid();render();toast('Daten wurden von einem anderen Arbeitsplatz aktualisiert.');}}catch(e){}
+},15000);
+(async()=>{
+  if(canFS){const h=await idbGet('lastHandle');if(h&&typeof h.queryPermission==='function')lastHandle=h;}
+  render();
+})();
+window.__jf={get DB(){return DB;},sha256js,stockMap,docSum};
+})();
+</script>
+</body>
+</html>
